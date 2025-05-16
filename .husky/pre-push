@@ -1,0 +1,13 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🚧 pre-push: yarn build 시작..."
+
+# 빌드 실패 시 push 중단
+yarn build
+if [ $? -ne 0 ]; then
+  echo "❌ 빌드 실패: push가 중단되었습니다."
+  exit 1
+fi
+
+echo "✅ 빌드 성공: push 진행"
