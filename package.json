@@ -7,7 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"postinstall": "husky",
+		"postinstall": "husky install",
 		"prepack": "pinst --disable",
 		"postpack": "pinst --enable"
 	},
