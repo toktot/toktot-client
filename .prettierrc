@@ -10,7 +10,10 @@
 	"importOrder": [
 		"^(react|react-dom|react-router)$",
 		"<THIRD_PARTY_MODULES>",
+		"^@/app/(.*)$",
 		"^@/pages/(.*)$",
+		"^@/widgets/(.*)$",
+		"^@/features/(.*)$",
 		"^@/shared/(.*)$",
 		"import type",
 		"^[./]",
