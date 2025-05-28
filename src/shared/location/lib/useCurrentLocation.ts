@@ -33,6 +33,7 @@ export const useCurrentLocation = () => {
 				},
 			});
 		} catch (e) {
+			console.info('❌ 위치 가져오기 실패', e);
 			setError(
 				e instanceof Error ? e.message : '위치 정보를 가져올 수 없어요.',
 			);
