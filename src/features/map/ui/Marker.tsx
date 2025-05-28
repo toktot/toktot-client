@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useMarkerClick } from '../model/useMarkerClick';
+import { useMarkerClick } from '../lib/useMarkerClick';
 
 interface MarkerProps {
 	map: kakao.maps.Map;
