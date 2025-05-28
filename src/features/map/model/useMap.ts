@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { loadKakaoMap } from '../lib/loadKakaoMap';
+import { DEFAULT_CENTER, DEFAULT_LEVEL } from './mapConfig';
 
 type MapInitOptions = {
 	center?: { lat?: number; lng?: number };
 	level?: number;
 };
-
-const DEFAULT_CENTER = { lat: 37.56671, lng: 126.97851 };
-const DEFAULT_LEVEL = 4;
 
 export function useMap(containerId: string, options: MapInitOptions = {}) {
 	const [map, setMap] = useState<kakao.maps.Map | null>(null);
