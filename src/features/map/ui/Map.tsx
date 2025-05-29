@@ -7,6 +7,7 @@ import { SEOUL_TOUR_SPOTS } from '../model/coordsMock';
 import { useMap } from '../model/useMap';
 import { CurrentLocationMarker } from './CurrentLocationMarker';
 import { Marker } from './Marker';
+import { MarkerClusterer } from './MarkerClusterer';
 
 const Map = () => {
 	const { location } = useCurrentLocation();
@@ -43,6 +44,13 @@ const Map = () => {
 							onClick={() => console.log(`클릭한 장소: ${spot.name}`)}
 						/>
 					))}
+
+					{/* 클러스터 마커 */}
+					<MarkerClusterer
+						map={map}
+						positions={SEOUL_TOUR_SPOTS.map((spot) => spot.position)}
+					/>
+
 					<button onClick={goToCurrentLocation}>내 위치로</button>
 				</>
 			)}
