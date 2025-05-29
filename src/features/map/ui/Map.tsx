@@ -2,9 +2,9 @@
 
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 
-import { panToPosition } from '../lib/panToPosition';
 import { SEOUL_TOUR_SPOTS } from '../model/coordsMock';
 import { useMap } from '../model/useMap';
+import CurrentLocationButton from './CurrentLocationButton';
 import { CurrentLocationMarker } from './CurrentLocationMarker';
 import { Marker } from './Marker';
 import { MarkerClusterer } from './MarkerClusterer';
@@ -17,15 +17,6 @@ const Map = () => {
 			lng: location?.coords.longitude,
 		},
 	});
-
-	const goToCurrentLocation = () => {
-		if (!map) return;
-
-		panToPosition(map, {
-			lat: location?.coords.latitude,
-			lng: location?.coords.longitude,
-		});
-	};
 
 	return (
 		<div style={{ width: '500px', height: '500px' }}>
@@ -51,7 +42,16 @@ const Map = () => {
 						positions={SEOUL_TOUR_SPOTS.map((spot) => spot.position)}
 					/>
 
-					<button onClick={goToCurrentLocation}>내 위치로</button>
+					{/* 내 위치로 이동 버튼 */}
+					{location?.coords && (
+						<CurrentLocationButton
+							map={map}
+							coords={{
+								lat: location.coords.latitude,
+								lng: location.coords.longitude,
+							}}
+						/>
+					)}
 				</>
 			)}
 		</div>
