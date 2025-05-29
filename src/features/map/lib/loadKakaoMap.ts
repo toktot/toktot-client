@@ -3,7 +3,7 @@ export async function loadKakaoMap(): Promise<void> {
 
 	return new Promise((resolve) => {
 		const script = document.createElement('script');
-		script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`;
+		script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false&libraries=clusterer`;
 		script.onload = () => {
 			window.kakao.maps.load(resolve);
 		};
