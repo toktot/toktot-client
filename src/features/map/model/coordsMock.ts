@@ -1,4 +1,12 @@
-export const SEOUL_TOUR_SPOTS = [
+import { Coordinates } from './types';
+
+type PlaceMeta = {
+	id: string;
+	name: string;
+	position: Coordinates;
+};
+
+export const SEOUL_TOUR_SPOTS: PlaceMeta[] = [
 	{
 		id: 'gyeongbokgung',
 		name: '경복궁',
