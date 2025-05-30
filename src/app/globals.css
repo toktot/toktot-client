@@ -1,9 +1,11 @@
-@import "tailwindcss";
-
+@import "tailwindcss/preflight"; /* 이전의 base 역할 */
+@import "tailwindcss/utilities"; /* 유틸리티 클래스 */
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-pertendard : Pretendard, sans-serif;
+  --font-manrope: Manrope, sans-serif;
 }
 
 @theme inline {
@@ -23,6 +25,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-pretendard);
 }
 

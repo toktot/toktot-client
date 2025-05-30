@@ -14,12 +14,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="ko">
-			<body
-				className={`${pretendard.variable} ${manrope.variable} antialiased`}
-			>
+		<html lang="ko"
+		className={`${pretendard.variable} ${manrope.variable}`}>
+			<body>
 				{children}
 			</body>
 		</html>
 	);
 }
+
