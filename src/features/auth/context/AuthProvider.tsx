@@ -1,7 +1,7 @@
 "use client";
 
 import React, {createContext, useContext, useEffect, useState} from "react";
-import {getDecryptedToken, removeToken, setEncryptedToken, getUser, setUser as storeUser, removeUser} from "@/shared/utils/storage";
+import {getDecryptedToken, removeToken, setEncryptedToken, getUser, removeUser} from "@/shared/utils/storage";
 import {User} from "../types/auth";
 import {mockUser} from "@/entities/user/model/mockUser";
 
@@ -21,15 +21,20 @@ export const AuthProvider = ({children} : {children: React.ReactNode}) => {
         if (token && storedUser) setUser(storedUser);
     }, []);
 
-    const loginHandler = (username : string, password : string) => {
-        if (username === mockUser.username && password === mockUser.password) {
-            setEncryptedToken("fake-jwt-token");
-            storeUser(mockUser);
-            setUser(mockUser);
-            return true;
-        }
-        return false;
-    }
+    const loginHandler = (username: string, password: string) => {
+  const storedUser = getUser();
+  if (
+    (username === mockUser.username && password === mockUser.password) ||
+    (storedUser && username === storedUser.username)
+  ) {
+    const token = getDecryptedToken() ?? "kakao-token";
+    setEncryptedToken(token);
+    setUser(storedUser ?? mockUser);
+    return true;
+  }
+  return false;
+};
+
     const logoutHandler = () => {
         removeToken();
         removeUser();

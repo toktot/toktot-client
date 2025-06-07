@@ -12,7 +12,7 @@ export default function ProtectedRoute({children}: {children: React.ReactNode}) 
         if (!user) {
             router.push("/login");
         }
-    }, [user]);
+    }, [user, router]);
     if (!user) return null;
     return <>{children}</>;
 }
