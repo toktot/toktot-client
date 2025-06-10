@@ -1,0 +1,18 @@
+.categoryItem {
+	padding: 4px 16px;
+	font-size: 16px;
+	border: 1px solid #d4d4d4;
+	border-radius: 50px;
+	background-color: #fff;
+	transition: all 0.21s;
+	line-height: 20px;
+}
+
+.categoryItem:active {
+	background-color: #e3faff;
+}
+
+.active {
+	background-color: #e3faff;
+	border-color: gainsboro;
+}
