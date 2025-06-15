@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
+import type { Coordinates } from '@/shared/location/model/types';
+
 import { clusterMarker } from '../lib/clusterMarker';
-import { Coordinates } from '../model/types';
 
 interface MarkerClustererProps {
 	map: kakao.maps.Map;

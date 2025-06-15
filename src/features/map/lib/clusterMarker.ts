@@ -1,6 +1,6 @@
-import { createMarker } from './createMarker';
+import type { Coordinates } from '@/shared/location/model/types';
 
-type Coordinates = { lat: number; lng: number };
+import { createMarker } from './createMarker';
 
 export function clusterMarker(
 	map: kakao.maps.Map,

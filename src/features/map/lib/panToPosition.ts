@@ -1,4 +1,4 @@
-import { Coordinates } from '../model/types';
+import { Coordinates } from '@/shared/location/model/types';
 
 export function panToPosition(map: kakao.maps.Map, coords: Coordinates) {
 	if (!map || !coords) return;

@@ -1,8 +1,3 @@
-export type Coordinates = {
-	lat: number;
-	lng: number;
-};
-
 export type MapZoomLevel =
 	| 1
 	| 2

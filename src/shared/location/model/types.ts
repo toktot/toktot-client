@@ -57,18 +57,6 @@ export type Location = {
  * @description 현재 위치를 가져오는 옵션을 나타내는 객체예요.
  */
 export interface GetCurrentLocationOptions {
-	enableHighAccuracy: boolean;
-	maximumAge: number;
-	timeout: number;
-}
-
-/**
- * @public
- * @category 위치 정보
- * @name GetCurrentLocationOptions
- * @description 현재 위치를 가져오는 옵션을 나타내는 객체예요.
- */
-export interface GetCurrentLocationOptions {
 	/**
 	 * 위치 정확도를 높이기 위해 사용하는 옵션이에요.
 	 */
@@ -82,3 +70,13 @@ export interface GetCurrentLocationOptions {
 	 */
 	timeout: number;
 }
+
+/**
+ * @public
+ * @category 위치 정보
+ * @description 좌표 정보를 가진 객체예요.
+ */
+export type Coordinates = {
+	lat: number;
+	lng: number;
+};

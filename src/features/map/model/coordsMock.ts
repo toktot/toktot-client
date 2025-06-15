@@ -1,4 +1,4 @@
-import { Coordinates } from './types';
+import type { Coordinates } from '@/shared/location/model/types';
 
 type PlaceMeta = {
 	id: string;

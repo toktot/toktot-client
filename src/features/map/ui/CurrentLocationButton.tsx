@@ -1,5 +1,6 @@
+import type { Coordinates } from '@/shared/location/model/types';
+
 import { panToPosition } from '../lib/panToPosition';
-import { Coordinates } from '../model/types';
 
 interface CurrentLocationButtonProps {
 	map: kakao.maps.Map;
