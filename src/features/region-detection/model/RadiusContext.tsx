@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useContext, useState } from 'react';
 
+import { DEFAULT_RANGE } from './constants';
 import { RangeStep } from './types';
 
 const RadiusContext = createContext<{
@@ -8,7 +9,7 @@ const RadiusContext = createContext<{
 } | null>(null);
 
 export const RadiusProvider = ({ children }: { children: ReactNode }) => {
-	const [radius, setRadius] = useState<RangeStep>(0);
+	const [radius, setRadius] = useState<RangeStep>(DEFAULT_RANGE);
 	return (
 		<RadiusContext.Provider value={{ radius, setRadius }}>
 			{children}
