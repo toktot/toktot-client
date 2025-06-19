@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 
 import { SEOUL_TOUR_SPOTS } from '../model/coordsMock';
@@ -9,7 +11,11 @@ import { CurrentLocationMarker } from './CurrentLocationMarker';
 import { Marker } from './Marker';
 import { MarkerClusterer } from './MarkerClusterer';
 
-const Map = () => {
+interface MapProps {
+	onLoad?: (map: kakao.maps.Map) => void;
+}
+
+const Map = ({ onLoad }: MapProps) => {
 	const { location } = useCurrentLocation();
 	const map = useMap('map', {
 		center: {
@@ -17,6 +23,12 @@ const Map = () => {
 			lng: location?.coords.longitude,
 		},
 	});
+
+	useEffect(() => {
+		if (map && onLoad) {
+			onLoad(map);
+		}
+	}, [map, onLoad]);
 
 	return (
 		<div style={{ width: '500px', height: '500px' }}>
