@@ -1,3 +1,5 @@
+import { RANGE_STEPS } from './constants';
+
 type Tm128Polygon = {
 	type: 'Polygon';
 	coordinates: [number, number][][];
@@ -14,3 +16,5 @@ export type Tm128GeoJSON = {
 	type: 'GeometryCollection';
 	geometries: Tm128Geometry[];
 };
+
+export type RangeStep = (typeof RANGE_STEPS)[number];
