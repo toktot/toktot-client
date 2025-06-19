@@ -1,20 +1,23 @@
+import { useRadius } from '../model/RadiusContext';
 import { RANGE_STEPS } from '../model/constants';
-import { RangeStep } from '../model/types';
 
-interface RangeSelectorProps {
-	value: RangeStep; // 현재 선택된 반경
-	onChange: (value: RangeStep) => void;
-}
-
-export const RangeSelector = ({ value, onChange }: RangeSelectorProps) => {
+export const RangeSelector = () => {
 	const minRange = RANGE_STEPS[0];
 	const maxRange = RANGE_STEPS[RANGE_STEPS.length - 1];
+	const { radius, setRadius } = useRadius();
 
 	return (
-		<div className="relative w-full max-w-sm px-2">
+		<div className="relative w-full">
+			{/* FIXME: 공용버튼으로 변경 */}
+			<button
+				className="ring-1 rounded-xl px-3 py-1 mb-5"
+				onClick={() => setRadius(0)}
+			>
+				전체
+			</button>
 			<div className="flex items-center justify-between relative h-6">
 				{RANGE_STEPS.map((step, idx) => {
-					const isFilled = step <= value;
+					const isFilled = step <= radius;
 
 					return (
 						<div
@@ -25,7 +28,7 @@ export const RangeSelector = ({ value, onChange }: RangeSelectorProps) => {
 							{idx > 0 && (
 								<div
 									className={`flex-1 h-1 ${
-										step <= value ? 'bg-sky-400' : 'bg-gray-200'
+										step <= radius ? 'bg-sky-400' : 'bg-gray-200'
 									}`}
 								/>
 							)}
@@ -37,7 +40,7 @@ export const RangeSelector = ({ value, onChange }: RangeSelectorProps) => {
 										? 'bg-sky-400 border-sky-400'
 										: 'bg-gray-100 border-gray-300'
 								}`}
-								onClick={() => onChange(step)}
+								onClick={() => setRadius(step)}
 							/>
 						</div>
 					);

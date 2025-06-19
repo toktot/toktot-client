@@ -5,7 +5,7 @@ import proj4 from 'proj4';
 import { Coordinates } from '@/shared/location/model/types';
 import { transformTm128ToLatLng } from '@/shared/map-geo/lib/transformTm128ToLatLng';
 
-import { DEFAULT_RADIUS } from '../model/constants';
+import { useRadius } from '../model/RadiusContext';
 import { fetchGeojson } from './fetchGeojson';
 import { filterGeometriesInRange } from './filterGeometriesInRange';
 
@@ -14,13 +14,11 @@ interface UseTm128DataProps {
 	radius?: number;
 }
 
-export function useTm128Data({
-	center,
-	radius = DEFAULT_RADIUS,
-}: UseTm128DataProps) {
+export function useTm128Data({ center }: UseTm128DataProps) {
 	const [data, setData] = useState<Coordinates[][] | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const { radius } = useRadius();
 
 	useEffect(() => {
 		const fetchData = async () => {

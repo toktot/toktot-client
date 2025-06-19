@@ -8,7 +8,6 @@ import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 
 import { createPolygon } from '../lib/createPolygon';
 import { useTm128Data } from '../lib/useTm128Data';
-import { DEFAULT_RADIUS } from '../model/constants';
 
 interface DongOverlayProps {
 	map: kakao.maps.Map;
@@ -21,7 +20,6 @@ const DongOverlay = ({ map }: DongOverlayProps) => {
 			lat: location?.coords.latitude || DEFAULT_CENTER.lat,
 			lng: location?.coords.longitude || DEFAULT_CENTER.lng,
 		},
-		radius: DEFAULT_RADIUS,
 	});
 	const polygonsRef = useRef<kakao.maps.Polygon[]>([]);
 

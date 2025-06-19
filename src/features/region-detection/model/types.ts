@@ -17,4 +17,4 @@ export type Tm128GeoJSON = {
 	geometries: Tm128Geometry[];
 };
 
-export type RangeStep = (typeof RANGE_STEPS)[number];
+export type RangeStep = 0 | (typeof RANGE_STEPS)[number];
