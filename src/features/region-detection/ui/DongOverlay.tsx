@@ -2,9 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { DEFAULT_CENTER } from '@/features/map/model/mapConfig';
-
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
+import { DEFAULT_CENTER } from '@/shared/location/model/constants';
 
 import { createPolygon } from '../lib/createPolygon';
 import { useTm128Data } from '../lib/useTm128Data';

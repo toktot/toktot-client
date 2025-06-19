@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { DEFAULT_CENTER } from '@/shared/location/model/constants';
+
 import { loadKakaoMap } from '../lib/loadKakaoMap';
-import { DEFAULT_CENTER, DEFAULT_LEVEL } from './mapConfig';
+import { DEFAULT_LEVEL } from './mapConfig';
 
 type MapInitOptions = {
 	center?: { lat?: number; lng?: number };
