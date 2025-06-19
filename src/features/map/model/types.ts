@@ -1,3 +1,6 @@
+/**
+ * @description kakao Map 기준 줌 레벨 1~14
+ */
 export type MapZoomLevel =
 	| 1
 	| 2
