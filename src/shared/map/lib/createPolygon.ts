@@ -1,12 +1,13 @@
 import type { Coordinates } from '@/shared/location/model/types';
 
 export function createPolygon(
-	map: kakao.maps.Map,
 	coords: Coordinates[],
 	options?: Partial<kakao.maps.PolygonOptions>,
 ) {
-	const polygon = new kakao.maps.Polygon({
-		path: coords.map((c) => new kakao.maps.LatLng(c.lat, c.lng)),
+	const path = coords.map((c) => new kakao.maps.LatLng(c.lat, c.lng));
+
+	return new kakao.maps.Polygon({
+		path,
 		strokeWeight: 2,
 		strokeColor: 'skyblue',
 		strokeOpacity: 0.8,
@@ -15,7 +16,4 @@ export function createPolygon(
 		fillOpacity: 0.4,
 		...options,
 	});
-
-	polygon.setMap(map);
-	return polygon;
 }

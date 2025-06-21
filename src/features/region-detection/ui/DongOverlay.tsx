@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import { DEFAULT_CENTER } from '@/shared/location/model/constants';
 
-import { createPolygon } from '../lib/createPolygon';
+import { createRegionWithExclusion } from '../lib/createRegionWithExclusion';
 import { useTm128Data } from '../lib/useTm128Data';
 
 interface DongOverlayProps {
@@ -30,7 +30,16 @@ const DongOverlay = ({ map }: DongOverlayProps) => {
 		polygonsRef.current = [];
 
 		//  새 폴리곤 생성
-		const newPolygons = data.map((coords) => createPolygon(map, coords));
+		const newPolygons: kakao.maps.Polygon[] = [];
+		data.forEach((coords) => {
+			const { regionBoundaryPolygon, excludedAreaPolygon } =
+				createRegionWithExclusion(coords);
+
+			regionBoundaryPolygon.setMap(map);
+			excludedAreaPolygon.setMap(map);
+
+			newPolygons.push(regionBoundaryPolygon, excludedAreaPolygon);
+		});
 
 		polygonsRef.current = newPolygons;
 	}, [map, data]);
