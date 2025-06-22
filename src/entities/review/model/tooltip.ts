@@ -6,7 +6,7 @@ interface BaseTooltip {
 	description?: string;
 }
 
-export type TooltipCategory = 'food' | 'service' | 'clean' | 'etc';
+export type TooltipCategory = 'food' | 'service' | 'clean';
 
 interface FoodTooltip extends BaseTooltip {
 	category: 'food';
