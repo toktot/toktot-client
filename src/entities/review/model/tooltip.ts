@@ -22,8 +22,4 @@ interface CleanTooltip extends BaseTooltip {
 	category: 'clean';
 }
 
-interface EtcTooltip extends BaseTooltip {
-	category: 'etc';
-}
-
-export type Tooltip = FoodTooltip | ServiceTooltip | CleanTooltip | EtcTooltip;
+export type Tooltip = FoodTooltip | ServiceTooltip | CleanTooltip;
