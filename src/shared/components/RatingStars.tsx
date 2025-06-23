@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 
+export const MAX_RATING = 5;
+
 type RatingStarsProps = {
   rating: number;
   onChange: (value: number) => void;
   category: "음식" | "서비스" | "청결";
+  maxRating? : number;
 };
 
 const getIconPaths = (category : string) => {
@@ -33,21 +36,25 @@ const getIconPaths = (category : string) => {
   }
 }
 
-const RatingStars = ({ rating, onChange, category }: RatingStarsProps) => {
+const RatingStars = ({ rating, onChange, category, maxRating = MAX_RATING }: RatingStarsProps) => {
   const {active, inactive} = getIconPaths(category);
 
   const handleClick = (star: number) => {
     if (rating === star) {
-      onChange(Math.max(0, star-1));
-    } else if (star > rating) {
+      onChange(star - 0.5);
+    } else if (star === rating - 0.5) {
+      onChange(star - 1);
+    } else {
       onChange(star);
     }
   }
 
   return (
-    <div className="flex gap-6 w-[296px] h-[40px]">
-      {[1, 2, 3, 4, 5].map((star) => {
-        const isActive = rating >= star;
+    <div className={`flex gap-6 w-[${maxRating * 40 + (maxRating - 1) * 6}px] h-[40px]`}>
+      {Array.from({length: maxRating}, (_, i) => {
+        const star = i + 1;
+        const isFull = rating >= star;
+        const isHalf = rating + 0.5 === star;
         return (
           <div
             key={star}
@@ -55,7 +62,7 @@ const RatingStars = ({ rating, onChange, category }: RatingStarsProps) => {
             onClick={() => handleClick(star)}
           >
             <Image
-              src={isActive ? active: inactive}
+              src={isFull || isHalf ? active: inactive}
               alt={`rating-star-${star}`}
               width={40}
               height={40}
