@@ -1,11 +1,11 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_433_6069)">
-<path d="M2 7H11" stroke="black" stroke-width="1.6" stroke-miterlimit="10"/>
-<path d="M17 7H22" stroke="black" stroke-width="1.6" stroke-miterlimit="10"/>
-<path d="M14 10C15.6569 10 17 8.65685 17 7C17 5.34315 15.6569 4 14 4C12.3431 4 11 5.34315 11 7C11 8.65685 12.3431 10 14 10Z" stroke="black" stroke-width="1.6" stroke-miterlimit="10"/>
-<path d="M2 16L6 16" stroke="black" stroke-width="1.7" stroke-miterlimit="10"/>
-<path d="M12 16L22 16" stroke="black" stroke-width="1.7" stroke-miterlimit="10"/>
-<path d="M9.00001 19C10.6569 19 12 17.6569 12 16C12 14.3431 10.6569 13 9.00001 13C7.34315 13 6 14.3431 6 16C6 17.6569 7.34315 19 9.00001 19Z" stroke="black" stroke-width="1.7" stroke-miterlimit="10"/>
+<path d="M2 7H11" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"/>
+<path d="M17 7H22" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"/>
+<path d="M14 10C15.6569 10 17 8.65685 17 7C17 5.34315 15.6569 4 14 4C12.3431 4 11 5.34315 11 7C11 8.65685 12.3431 10 14 10Z" stroke="currentColor" stroke-width="1.6" stroke-miterlimit="10"/>
+<path d="M2 16L6 16" stroke="currentColor" stroke-width="1.7" stroke-miterlimit="10"/>
+<path d="M12 16L22 16" stroke="currentColor" stroke-width="1.7" stroke-miterlimit="10"/>
+<path d="M9.00001 19C10.6569 19 12 17.6569 12 16C12 14.3431 10.6569 13 9.00001 13C7.34315 13 6 14.3431 6 16C6 17.6569 7.34315 19 9.00001 19Z" stroke="currentColor" stroke-width="1.7" stroke-miterlimit="10"/>
 </g>
 <defs>
 <clipPath id="clip0_433_6069">
