@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, ReactNode, useCallback } from "react";
 
 type BottomSheetProps = {
   children: ReactNode;
@@ -38,11 +38,11 @@ export const BottomSheet = ({ children }: BottomSheetProps) => {
 
   const Y_VALUES = Object.values(Y_POSITIONS);
 
-  const getClosestPosition = (y: number) => {
+  const getClosestPosition = useCallback((y: number) => {
     return Y_VALUES.reduce((prev, curr) =>
       Math.abs(curr - y) < Math.abs(prev - y) ? curr : prev
     );
-  };
+  }, [Y_VALUES]);
 
   const setSheetPosition = (targetTop: number) => {
     if (sheet.current) {
@@ -136,17 +136,21 @@ export const BottomSheet = ({ children }: BottomSheetProps) => {
       node?.removeEventListener("touchend", handleEnd);
       node?.removeEventListener("mousedown", handleStart);
     };
-  }, []);
+  }, [getClosestPosition]);
 
   useEffect(() => {
-    const handleTouchStart = () => {
-      metrics.current.isContentAreaTouched = true;
-    };
-    content.current?.addEventListener("touchstart", handleTouchStart);
-    return () => {
-      content.current?.removeEventListener("touchstart", handleTouchStart);
-    };
-  }, []);
+  const handleTouchStart = () => {
+    metrics.current.isContentAreaTouched = true;
+  };
+
+  const contentNode = content.current; // 복사해서 사용
+  contentNode?.addEventListener("touchstart", handleTouchStart);
+
+  return () => {
+    contentNode?.removeEventListener("touchstart", handleTouchStart);
+  };
+}, []);
+
 
   return (
 
