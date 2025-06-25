@@ -1627,6 +1627,9 @@
   integrity sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dd2eb3f (feat: 상세 리뷰 구현 [TOKTOT-249])
 "@standard-schema/utils@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@standard-schema/utils/-/utils-0.3.0.tgz#3d5e608f16c2390c10528e98e59aef6bf73cae7b"
@@ -1636,12 +1639,15 @@
   version "9.0.6"
   resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-9.0.6.tgz#1e56b940fe042da666ae4d2cb210baa279530096"
   integrity sha512-V5S2+nF8JwjDyKtxy6KW+lH6WO8bI+X/OMYb2MYkGlm4cehxDBymhFSlmmrSWMTE1F/wE4wcEZ/U7M7FT2Lgxg==
+<<<<<<< HEAD
 =======
 "@storybook/addon-a11y@^9.0.13":
   version "9.0.13"
   resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-9.0.13.tgz#63945f797d5fce73190993a58638ce7b44a99278"
   integrity sha512-MVkfZx7ZeAOMGzeRLH6Rf2NMMA5ubTRR8EzW0x0kGXIfYhZxRj+hDEZl3ggMUo+A30w+hOi4d8OGFfWm45DTeg==
 >>>>>>> b1e80a2 (feat: 검색 컴포넌트 추가)
+=======
+>>>>>>> dd2eb3f (feat: 상세 리뷰 구현 [TOKTOT-249])
   dependencies:
     "@storybook/global" "^5.0.0"
     axe-core "^4.2.0"
