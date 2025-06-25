@@ -1,0 +1,29 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1307_35739)">
+<path d="M12 3.01125C7.032 3.01125 3 6.46285 3 10.7239C3 13.7595 4.53 16.3679 7.5 17.6271V21L9.759 18.178C10.479 18.3354 11.226 18.4254 12 18.4254C16.968 18.4254 21 14.9738 21 10.7127C21 6.45159 16.968 3 12 3V3.01125Z" fill="#F6F9FB" stroke="#D4DEE5" stroke-width="1.6" stroke-linejoin="bevel"/>
+<path d="M7 11H8.5" stroke="#D4DEE5" stroke-width="1.7" stroke-linejoin="bevel"/>
+<path d="M11 11H12.5" stroke="#D4DEE5" stroke-width="1.7" stroke-linejoin="bevel"/>
+<path d="M15 11H16.5" stroke="#D4DEE5" stroke-width="1.7" stroke-linejoin="bevel"/>
+</g>
+<mask id="mask0_1307_35739" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+<g clip-path="url(#clip1_1307_35739)">
+<path d="M12 3.01125C7.032 3.01125 3 6.46285 3 10.7239C3 13.7595 4.53 16.3679 7.5 17.6271V21L9.759 18.178C10.479 18.3354 11.226 18.4254 12 18.4254C16.968 18.4254 21 14.9738 21 10.7127C21 6.45159 16.968 3 12 3V3.01125Z" fill="#FF893A" stroke="#FF893A" stroke-width="1.6" stroke-linejoin="bevel"/>
+<path d="M7 11H8.5" stroke="white" stroke-width="1.7" stroke-linejoin="bevel"/>
+<path d="M11 11H12.5" stroke="white" stroke-width="1.7" stroke-linejoin="bevel"/>
+<path d="M15 11H16.5" stroke="white" stroke-width="1.7" stroke-linejoin="bevel"/>
+</g>
+</mask>
+<g mask="url(#mask0_1307_35739)">
+<rect width="12" height="24" fill="#FF893A"/>
+<path d="M7 11H8.5" stroke="white" stroke-width="1.7" stroke-linejoin="bevel"/>
+<path d="M11 11H12" stroke="white" stroke-width="1.7" stroke-linejoin="bevel"/>
+</g>
+<defs>
+<clipPath id="clip0_1307_35739">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+<clipPath id="clip1_1307_35739">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg>

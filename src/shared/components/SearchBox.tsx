@@ -1,6 +1,6 @@
 // shared/components/SearchBox.tsx
 import Image from "next/image";
-import searchIcon from "@/shared/assets/search.svg";
+import searchIcon from "@/assets/icons/search.svg";
 
 interface Props {
   query: string;
