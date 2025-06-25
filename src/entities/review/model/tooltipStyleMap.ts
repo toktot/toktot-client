@@ -2,7 +2,7 @@ import { IconName } from '@/shared/icons/iconMap';
 
 import { TooltipCategory } from './tooltip';
 
-export const tooltipStyleMap: Record<
+export const tooltipMarkerStyleMap: Record<
 	TooltipCategory,
 	{
 		icon: IconName;
@@ -17,12 +17,12 @@ export const tooltipStyleMap: Record<
 	},
 	service: {
 		icon: 'Service',
-		bgColor: 'bg-yellow-100',
+		bgColor: 'bg-sub-orange-50',
 		iconColor: 'white',
 	},
 	clean: {
 		icon: 'Clear',
-		bgColor: 'bg-green-100',
+		bgColor: 'bg-sub-green-50',
 		iconColor: 'white',
 	},
 };
