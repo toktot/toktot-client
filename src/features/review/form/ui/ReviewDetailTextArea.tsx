@@ -19,7 +19,7 @@ export const ReviewDetailTextArea = () => {
 		<div className="relative w-full">
 			<textarea
 				{...register('reviewDetail')}
-				placeholder="상세 리뷰를 입력해주세요."
+				placeholder="리뷰에 대해 입력해주세요."
 				maxLength={maxLength}
 				onFocus={() => setIsFocused(true)}
 				onBlur={() => setIsFocused(false)}
