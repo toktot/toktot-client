@@ -9,16 +9,19 @@ const meta: Meta<typeof RatingStars> = {
   component: RatingStars,
   tags: ['autodocs'],
   argTypes: {
-    category: {
-      control: { type: 'select' },
-      options: ['음식', '서비스', '청결'],
-    },
-    rating: {
-      control: { type: 'number', min: 0, max: 5, step: 1 },
-    },
-    onChange: { action: 'changed' },
+  category: {
+    control: { type: 'select' },
+    options: ['음식', '서비스', '청결'],
   },
-};
+  size: {
+    control: { type: 'radio' },
+    options: ['default', 'large'],
+  },
+  onChange: { action: 'changed' },
+  // rating: ❌ 제거
+  }
+  }
+
 
 export default meta;
 type Story = StoryObj<typeof RatingStars>;
@@ -32,23 +35,23 @@ const Wrapper = (args: Omit<React.ComponentProps<typeof RatingStars>, 'onChange'
 export const Default: Story = {
   render: (args) => <Wrapper {...args} />,
   args: {
-    rating: 3,
     category: '음식',
+    rating: [0, 0, 0, 0, 0], // ✅ 배열로 명확히 지정
   },
 };
 
 export const ServiceCategory: Story = {
   render: (args) => <Wrapper {...args} />,
   args: {
-    rating: 4,
     category: '서비스',
+    rating: [1, 1, 1, 0.5, 0], // 원하는 초기 값
   },
 };
 
 export const CleanCategory: Story = {
   render: (args) => <Wrapper {...args} />,
   args: {
-    rating: 2,
     category: '청결',
+    rating: [1, 1, 1, 1, 1],
   },
 };
