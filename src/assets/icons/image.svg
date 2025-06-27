@@ -1,8 +1,8 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_433_6634)">
-<path d="M21 3H3V21H21V3Z" stroke="black" stroke-width="1.6" stroke-linejoin="bevel"/>
-<path d="M6 17C6 17 7.6 12 10 12C13 12 14.4 17 14.4 17C14.4 17 14.8 15 16 15C17.2 15 18 17 18 17" stroke="black" stroke-width="1.7" stroke-linejoin="bevel"/>
-<circle cx="15.5" cy="8.5" r="1.65" stroke="black" stroke-width="1.7"/>
+<path d="M21 3H3V21H21V3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="bevel"/>
+<path d="M6 17C6 17 7.6 12 10 12C13 12 14.4 17 14.4 17C14.4 17 14.8 15 16 15C17.2 15 18 17 18 17" stroke="currentColor" stroke-width="1.7" stroke-linejoin="bevel"/>
+<circle cx="15.5" cy="8.5" r="1.65" stroke="currentColor" stroke-width="1.7"/>
 </g>
 <defs>
 <clipPath id="clip0_433_6634">
