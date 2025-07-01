@@ -13,8 +13,8 @@ const colors = {
     ],
     Orange : [
   { name: 'Orange 10', variable: '--color-sub-orange-10', hex: '#fff6f0' },
-  { name: 'Orange 20', variable: '--color-sub-orange-20', hex: '#ffb380' },
-  { name: 'Orange 30', variable: '--color-sub-orange-30', hex: '#fccfb1' },
+  { name: 'Orange 20', variable: '--color-sub-orange-20', hex: '#fccfb1' },
+  { name: 'Orange 30', variable: '--color-sub-orange-30', hex: '#ffb380' },
   { name: 'Orange 40', variable: '--color-sub-orange-40', hex: '#ffa970' },
   { name: 'Orange 50', variable: '--color-sub-orange-50', hex: '#ff893a' },
     ],
