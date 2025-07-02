@@ -50,31 +50,44 @@ const RatingStars = ({ rating, onChange, category, size = "default", }: RatingSt
   const isRightAllFull = newRating
     .slice(index)
     .every((val) => val === 1);
+  console.log(isRightAllFull);
 
-  // 우측 모두가 1인 경우 → 해당 인덱스 포함 오른쪽 전부 0으로 초기화
-  if (isRightAllFull) {
-    for (let i = index; i < newRating.length; i++) {
-      newRating[i] = 0;
-    }
+  const isLeftFull = index === 0 || newRating[index -1 ] === 1;
+
+  if (!isLeftFull && current === 0) {
+    return;
+  }
+
+  const isLastFilledIndex = newRating.lastIndexOf(1);
+  const isOnlyRightCanDelete = index === isLastFilledIndex;
+
+  if (current === 0) {
+    newRating[index] = 0.5;
+  } else if (current === 0.5) {
+    newRating[index] = 1;
   } else {
-    // 아니면 해당 별 하나만 순환 (0 → 0.5 → 1 → 0)
-    const next = current === 0 ? 0.5 : current === 0.5 ? 1 : 0;
-    newRating[index] = next;
+    if (!isOnlyRightCanDelete) return;
+    newRating[index] = 0;
+  }
+
+  for (let i = index + 1; i < newRating.length; i++) {
+    newRating[i] = 0;
   }
 
   onChange(newRating);
 };
 
 
-        return (
-    <div className="flex gap-1">
+    return (
+    <div className="flex flex-row gap-1 items-center">
       {rating.map((value, index) => {
         const icon = value === 1 ? full : value === 0.5 ? half : empty;
 
         return (
           <div
             key={index}
-            className={`cursor-pointer w-[${pixelSize}px] h-[${pixelSize}px]`}
+            className="cursor-pointer"
+            style={{width : pixelSize, height : pixelSize}}
             onClick={() => handleClick(index)}
           >
             <Image
