@@ -26,7 +26,6 @@ export { default as Plus } from './plus.svg';
 export { default as Review } from './review.svg';
 export { default as ReviewPlus } from './reviewplus.svg';
 export { default as Route } from './route.svg';
-export { default as Search } from './search.svg';
 export { default as Service } from './service.svg';
 export { default as Star } from './star.svg';
 export { default as Table } from './table.svg';

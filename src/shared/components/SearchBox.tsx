@@ -1,6 +1,5 @@
 // shared/components/SearchBox.tsx
-import Image from "next/image";
-import searchIcon from "@/assets/icons/search.svg";
+
 
 interface Props {
   query: string;
@@ -20,7 +19,7 @@ export default function SearchBox({ query, onChange, onSearchClick }: Props) {
           isFilled ? "right-4" : "left-4"
         }`}
       >
-        <Image src={searchIcon} alt="검색" width={20} height={20} />
+        <img src="/icons/search.svg" alt="검색" width={20} height={20} />
       </button>
       <input
         type="text"
