@@ -1,5 +1,7 @@
 // shared/components/SearchBox.tsx
 
+import Icon from "@/widgets/Icon";
+
 
 interface Props {
   query: string;
@@ -19,7 +21,7 @@ export default function SearchBox({ query, onChange, onSearchClick }: Props) {
           isFilled ? "right-4" : "left-4"
         }`}
       >
-        <img src="/icons/search.svg" alt="검색" width={20} height={20} />
+        <Icon name={"Search"} size = "s" className={"text-grey-50"}/>
       </button>
       <input
         type="text"
@@ -27,7 +29,7 @@ export default function SearchBox({ query, onChange, onSearchClick }: Props) {
         value={query}
         onChange={(e) => onChange(e.target.value)}
         className={`w-full h-[44px] pl-10 pr-10 py-[11px] rounded-[18px] border text-sm outline-none transition-all
-          ${isFilled ? "text-[#21A8F1] border-[#21A8F1]" : "text-[#4A5361] border-[#ccc]"}`}
+          ${isFilled ? "text-primary-60 border-primary-60" : "text-grey-60 border-[#ccc]"}`}
       />
     </div>
   );

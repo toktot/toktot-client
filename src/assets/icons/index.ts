@@ -31,3 +31,4 @@ export { default as Trash } from './trash.svg';
 export { default as Variant23 } from './Variant23.svg';
 export { default as WarningMark } from './warningmark.svg';
 export { default as WesternFood } from './western-food.svg';
+export { default as Search } from './search.svg';
