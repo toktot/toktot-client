@@ -20,12 +20,14 @@ interface ReviewImageWithTooltipProps {
 	image: ReviewImage;
 	onClose: () => void;
 	onUpdateTooltip: (imageId: string, tooltip: Tooltip) => void;
+	onRemoveTooltip: (imageId: string, tooltipId: string) => void;
 }
 
 export const ReviewImageWithTooltip = ({
 	image,
 	onClose,
 	onUpdateTooltip,
+	onRemoveTooltip,
 }: ReviewImageWithTooltipProps) => {
 	const imgRef = useRef<HTMLImageElement>(null);
 	const { getRelativeCoord } = useImageCoordinate(imgRef);
@@ -42,6 +44,7 @@ export const ReviewImageWithTooltip = ({
 			category: 'food',
 			menuName: '불고기',
 			price: 12000,
+			rating: 4,
 			// 100자
 			description:
 				'글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글dsfdsfd',
@@ -87,7 +90,12 @@ export const ReviewImageWithTooltip = ({
 								}}
 							>
 								<Bubble direction={tooltipDirection}>
-									<TooltipBox tooltip={tip} />
+									<TooltipBox
+										tooltip={tip}
+										onDelete={(tooltipId) =>
+											onRemoveTooltip(image.id, tooltipId)
+										}
+									/>
 								</Bubble>
 							</div>
 						)}

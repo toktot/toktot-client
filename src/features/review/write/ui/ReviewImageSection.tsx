@@ -11,8 +11,14 @@ import { ReviewImageWithTooltip } from './ReviewImageWithTooltip';
 
 const ReviewImageSection = () => {
 	const [selectedImage, setSelectedImage] = useState<ReviewImage | null>(null);
-	const { images, addImage, removeImage, canAddMore, updateTooltip } =
-		useReviewImageManager();
+	const {
+		images,
+		addImage,
+		removeImage,
+		canAddMore,
+		updateTooltip,
+		removeTooltip,
+	} = useReviewImageManager();
 
 	//FIXME: selectedImage를 업데이트된 images와 동기화 시켜주기 위한 useEffect 로직 개선 필요
 	useEffect(() => {
@@ -39,6 +45,7 @@ const ReviewImageSection = () => {
 					image={selectedImage}
 					onClose={() => setSelectedImage(null)}
 					onUpdateTooltip={updateTooltip}
+					onRemoveTooltip={removeTooltip}
 				/>
 			)}
 		</section>
