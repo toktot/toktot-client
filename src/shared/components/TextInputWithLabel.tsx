@@ -2,7 +2,7 @@
 import { forwardRef } from "react";
 
 export type TextInputWithLabelProps = {
-  label: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -24,20 +24,28 @@ const TextInputWithLabel = forwardRef<HTMLInputElement, TextInputWithLabelProps>
     },
     ref
   ) => {
+    const textColor = value.trim() !== "" ? "text-grey-90" : "text-grey-60";
     return (
+      
       <div className="flex flex-col gap-[10px] w-[296px] h-[62px]">
-        <label className={`text-sm font-medium ${labelClassName}`}>{label}</label>
+        <label className={`text-sm font-medium text-grey-60 ${labelClassName}`}>{label}</label>
         <input
           ref={ref}
           type={type}
           maxLength = {15}
           className={`
+           
+            h-[38px]
             rounded-[10px] 
             pt-[17px] pr-[20px] pb-[17px] pl-[20px] 
-            border border-[#ccc] 
-            text-[#4A5361] 
-            focus:border-[#38DEFF] focus:text-[#38DEFF] 
-            outline-none w-full
+            border border-grey-30
+            text-grey-60
+            bg-grey-10
+            focus:border-primary-40 focus:text-primary-40
+            outline-none
+            placeholder:text-grey-80
+            placeholder:h-[28px]
+            ${textColor}
             ${inputClassName}
           `}
           value={value}
