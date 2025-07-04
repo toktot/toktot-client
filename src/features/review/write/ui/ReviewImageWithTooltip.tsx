@@ -2,29 +2,33 @@
 
 import { useRef, useState } from 'react';
 
-import { useTooltipManager } from '@/entities/review/lib/useTooltipManager';
+import { ReviewImage } from '@/entities/review/model/reviewImage';
 import { Tooltip } from '@/entities/review/model/tooltip';
 import { TooltipBox } from '@/entities/review/ui/TooltipBox';
 import Image from 'next/image';
+
+import Icon from '@/widgets/Icon';
 
 import { getTailDirection } from '@/shared/bubble/lib/getTailDirection';
 import { getBubbleTransformFromMarker } from '@/shared/bubble/model/direction';
 import { Bubble } from '@/shared/bubble/ui/Bubble';
 
-import { TooltipMarker } from '../../ui/TooltipMarker';
+import { TooltipMarker } from '../../../../entities/review/ui/TooltipMarker';
 import { useImageCoordinate } from '../lib/useImageCoordinate';
 
-const mockFoodTooltip = {
-	category: 'food',
-	menuName: '불고기',
-	price: 12000,
-	// 100자
-	description:
-		'글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글dsfdsfd',
-} as Tooltip;
+interface ReviewImageWithTooltipProps {
+	image: ReviewImage;
+	onClose: () => void;
+	onUpdateTooltip: (imageId: string, tooltip: Tooltip) => void;
+	onRemoveTooltip: (imageId: string, tooltipId: string) => void;
+}
 
-export const ReviewImageWithTooltip = ({ imageUrl }: { imageUrl: string }) => {
-	const { tooltips, addTooltip } = useTooltipManager();
+export const ReviewImageWithTooltip = ({
+	image,
+	onClose,
+	onUpdateTooltip,
+	onRemoveTooltip,
+}: ReviewImageWithTooltipProps) => {
 	const imgRef = useRef<HTMLImageElement>(null);
 	const { getRelativeCoord } = useImageCoordinate(imgRef);
 	const [selectedTooltip, setSelectedTooltip] = useState<Tooltip | null>(null);
@@ -35,7 +39,20 @@ export const ReviewImageWithTooltip = ({ imageUrl }: { imageUrl: string }) => {
 		const coord = getRelativeCoord(e);
 		if (!coord) return;
 
-		addTooltip({ ...coord, ...mockFoodTooltip }); //TODO: 바텀시트 연결 후 데이터 받기 (현재 임시 데이터 처리)
+		const mockFoodTooltip = {
+			id: crypto.randomUUID(),
+			category: 'food',
+			menuName: '불고기',
+			price: 12000,
+			rating: 4,
+			// 100자
+			description:
+				'글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글dsfdsfd',
+		} as Tooltip;
+
+		const newTooltip = { ...coord, ...mockFoodTooltip };
+
+		onUpdateTooltip(image.id, newTooltip); //TODO: 바텀시트 연결 후 데이터 받기 (현재 임시 데이터 처리)
 	};
 
 	const handleMarkerClick = (tooltip: Tooltip) => {
@@ -43,15 +60,18 @@ export const ReviewImageWithTooltip = ({ imageUrl }: { imageUrl: string }) => {
 	};
 
 	return (
-		<div className="relative w-100 h-100">
+		<div className="relative w-full h-100">
 			<Image
 				ref={imgRef}
-				src={imageUrl}
+				src={image.url}
 				onClick={handleImageClick}
 				fill
 				alt="리뷰이미지"
 			/>
-			{tooltips.map((tip) => (
+			<button className="absolute top-1 right-1 z-10" onClick={onClose}>
+				<Icon name="Cancel" size="s" />
+			</button>
+			{image.tooltips.map((tip) => (
 				<div
 					key={tip.id}
 					className="absolute"
@@ -70,7 +90,12 @@ export const ReviewImageWithTooltip = ({ imageUrl }: { imageUrl: string }) => {
 								}}
 							>
 								<Bubble direction={tooltipDirection}>
-									<TooltipBox tooltip={tip} />
+									<TooltipBox
+										tooltip={tip}
+										onDelete={(tooltipId) =>
+											onRemoveTooltip(image.id, tooltipId)
+										}
+									/>
 								</Bubble>
 							</div>
 						)}

@@ -3,6 +3,8 @@ interface BaseTooltip {
 	x: number;
 	y: number;
 	category: TooltipCategory;
+	rating: number;
+
 	description?: string;
 }
 
