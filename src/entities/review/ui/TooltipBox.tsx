@@ -10,7 +10,7 @@ interface TooltipBoxProps {
 export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
 	return (
 		<div className="text-xs text-black min-w-[270px] space-y-[6px] flex gap-3">
-			<div className="flex flex-col">
+			<div className="flex flex-col flex-1 gap-2">
 				{tooltip.category === 'food' && (
 					<div className="flex gap-2">
 						<div className="text-grey-90 font-semibold">{tooltip.menuName}</div>
@@ -30,9 +30,10 @@ export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
 
 			<button
 				onClick={() => onDelete(tooltip.id)}
-				className="bg-[#FFF9F9] flex items-center rounded-xl"
+				className="bg-sub-red-10 flex flex-col w-12 p-2 justify-center items-center rounded-xl"
 			>
-				<Icon name={'Trash'} className="text-[#FF2626]" />
+				<Icon name={'Trash'} className="text-sub-red-30" />
+				<span className="text-sub-red-30 text-[9px] font-medium">삭제하기</span>
 			</button>
 		</div>
 	);
