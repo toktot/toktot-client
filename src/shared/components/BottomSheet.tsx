@@ -1,169 +1,176 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, ReactNode, useCallback } from "react";
+import React, {
+	Children,
+	type ReactNode,
+	cloneElement,
+	createContext,
+	isValidElement,
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 
-type BottomSheetProps = {
-  children: ReactNode;
+import {
+	AnimatePresence,
+	type HTMLMotionProps,
+	type PanInfo,
+	motion,
+} from 'framer-motion';
+
+interface BottomSheetContextProps {
+	isOpen: boolean;
+	open: () => void;
+	close: () => void;
+	contentRef: React.RefObject<HTMLDivElement | null>;
+}
+
+const BottomSheetContext = createContext<BottomSheetContextProps | null>(null);
+
+const useBottomSheet = () => {
+	const context = useContext(BottomSheetContext);
+	if (!context) {
+		throw new Error('useBottomSheet must be used within a BottomSheet');
+	}
+	return context;
 };
 
-type BottomSheetMetrics = {
-  touchStart: {
-    sheetY: number;
-    touchY: number;
-  };
-  touchMove: {
-    prevTouchY?: number;
-    movingDirection: "none" | "down" | "up";
-  };
-  isContentAreaTouched: boolean;
+interface BottomSheetProps {
+	children: ReactNode;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+}
+
+export const BottomSheet = ({
+	children,
+	open: controlledOpen,
+	onOpenChange,
+}: BottomSheetProps) => {
+	const [internalOpen, setInternalOpen] = useState(false);
+	const contentRef = useRef<HTMLDivElement>(null);
+
+	const isOpen = controlledOpen ?? internalOpen;
+	const setIsOpen = onOpenChange ?? setInternalOpen;
+
+	const open = () => setIsOpen(true);
+	const close = useCallback(() => setIsOpen(false), [setIsOpen]);
+
+	return (
+		<BottomSheetContext.Provider value={{ isOpen, open, close, contentRef }}>
+			{children}
+		</BottomSheetContext.Provider>
+	);
 };
 
-const Y_POSITIONS = {
-  FULL: 202,
-  MAX: 261,
-  MID2: 298,
-  MID: 504,
-  MIN: 705,
+export const BottomSheetTrigger = ({ children }: { children: ReactNode }) => {
+	const { open } = useBottomSheet();
+	const child = Children.only(children);
+
+	if (!isValidElement(child)) {
+		return null;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const originalOnClick = (child.props as any).onClick;
+
+	return cloneElement(
+		child as React.ReactElement<React.HTMLAttributes<HTMLElement>>,
+		{
+			onClick: (e: React.MouseEvent<HTMLElement>) => {
+				open();
+				// 자식에게 원래 onClick이 함수 형태로 존재할 경우에만 실행
+				if (typeof originalOnClick === 'function') {
+					originalOnClick(e);
+				}
+			},
+		},
+	);
 };
 
-export const BottomSheet = ({ children }: BottomSheetProps) => {
-  const sheet = useRef<HTMLDivElement>(null);
-  const content = useRef<HTMLDivElement>(null);
+export const BottomSheetOverlay = (props: HTMLMotionProps<'div'>) => {
+	const { isOpen, close } = useBottomSheet();
+	const [isMounted, setIsMounted] = useState(false);
 
-  const metrics = useRef<BottomSheetMetrics>({
-    touchStart: { sheetY: 0, touchY: 0 },
-    touchMove: { prevTouchY: 0, movingDirection: "none" },
-    isContentAreaTouched: false,
-  });
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
-  const Y_VALUES = Object.values(Y_POSITIONS);
+	if (!isMounted) {
+		return null;
+	}
 
-  const getClosestPosition = useCallback((y: number) => {
-    return Y_VALUES.reduce((prev, curr) =>
-      Math.abs(curr - y) < Math.abs(prev - y) ? curr : prev
-    );
-  }, [Y_VALUES]);
-
-  const setSheetPosition = (targetTop: number) => {
-    if (sheet.current) {
-      const translateY = targetTop - Y_POSITIONS.MIN;
-      sheet.current.style.transform = `translateY(${translateY}px)`;
-    }
-  };
-
-  useEffect(() => {
-    const canUserMoveBottomSheet = () => {
-      const { touchMove, isContentAreaTouched } = metrics.current;
-      if (!isContentAreaTouched) return true;
-      if (sheet.current!.getBoundingClientRect().y !== Y_POSITIONS.MAX)
-        return true;
-      if (touchMove.movingDirection === "down") {
-        return content.current!.scrollTop <= 0;
-      }
-      return false;
-    };
-
-    const handleStart = (e: TouchEvent | MouseEvent) => {
-      const { touchStart } = metrics.current;
-      touchStart.sheetY = sheet.current!.getBoundingClientRect().y;
-
-      if (e instanceof TouchEvent) {
-        touchStart.touchY = e.touches[0].clientY;
-      } else {
-        touchStart.touchY = e.clientY;
-        document.addEventListener("mousemove", handleMove);
-        document.addEventListener("mouseup", handleEnd);
-      }
-    };
-
-    const handleMove = (e: TouchEvent | MouseEvent) => {
-      const { touchStart, touchMove } = metrics.current;
-      let currentY: number;
-
-      if (e instanceof TouchEvent) {
-        currentY = e.touches[0].clientY;
-      } else {
-        currentY = e.clientY;
-      }
-
-      if (!touchMove.prevTouchY) {
-        touchMove.prevTouchY = touchStart.touchY;
-      }
-
-      touchMove.movingDirection =
-        touchMove.prevTouchY < currentY ? "down" : "up";
-
-      if (canUserMoveBottomSheet()) {
-        e.preventDefault();
-        const offset = currentY - touchStart.touchY;
-        const nextY = touchStart.sheetY + offset;
-
-        const clampedY = Math.min(
-          Y_POSITIONS.MIN,
-          Math.max(Y_POSITIONS.FULL, nextY)
-        );
-        sheet.current!.style.transform = `translateY(${clampedY - Y_POSITIONS.MIN}px)`;
-      } else {
-        document.body.style.overflowY = "hidden";
-      }
-    };
-
-    const handleEnd = () => {
-      document.body.style.overflowY = "auto";
-      const currentY = sheet.current!.getBoundingClientRect().y;
-      const closest = getClosestPosition(currentY);
-      setSheetPosition(closest);
-
-      metrics.current = {
-        touchStart: { sheetY: 0, touchY: 0 },
-        touchMove: { prevTouchY: 0, movingDirection: "none" },
-        isContentAreaTouched: false,
-      };
-
-      document.removeEventListener("mousemove", handleMove);
-      document.removeEventListener("mouseup", handleEnd);
-    };
-
-    const node = sheet.current;
-    node?.addEventListener("touchstart", handleStart);
-    node?.addEventListener("touchmove", handleMove);
-    node?.addEventListener("touchend", handleEnd);
-    node?.addEventListener("mousedown", handleStart);
-
-    return () => {
-      node?.removeEventListener("touchstart", handleStart);
-      node?.removeEventListener("touchmove", handleMove);
-      node?.removeEventListener("touchend", handleEnd);
-      node?.removeEventListener("mousedown", handleStart);
-    };
-  }, [getClosestPosition]);
-
-  useEffect(() => {
-  const handleTouchStart = () => {
-    metrics.current.isContentAreaTouched = true;
-  };
-
-  const contentNode = content.current; // 복사해서 사용
-  contentNode?.addEventListener("touchstart", handleTouchStart);
-
-  return () => {
-    contentNode?.removeEventListener("touchstart", handleTouchStart);
-  };
-}, []);
-
-
-  return (
-
-    <div
-      ref={sheet}
-      className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl h-[600px] transition-transform z-50"
-    >
-      <div ref={content} className="overflow-y-auto h-full p-4">
-        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4" />
-        {children}
-      </div>
-    </div>
-  );
+	return createPortal(
+		<AnimatePresence>
+			{isOpen && (
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					onClick={close}
+					{...props}
+				/>
+			)}
+		</AnimatePresence>,
+		document.body,
+	);
 };
 
-export default BottomSheet;
+interface BottomSheetContentProps extends HTMLMotionProps<'div'> {
+	children: ReactNode;
+}
+
+export const BottomSheetContent = ({
+	children,
+	...props
+}: BottomSheetContentProps) => {
+	const { isOpen, close, contentRef } = useBottomSheet();
+	const [isMounted, setIsMounted] = useState(false);
+
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
+
+	const handleDragEnd = (
+		event: MouseEvent | TouchEvent | PointerEvent,
+		info: PanInfo,
+	) => {
+		const dragThreshold = 150; // 드래그 임계값 (px)
+
+		if (info.offset.y > dragThreshold) {
+			close();
+		}
+	};
+
+	if (!isMounted) {
+		return null;
+	}
+
+	return createPortal(
+		<AnimatePresence>
+			{isOpen && (
+				<motion.div
+					ref={contentRef}
+					role="dialog"
+					aria-modal="true"
+					// 애니메이션 설정
+					initial={{ y: '100%' }}
+					animate={{ y: '0%' }}
+					exit={{ y: '100%' }}
+					transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+					// 드래그 설정
+					drag="y"
+					dragConstraints={{ top: 0, bottom: 0 }}
+					dragElastic={{ top: 0, bottom: 0.5 }}
+					onDragEnd={handleDragEnd}
+					{...props}
+				>
+					{children}
+				</motion.div>
+			)}
+		</AnimatePresence>,
+		document.body,
+	);
+};
