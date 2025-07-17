@@ -35,3 +35,8 @@ export { default as Variant23 } from './Variant23.svg';
 export { default as WarningMark } from './warningmark.svg';
 export { default as WesternFood } from './western-food.svg';
 export { default as Search } from './search.svg';
+export { default as LocalJeju } from './localjeju.svg';
+export { default as Checkmark } from './checkmark.svg';
+export { default as GoodPrice } from './good_price.svg';
+export { default as Questionmark } from './questionmark.svg';
+export { default as FillLocalJeju } from './fill_localjeju.svg';
