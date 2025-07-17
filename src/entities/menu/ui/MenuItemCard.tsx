@@ -1,14 +1,14 @@
-import Icon from '@/widgets/Icon';
+import Icon from '@/shared/ui/Icon';
 
-import { ReviewedMenuItem } from '../model/menu';
+import type { ReviewedMenuItemData } from '../model/types';
 
-interface MenuItemProps {
-	menu: ReviewedMenuItem;
+interface MenuItemCardProps {
+	menu: ReviewedMenuItemData;
 }
 
-export const MenuItem = ({ menu }: MenuItemProps) => {
+export const MenuItemCard = ({ menu }: MenuItemCardProps) => {
 	return (
-		<div className="w-96 h-12 py-2.5 border-b border-grey-10 flex justify-between items-center gap-2.5">
+		<div className="w-full h-12 py-2.5 border-b border-grey-10 flex justify-between items-center gap-2.5">
 			<div className="flex gap-2.5">
 				<div className="justify-center text-grey-80 text-sm leading-tight">
 					{menu.name}
@@ -30,4 +30,3 @@ export const MenuItem = ({ menu }: MenuItemProps) => {
 		</div>
 	);
 };
-export default MenuItem;
