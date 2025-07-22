@@ -51,7 +51,6 @@ export const DetailedReviewStep = ({ onComplete }: DetailedReviewStepProps) => {
 
 				<div className="relative w-full">
 					<textarea
-						// register 함수로 react-hook-form에 등록합니다.
 						{...register('detailedText')}
 						placeholder="리뷰에 대해 입력해주세요."
 						maxLength={maxLength}

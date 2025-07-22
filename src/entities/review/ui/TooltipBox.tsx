@@ -31,11 +31,9 @@ export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
 					)}
 					<RatingStarView value={tooltip.rating} category={tooltip.category} />
 				</div>
-				{tooltip.description && (
-					<p className="text-grey-80 overflow-hidden text-ellipsis whitespace-nowrap">
-						{tooltip.description}
-					</p>
-				)}
+				<p className="text-grey-80 overflow-hidden text-ellipsis whitespace-nowrap">
+					{tooltip.description || '상세 리뷰가 작성되지 않았어요.'}
+				</p>
 			</div>
 
 			<button
