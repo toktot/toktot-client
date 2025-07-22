@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import type { ReviewImage } from '../model/reviewImage';
 
@@ -8,6 +8,7 @@ const MAX_IMAGES = 5;
 
 export const useReviewImageManager = () => {
 	const [images, setImages] = useState<ReviewImage[]>([]);
+	const idPrefix = useId();
 
 	const addImages = (files: FileList) => {
 		const currentImageCount = images.length;
@@ -20,12 +21,16 @@ export const useReviewImageManager = () => {
 
 		const filesToAdd = Array.from(files).slice(0, availableSlots);
 
-		const newImages: ReviewImage[] = filesToAdd.map((file) => ({
-			id: crypto.randomUUID(),
-			file,
-			url: URL.createObjectURL(file),
-			tooltipIds: [], // tooltips -> tooltipIds
-		}));
+		const newImages: ReviewImage[] = filesToAdd.map((file, index) => {
+			const uniqueId = `${idPrefix}-${file.name}-${Date.now()}-${index}`;
+
+			return {
+				id: uniqueId,
+				file,
+				url: URL.createObjectURL(file),
+				tooltipIds: [],
+			};
+		});
 
 		setImages((prev) => [...prev, ...newImages]);
 	};
