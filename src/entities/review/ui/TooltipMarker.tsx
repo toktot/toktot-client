@@ -1,7 +1,7 @@
 import { Tooltip } from '@/entities/review/model/tooltip';
 import { tooltipMarkerStyleMap } from '@/entities/review/model/tooltipStyleMap';
 
-import Icon from '@/widgets/Icon';
+import Icon from '@/shared/ui/Icon';
 
 interface TooltipMarkerProps {
 	tip: Tooltip;

@@ -1,4 +1,3 @@
-// src/components/Icon.tsx
 import { memo } from 'react';
 import type { SVGProps } from 'react';
 
@@ -11,6 +10,9 @@ interface IconProps extends SVGProps<SVGSVGElement> {
 	size?: TSizeName;
 }
 
+/**
+ * @param size? - @default 'm' size, 16px
+ */
 function Icon({ name, size = DEFAULT_ICON_SIZE, ...props }: IconProps) {
 	const { width, height } = SIZE[size];
 	const IconComponent = ICON_MAP[name];

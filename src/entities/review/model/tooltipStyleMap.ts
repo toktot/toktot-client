@@ -26,3 +26,11 @@ export const tooltipMarkerStyleMap: Record<
 		iconColor: 'white',
 	},
 };
+
+export const categoryColors = {
+	food: '#3AC8FF',
+	service: '#FF893A',
+	clean: '#1AA96E',
+};
+
+export const ratingStartViewIconMap = {};

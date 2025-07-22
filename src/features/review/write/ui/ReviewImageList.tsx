@@ -11,7 +11,7 @@ export const ReviewImageList = ({
 	onDeleteImage: (id: string) => void;
 }) => {
 	return (
-		<>
+		<div className="h-full flex">
 			{images.map((image) => (
 				<ReviewImageItem
 					key={image.id}
@@ -20,6 +20,6 @@ export const ReviewImageList = ({
 					onDeleteImage={() => onDeleteImage(image.id)}
 				/>
 			))}
-		</>
+		</div>
 	);
 };

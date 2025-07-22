@@ -27,9 +27,7 @@ function SingleCategorySelect({
 		<SingleCategorySelectContext.Provider
 			value={{ selectedValue: value, onChange }}
 		>
-			<div
-				className={clsx('flex flex-wrap gap-x-[10px] gap-y-[6px]', className)}
-			>
+			<div className={clsx('flex gap-x-[10px] gap-y-[6px]', className)}>
 				{children}
 			</div>
 		</SingleCategorySelectContext.Provider>

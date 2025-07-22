@@ -1,6 +1,7 @@
-import Icon from '@/widgets/Icon';
+import Icon from '@/shared/ui/Icon';
 
 import { Tooltip } from '../model/tooltip';
+import { RatingStarView } from './RatingStarView';
 
 interface TooltipBoxProps {
 	tooltip: Tooltip;
@@ -9,20 +10,29 @@ interface TooltipBoxProps {
 
 export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
 	return (
-		<div className="text-xs text-black min-w-[270px] space-y-[6px] flex gap-3">
-			<div className="flex flex-col flex-1 gap-2">
-				{tooltip.category === 'food' && (
-					<div className="flex gap-2">
-						<div className="text-grey-90 font-semibold">{tooltip.menuName}</div>
-						<div className="text-grey-70">
-							{tooltip.price.toLocaleString()}원
+		<div className="text-xs text-black w-[230px] space-y-[6px] flex gap-3">
+			<div className="flex flex-col flex-1 gap-2  min-w-0">
+				<div className="flex gap-2">
+					{tooltip.category === 'food' && (
+						<div className="flex gap-2 min-w-0">
+							<div className="text-grey-90 font-semibold overflow-hidden text-ellipsis">
+								{tooltip.menuName}
+							</div>
+							<div className="text-grey-70 whitespace-nowrap">
+								{tooltip?.price?.toLocaleString()}원
+							</div>
 						</div>
-						<div className="text-grey-70">{tooltip.rating}</div>
-					</div>
-				)}
-
+					)}
+					{tooltip.category === 'service' && (
+						<div className="text-grey-90 font-semibold">서비스</div>
+					)}
+					{tooltip.category === 'clean' && (
+						<div className="text-grey-90 font-semibold">청결</div>
+					)}
+					<RatingStarView value={tooltip.rating} category={tooltip.category} />
+				</div>
 				{tooltip.description && (
-					<p className="text-grey-80 whitespace-pre-line">
+					<p className="text-grey-80 overflow-hidden text-ellipsis whitespace-nowrap">
 						{tooltip.description}
 					</p>
 				)}

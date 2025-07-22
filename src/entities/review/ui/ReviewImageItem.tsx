@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import Icon from '@/widgets/Icon';
+import Icon from '@/shared/ui/Icon';
 
 import { ReviewImage } from '../model/reviewImage';
 
@@ -17,9 +17,11 @@ export const ReviewImageItem = ({
 	onSelectImage,
 	onDeleteImage,
 }: Props) => {
+	const tooltipCount = image.tooltipIds.length;
+
 	return (
 		<div
-			className="relative w-[100px] h-[100px] shrink-0"
+			className="relative w-9 rounded-xl"
 			onClick={() => onSelectImage(image)}
 		>
 			<Image src={image.url} alt="리뷰 이미지" fill />
@@ -34,9 +36,9 @@ export const ReviewImageItem = ({
 					<Icon name="Cancel" size="s" />
 				</button>
 			)}
-			{showTooltipCount && image.tooltips.length > 0 && (
-				<div className="absolute bottom-1 left-1 bg-primary text-white text-xs rounded px-1 py-0.5">
-					툴팁 {image.tooltips.length}
+			{showTooltipCount && tooltipCount > 0 && (
+				<div className="absolute bottom-1 right-1 bg-primary text-primary-50 text-xs px-1 py-0.5 rounded-full bg-grey-10">
+					{tooltipCount}
 				</div>
 			)}
 		</div>

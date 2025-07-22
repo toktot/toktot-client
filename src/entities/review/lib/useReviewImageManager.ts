@@ -3,67 +3,65 @@
 import { useState } from 'react';
 
 import type { ReviewImage } from '../model/reviewImage';
-import { Tooltip } from '../model/tooltip';
+
+const MAX_IMAGES = 5;
 
 export const useReviewImageManager = () => {
 	const [images, setImages] = useState<ReviewImage[]>([]);
 
-	const addImage = (file: File) => {
-		if (images.length >= 5) return;
-		const url = URL.createObjectURL(file);
-		const newImage: ReviewImage = {
+	const addImages = (files: FileList) => {
+		const currentImageCount = images.length;
+		const availableSlots = MAX_IMAGES - currentImageCount;
+
+		if (availableSlots <= 0) {
+			alert(`이미지는 최대 ${MAX_IMAGES}개까지 추가할 수 있습니다.`);
+			return;
+		}
+
+		const filesToAdd = Array.from(files).slice(0, availableSlots);
+
+		const newImages: ReviewImage[] = filesToAdd.map((file) => ({
 			id: crypto.randomUUID(),
 			file,
-			url,
-			tooltips: [],
-		};
-		setImages((prev) => [...prev, newImage]);
+			url: URL.createObjectURL(file),
+			tooltipIds: [], // tooltips -> tooltipIds
+		}));
+
+		setImages((prev) => [...prev, ...newImages]);
 	};
 
 	const removeImage = (id: string) => {
 		setImages((prev) => prev.filter((img) => img.id !== id));
 	};
 
-	const updateTooltip = (imageId: string, tooltip: Tooltip) => {
+	const addTooltipToImage = (imageId: string, tooltipId: string) => {
 		setImages((prev) =>
 			prev.map((img) => {
 				if (img.id !== imageId) return img;
-
-				const existingTooltips = img.tooltips.filter(
-					(t) => t.id !== tooltip.id,
-				);
-				if (existingTooltips.length >= 5) {
+				if (img.tooltipIds.length >= 5) {
 					alert('툴팁은 이미지당 최대 5개까지 등록할 수 있습니다.');
 					return img;
 				}
-
-				return {
-					...img,
-					tooltips: [...existingTooltips, tooltip],
-				};
+				return { ...img, tooltipIds: [...img.tooltipIds, tooltipId] };
 			}),
 		);
 	};
 
-	const removeTooltip = (imageId: string, tooltipId: string) => {
+	const removeTooltipFromImage = (tooltipId: string) => {
 		setImages((prev) =>
-			prev.map((img) =>
-				img.id === imageId
-					? {
-							...img,
-							tooltips: img.tooltips.filter((t) => t.id !== tooltipId),
-						}
-					: img,
-			),
+			prev.map((img) => ({
+				...img,
+				tooltipIds: img.tooltipIds.filter((id) => id !== tooltipId),
+			})),
 		);
 	};
 
 	return {
 		images,
-		addImage,
+		addImages,
 		removeImage,
-		updateTooltip,
-		removeTooltip,
-		canAddMore: images.length < 5,
+		addTooltipToImage,
+		removeTooltipFromImage,
+		canAddMore: images.length < MAX_IMAGES,
 	};
 };
