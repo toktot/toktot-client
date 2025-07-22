@@ -10,14 +10,14 @@ import {
 
 const ReviewMenuList: ReviewedMenuItemData[] = [
 	{
-		id: crypto.randomUUID(),
+		id: 'mock-menu-bulgogi',
 		name: '불고기',
 		price: 12000,
 		servings: 2,
 		rating: 3,
 	},
 	{
-		id: crypto.randomUUID(),
+		id: 'mock-menu-samgyeopsal',
 		name: '삼겹살',
 		price: 15000,
 		servings: 1,
@@ -41,8 +41,11 @@ async function getVisitedStoreData(
 	};
 }
 
-async function ReviewWritePage({ params }: { params: { storeId: string } }) {
-	const visitedStoreData = await getVisitedStoreData(params.storeId);
+type Params = Promise<{ storeId: string }>;
+
+export default async function ReviewWritePage({ params }: { params: Params }) {
+	const { storeId } = await params;
+	const visitedStoreData = await getVisitedStoreData(storeId);
 
 	return (
 		<div className="h-dvh flex flex-col items-center p-4 gap-9">
@@ -53,5 +56,3 @@ async function ReviewWritePage({ params }: { params: { storeId: string } }) {
 		</div>
 	);
 }
-
-export default ReviewWritePage;
