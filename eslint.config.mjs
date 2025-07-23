@@ -16,6 +16,7 @@ const eslintConfig = [
 	...storybook.configs['flat/recommended'],
 	{
 		ignores: ['node_modules/', '.next/'],
+		rules: { 'react/no-unescaped-entities': 0 },
 	},
 ];
 

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { AuthProvider } from '@/features/auth/context/AuthProvider';
+
 import { manrope, pretendard } from './font/font';
 import './globals.css';
 
@@ -18,7 +20,7 @@ export default function RootLayout({
 			<body
 				className={`${pretendard.variable} ${manrope.variable} antialiased`}
 			>
-				{children}
+				<AuthProvider>{children}</AuthProvider>
 			</body>
 		</html>
 	);

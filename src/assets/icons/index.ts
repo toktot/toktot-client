@@ -40,3 +40,6 @@ export { default as Checkmark } from './checkmark.svg';
 export { default as GoodPrice } from './good_price.svg';
 export { default as Questionmark } from './questionmark.svg';
 export { default as FillLocalJeju } from './fill_localjeju.svg';
+export { default as Back } from './Icon_system.svg';
+export { default as Delete } from './delete.svg';
+export { default as None } from './none.svg';
