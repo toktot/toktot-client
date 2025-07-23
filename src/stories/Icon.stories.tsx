@@ -1,9 +1,8 @@
 import type { Meta } from '@storybook/nextjs';
 
-import Icon from '@/widgets/Icon';
-
 import { DEFAULT_ICON_SIZE, SIZE } from '@/shared/icons/constants';
 import { ICON_MAP, IconName } from '@/shared/icons/iconMap';
+import Icon from '@/shared/ui/Icon';
 
 export const IconGallery = ({ size }: { size: keyof typeof SIZE }) => {
 	return (

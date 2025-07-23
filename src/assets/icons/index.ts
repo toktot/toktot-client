@@ -1,6 +1,9 @@
 export { default as ArrowDownBar } from './arrow-down-bar.svg';
 export { default as ArrowUpBar } from './arrow-up-bar.svg';
 export { default as ArrowUp } from './arrow-up.svg';
+export { default as ArrowDown } from './arrow-down.svg';
+export { default as ArrowLeft } from './arrow-left.svg';
+export { default as ArrowRight } from './arrow-right.svg';
 export { default as Bell } from './bell.svg';
 export { default as Bookmark } from './bookmark.svg';
 export { default as Cancel } from './cancel.svg';
@@ -32,3 +35,8 @@ export { default as Variant23 } from './Variant23.svg';
 export { default as WarningMark } from './warningmark.svg';
 export { default as WesternFood } from './western-food.svg';
 export { default as Search } from './search.svg';
+export { default as LocalJeju } from './localjeju.svg';
+export { default as Checkmark } from './checkmark.svg';
+export { default as GoodPrice } from './good_price.svg';
+export { default as Questionmark } from './questionmark.svg';
+export { default as FillLocalJeju } from './fill_localjeju.svg';
