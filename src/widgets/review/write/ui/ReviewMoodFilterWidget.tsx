@@ -1,7 +1,7 @@
 'use client';
 
-import { PLACE_MOOD_KEYWORDS } from '@/entities/review/constants/moodKeywords';
 import { useMoodFilter } from '@/entities/review/lib/useMoodFilter';
+import { PLACE_MOOD_KEYWORDS } from '@/entities/review/model/moodKeywords';
 import clsx from 'clsx';
 
 import Icon from '@/shared/ui/Icon';
