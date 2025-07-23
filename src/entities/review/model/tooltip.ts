@@ -10,6 +10,12 @@ export const REVERSE_CATEGORY_MAP: Record<TooltipCategory, number> = {
 	clean: 2,
 };
 
+export const CATEGORY_LABEL_MAP: Record<TooltipCategory, string> = {
+	food: '음식',
+	service: '서비스',
+	clean: '청결',
+};
+
 export type CategoryMap = typeof CATEGORY_MAP;
 export type CategoryKey = keyof CategoryMap;
 export type TooltipCategory = CategoryMap[CategoryKey]; // 'food' | 'service' | 'clean'

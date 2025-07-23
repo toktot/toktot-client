@@ -1,9 +1,9 @@
 import { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
 
-import { mapCategoryToIconType } from '../lib/RatingIconType';
+import { RATING_ICON_FOR_CATEGORY } from '../lib/RatingIconType';
 import { TooltipCategory } from '../model/tooltip';
-import { categoryColors } from '../model/tooltipStyleMap';
+import { RATING_ICON_COLOR_FOR_CATEGORY } from '../model/tooltipStyleMap';
 
 export const RatingStarView = ({
 	value,
@@ -18,8 +18,8 @@ export const RatingStarView = ({
 	iconCount?: number;
 	emptyColor?: string;
 }) => {
-	const resolvedIcon = category ? mapCategoryToIconType(category) : icon;
-	const color = categoryColors[category];
+	const resolvedIcon = category ? RATING_ICON_FOR_CATEGORY(category) : icon;
+	const color = RATING_ICON_COLOR_FOR_CATEGORY[category];
 
 	return (
 		<div className="flex gap-1">

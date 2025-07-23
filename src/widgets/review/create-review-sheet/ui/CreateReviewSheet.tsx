@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 
-import type { TooltipCategory } from '@/entities/review/model/tooltip';
+import {
+	CATEGORY_LABEL_MAP,
+	CATEGORY_MAP,
+	type TooltipCategory,
+} from '@/entities/review';
 
 import { ReviewFormData } from '@/features/review/create/ui/ReviewFormRenderer';
 
@@ -22,15 +26,11 @@ interface CreateReviewSheetProps {
 	onComplete: (data: FinalReviewData) => void;
 }
 
-const CATEGORY_OPTIONS: {
-	id: number;
-	label: string;
-	value: TooltipCategory;
-}[] = [
-	{ id: 1, label: '음식', value: 'food' },
-	{ id: 2, label: '서비스', value: 'service' },
-	{ id: 3, label: '청결', value: 'clean' },
-];
+const CATEGORY_OPTIONS = Object.entries(CATEGORY_MAP).map(([key, value]) => ({
+	id: Number(key), // 0, 1, 2
+	label: CATEGORY_LABEL_MAP[value as TooltipCategory], // '음식', '서비스', '청결'
+	value: value as TooltipCategory, // 'food', 'service', 'clean'
+}));
 
 export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
 	const [currentStep, setCurrentStep] = useState(0);

@@ -1,4 +1,4 @@
-import { ReviewImage } from '@/entities/review/model/reviewImage';
+import { ReviewImage } from '@/entities/review';
 import Image from 'next/image';
 
 interface ReviewImageBoxProps {

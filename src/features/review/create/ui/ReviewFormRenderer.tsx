@@ -1,5 +1,7 @@
 'use client';
 
+import { TooltipCategory } from '@/entities/review';
+
 import CleanlinessReviewForm from './CleanlinessReviewForm';
 import FoodReviewForm, { type FoodFormState } from './FoodReviewForm';
 import ServiceReviewForm from './ServiceReviewForm';
@@ -10,7 +12,7 @@ export type ReviewFormData =
 	| { cleanlinessData: string };
 
 interface ReviewFormRendererProps {
-	category: 'food' | 'service' | 'clean';
+	category: TooltipCategory;
 	onSubmit: (data: ReviewFormData) => void;
 }
 

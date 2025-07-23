@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 
-import { useReviewImageManager } from '@/entities/review/lib/useReviewImageManager';
-import { useTooltipManager } from '@/entities/review/lib/useTooltipManager';
-import { Tooltip } from '@/entities/review/model/tooltip';
+import {
+	Tooltip,
+	useReviewImageManager,
+	useTooltipManager,
+} from '@/entities/review';
 
 import {
 	CreateReviewSheet,

@@ -2,10 +2,12 @@
 
 import { useRef, useState } from 'react';
 
-import { ReviewImage } from '@/entities/review/model/reviewImage';
-import { Tooltip } from '@/entities/review/model/tooltip';
-import { TooltipBox } from '@/entities/review/ui/TooltipBox';
-import { TooltipMarker } from '@/entities/review/ui/TooltipMarker';
+import {
+	ReviewImage,
+	Tooltip,
+	TooltipBox,
+	TooltipMarker,
+} from '@/entities/review';
 import Image from 'next/image';
 
 import { getTailDirection } from '@/shared/bubble/lib/getTailDirection';

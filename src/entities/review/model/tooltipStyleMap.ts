@@ -27,10 +27,8 @@ export const tooltipMarkerStyleMap: Record<
 	},
 };
 
-export const categoryColors = {
+export const RATING_ICON_COLOR_FOR_CATEGORY = {
 	food: '#3AC8FF',
 	service: '#FF893A',
 	clean: '#1AA96E',
 };
-
-export const ratingStartViewIconMap = {};

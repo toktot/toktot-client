@@ -1,8 +1,10 @@
 'use client';
 
-import { mapCategoryToIconType } from '@/entities/review/lib/RatingIconType';
-import { TooltipCategory } from '@/entities/review/model/tooltip';
-import { categoryColors } from '@/entities/review/model/tooltipStyleMap';
+import {
+	RATING_ICON_COLOR_FOR_CATEGORY,
+	RATING_ICON_FOR_CATEGORY,
+	TooltipCategory,
+} from '@/entities/review';
 
 import ReviewFormRenderer, {
 	type ReviewFormData,
@@ -23,8 +25,8 @@ const InitialInfoStep = ({
 	onRatingChange,
 	onSubmit,
 }: InitialInfoStepProps) => {
-	const color = categoryColors[category];
-	const iconName = mapCategoryToIconType(category);
+	const color = RATING_ICON_COLOR_FOR_CATEGORY[category];
+	const iconName = RATING_ICON_FOR_CATEGORY(category);
 
 	return (
 		<div>

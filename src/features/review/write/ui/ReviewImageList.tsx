@@ -1,5 +1,4 @@
-import { ReviewImage } from '@/entities/review/model/reviewImage';
-import { ReviewImageItem } from '@/entities/review/ui/ReviewImageItem';
+import { ReviewImage, ReviewImageItem } from '@/entities/review';
 
 export const ReviewImageList = ({
 	images,
