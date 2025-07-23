@@ -15,7 +15,6 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.1.1",
-		"classnames": "^2.5.1",
 		"clsx": "^2.1.1",
 		"framer-motion": "^12.23.3",
 		"next": "15.3.2",
@@ -35,7 +34,7 @@
 		"@svgr/webpack": "^8.1.0",
 		"@tailwindcss/postcss": "^4",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
-		"@types/classnames": "^2.3.4",
+		"@types/minimatch": "^6.0.0",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
