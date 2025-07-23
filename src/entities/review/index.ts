@@ -1,6 +1,5 @@
 // model exports
 export * from './model/constants';
-export * from './model/moodKeywords';
 export * from './model/reviewImage';
 export * from './model/tooltip';
 export * from './model/tooltipStyleMap';
