@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import {
+	MAX_IMAGE_COUNT,
 	Tooltip,
 	useReviewImageManager,
 	useTooltipManager,
@@ -162,7 +163,10 @@ export const ReviewImageWidget = () => {
 			<div className="flex items-center h-[100px] gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
 				{canAddMore && (
 					<div className="h-full flex items-center justify-center">
-						<ReviewImageUploader onUpload={addImages} maxCount={5} />
+						<ReviewImageUploader
+							onUpload={addImages}
+							maxCount={MAX_IMAGE_COUNT}
+						/>
 					</div>
 				)}
 				{images.map((image) => (

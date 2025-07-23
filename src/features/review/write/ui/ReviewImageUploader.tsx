@@ -1,4 +1,4 @@
-import { validateFiles } from '@/shared/lib/validateFilesj';
+import { validateFiles } from '@/shared/lib/validateFiles';
 import Icon from '@/shared/ui/Icon';
 
 export const ReviewImageUploader = ({
