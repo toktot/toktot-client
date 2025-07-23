@@ -21,7 +21,8 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@/icons/*": ["./src/assets/icons/*"]
-		}
+		},
+		"types": ["node"]
 	},
 	"include": [
 		"next-env.d.ts",
