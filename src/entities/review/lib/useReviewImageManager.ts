@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 
+import { MAX_TOOLTIP_COUNT } from '../model/constants';
 import type { ReviewImage } from '../model/reviewImage';
 
 const MAX_IMAGES = 5;
@@ -43,7 +44,7 @@ export const useReviewImageManager = () => {
 		setImages((prev) =>
 			prev.map((img) => {
 				if (img.id !== imageId) return img;
-				if (img.tooltipIds.length >= 5) {
+				if (img.tooltipIds.length >= MAX_TOOLTIP_COUNT) {
 					alert('툴팁은 이미지당 최대 5개까지 등록할 수 있습니다.');
 					return img;
 				}
