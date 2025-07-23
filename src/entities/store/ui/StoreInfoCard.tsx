@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import type { StoreData } from '../model/types';
 
 interface StoreInfoCardProps {
@@ -7,10 +9,12 @@ interface StoreInfoCardProps {
 export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 	return (
 		<div className="flex justify-center items-center gap-3">
-			<img
+			<Image
 				className="w-9 h-9 relative rounded"
 				// FIXME: 기본 이미지 교체
-				src={store.storeImageUrl || '/images/default-store.png'}
+				width={100}
+				height={100}
+				src={store.storeImageUrl ?? '/images/mockReview.jpg'}
 				alt={store.storeName}
 			/>
 			<div className="w-60 self-stretch inline-flex flex-col justify-between">
