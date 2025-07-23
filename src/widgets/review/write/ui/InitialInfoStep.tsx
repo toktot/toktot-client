@@ -7,8 +7,8 @@ import {
 } from '@/entities/review';
 
 import ReviewFormRenderer, {
-	type ReviewFormData,
-} from '@/features/review/create/ui/ReviewFormRenderer';
+	ReviewFormData,
+} from '@/features/review/write/ui/ReviewFormRenderer';
 
 import StarRating from '@/shared/ui/StarRating';
 

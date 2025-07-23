@@ -12,7 +12,7 @@ import {
 import {
 	CreateReviewSheet,
 	type FinalReviewData,
-} from '@/widgets/review/create-review-sheet/ui/CreateReviewSheet';
+} from '@/widgets/review/write/ui/CreateReviewSheet';
 
 import { ReviewImageBox } from '@/features/review/write/ui/ReviewImageBox';
 import { ReviewImageList } from '@/features/review/write/ui/ReviewImageList';

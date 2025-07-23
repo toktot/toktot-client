@@ -8,7 +8,7 @@ import {
 	type TooltipCategory,
 } from '@/entities/review';
 
-import { ReviewFormData } from '@/features/review/create/ui/ReviewFormRenderer';
+import { ReviewFormData } from '@/features/review/write/ui/ReviewFormRenderer';
 
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
