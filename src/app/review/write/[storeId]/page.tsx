@@ -1,6 +1,7 @@
 import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
+import { Header } from '@/widgets/layout/Header';
 import {
 	RegisteredMenuListWidget,
 	ReviewImageWidget,
@@ -48,11 +49,17 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 	const visitedStoreData = await getVisitedStoreData(storeId);
 
 	return (
-		<div className="h-dvh flex flex-col items-center p-4 gap-9">
-			<VisitedStoreWidget store={visitedStoreData} />
-			<ReviewImageWidget />
-			<RegisteredMenuListWidget menuList={ReviewMenuList} />
-			<ReviewMoodFilterWidget />
-		</div>
+		<>
+			<Header>
+				<Header.Left />
+				<Header.Center>리뷰 쓰기</Header.Center>
+			</Header>
+			<div className="h-dvh flex flex-col items-center p-4 gap-9">
+				<VisitedStoreWidget store={visitedStoreData} />
+				<ReviewImageWidget />
+				<RegisteredMenuListWidget menuList={ReviewMenuList} />
+				<ReviewMoodFilterWidget />
+			</div>
+		</>
 	);
 }

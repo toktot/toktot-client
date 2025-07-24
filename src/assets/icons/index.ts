@@ -43,3 +43,5 @@ export { default as FillLocalJeju } from './fill_localjeju.svg';
 export { default as Back } from './Icon_system.svg';
 export { default as Delete } from './delete.svg';
 export { default as None } from './none.svg';
+export { default as ArrowRightBar } from './arrow-right-bar.svg';
+export { default as ArrowLefttBar } from './arrow-left-bar.svg';
