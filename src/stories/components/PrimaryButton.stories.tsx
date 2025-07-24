@@ -1,10 +1,10 @@
 // shared/components/PrimaryButton.stories.tsx
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
-import PrimaryButton from '../shared/components/PrimaryButton';
+import PrimaryButton from '@/shared/components/PrimaryButton';
 
 const meta: Meta<typeof PrimaryButton> = {
-	title: 'Shared/PrimaryButton',
+	title: 'Components/PrimaryButton',
 	component: PrimaryButton,
 	tags: ['autodocs'],
 	argTypes: {
