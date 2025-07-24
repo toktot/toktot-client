@@ -1,7 +1,9 @@
 import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
-import { Header } from '@/widgets/layout/Header';
+import { BottomNav, BottomNavItem, Header } from '@/widgets/layout';
+import { DEFAULT_NAVIGATION_ITEMS } from '@/widgets/layout/config/navigation';
+import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 import {
 	RegisteredMenuListWidget,
 	ReviewImageWidget,
@@ -60,6 +62,29 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 				<RegisteredMenuListWidget menuList={ReviewMenuList} />
 				<ReviewMoodFilterWidget />
 			</div>
+			<BottomNav>
+				{DEFAULT_NAVIGATION_ITEMS.map((item) => {
+					if (item.type === 'action') {
+						return (
+							<CenterButton
+								key={item.href}
+								href={item.href}
+								iconName={item.iconName}
+								aria-label={item['aria-label']}
+							/>
+						);
+					}
+
+					return (
+						<BottomNavItem
+							key={item.href}
+							href={item.href}
+							iconName={item.iconName}
+							label={item.label}
+						/>
+					);
+				})}
+			</BottomNav>
 		</>
 	);
 }
