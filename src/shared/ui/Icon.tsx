@@ -11,7 +11,7 @@ interface IconProps extends SVGProps<SVGSVGElement> {
 }
 
 /**
- * @param size? - @default 'm' size, 16px
+ * @param size? - @default 'm' size, 24px
  */
 function Icon({ name, size = DEFAULT_ICON_SIZE, ...props }: IconProps) {
 	const { width, height } = SIZE[size];
