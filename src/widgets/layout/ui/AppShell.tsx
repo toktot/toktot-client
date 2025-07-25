@@ -10,11 +10,11 @@ interface AppShellProps {
 	showBottomNav?: boolean;
 }
 
-function AppShell({
+export const AppShell = ({
 	headerTitle,
 	children,
 	showBottomNav = true,
-}: AppShellProps) {
+}: AppShellProps) => {
 	const mainPaddingBottom = showBottomNav ? BOTTOM_NAV_HEIGHT : 0;
 
 	return (
@@ -58,6 +58,4 @@ function AppShell({
 			</div>
 		</>
 	);
-}
-
-export default AppShell;
+};

@@ -1,7 +1,7 @@
 import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
-import AppShell from '@/widgets/layout/ui/AppShell';
+import { AppShell } from '@/widgets/layout';
 import {
 	RegisteredMenuListWidget,
 	ReviewImageWidget,
