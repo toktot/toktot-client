@@ -59,7 +59,7 @@ export const CenterButton = ({
 				href={href}
 				aria-label={ariaLabel}
 				className={clsx(
-					'w-10 h-10 bg-grey-90 rounded-3xl flex items-center justify-center shadow-lg text-primary-50',
+					'w-10 h-10 bg-grey-90 rounded-3xl flex items-center justify-center text-primary-50',
 				)}
 			>
 				<Icon name={iconName} />
@@ -72,10 +72,15 @@ interface BottomNavProps {
 	children: ReactNode;
 }
 
+export const BOTTOM_NAV_HEIGHT = 48;
+
 export const BottomNav = ({ children }: BottomNavProps) => {
 	return (
-		<nav className="fixed bottom-0 left-0 right-0 h-12">
-			<div className="grid grid-cols-5 h-full max-w-md mx-auto">{children}</div>
+		<nav
+			className="fixed bottom-0 left-0 right-0 bg-white shadow-top z-10"
+			style={{ height: BOTTOM_NAV_HEIGHT }}
+		>
+			<div className="grid grid-cols-5 h-full mx-auto">{children}</div>
 		</nav>
 	);
 };

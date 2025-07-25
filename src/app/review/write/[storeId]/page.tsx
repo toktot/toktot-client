@@ -1,9 +1,7 @@
 import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
-import { BottomNav, BottomNavItem, Header } from '@/widgets/layout';
-import { DEFAULT_NAVIGATION_ITEMS } from '@/widgets/layout/config/navigation';
-import { CenterButton } from '@/widgets/layout/ui/BottomNav';
+import AppShell from '@/widgets/layout/ui/AppShell';
 import {
 	RegisteredMenuListWidget,
 	ReviewImageWidget,
@@ -51,40 +49,13 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 	const visitedStoreData = await getVisitedStoreData(storeId);
 
 	return (
-		<>
-			<Header>
-				<Header.Left />
-				<Header.Center>리뷰 쓰기</Header.Center>
-			</Header>
-			<div className="h-dvh flex flex-col items-center p-4 gap-9">
+		<AppShell headerTitle={`리뷰 작성`} showBottomNav={false}>
+			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
 				<RegisteredMenuListWidget menuList={ReviewMenuList} />
 				<ReviewMoodFilterWidget />
 			</div>
-			<BottomNav>
-				{DEFAULT_NAVIGATION_ITEMS.map((item) => {
-					if (item.type === 'action') {
-						return (
-							<CenterButton
-								key={item.href}
-								href={item.href}
-								iconName={item.iconName}
-								aria-label={item['aria-label']}
-							/>
-						);
-					}
-
-					return (
-						<BottomNavItem
-							key={item.href}
-							href={item.href}
-							iconName={item.iconName}
-							label={item.label}
-						/>
-					);
-				})}
-			</BottomNav>
-		</>
+		</AppShell>
 	);
 }
