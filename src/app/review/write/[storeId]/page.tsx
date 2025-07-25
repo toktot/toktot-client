@@ -49,7 +49,7 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 	const visitedStoreData = await getVisitedStoreData(storeId);
 
 	return (
-		<AppShell headerTitle={`리뷰 작성`} showBottomNav={false}>
+		<AppShell headerTitle={`리뷰 쓰기`} showBottomNav={false}>
 			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
