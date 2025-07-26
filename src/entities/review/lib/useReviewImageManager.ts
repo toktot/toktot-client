@@ -3,7 +3,7 @@
 import { useId, useState } from 'react';
 
 import { MAX_TOOLTIP_COUNT } from '../model/constants';
-import type { ReviewImage } from '../model/reviewImage';
+import { ReviewImage } from '../model/image';
 
 const MAX_IMAGES = 5;
 
