@@ -5,10 +5,10 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 
 import TextInputWithLabel, {
 	TextInputWithLabelProps,
-} from '../shared/components/TextInputWithLabel';
+} from '@/shared/components/TextInputWithLabel';
 
 const meta: Meta<typeof TextInputWithLabel> = {
-	title: 'Shared/TextInputWithLabel',
+	title: 'Components/TextInputWithLabel',
 	component: TextInputWithLabel,
 	tags: ['autodocs'],
 	argTypes: {

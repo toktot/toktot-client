@@ -1,7 +1,5 @@
 import React from 'react';
 
-import '../../app/globals.css';
-
 export default {
 	title: 'FOUNDATIONS/FONT',
 };

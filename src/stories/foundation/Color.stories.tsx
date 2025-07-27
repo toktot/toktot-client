@@ -1,7 +1,5 @@
 import React from 'react';
 
-import '../../app/globals.css';
-
 const colors = {
 	Primary: [
 		{ name: 'Primary 10', variable: '--color-primary-10', hex: '#f6fcff' },
@@ -15,8 +13,8 @@ const colors = {
 	],
 	Orange: [
 		{ name: 'Orange 10', variable: '--color-sub-orange-10', hex: '#fff6f0' },
-		{ name: 'Orange 20', variable: '--color-sub-orange-20', hex: '#ffb380' },
-		{ name: 'Orange 30', variable: '--color-sub-orange-30', hex: '#fccfb1' },
+		{ name: 'Orange 20', variable: '--color-sub-orange-20', hex: '#fccfb1' },
+		{ name: 'Orange 30', variable: '--color-sub-orange-30', hex: '#ffb380' },
 		{ name: 'Orange 40', variable: '--color-sub-orange-40', hex: '#ffa970' },
 		{ name: 'Orange 50', variable: '--color-sub-orange-50', hex: '#ff893a' },
 	],
@@ -31,6 +29,18 @@ const colors = {
 		{ name: 'Grey 80', variable: '--color-grey-80', hex: '#4a5361' },
 		{ name: 'Grey 85', variable: '--color-grey-85', hex: '#333c4a' },
 		{ name: 'Grey 90', variable: '--color-grey-90', hex: '#171d29' },
+	],
+	Green: [
+		{ name: 'Green 10', variable: '--color-sub-green-10', hex: '#f4fff7' },
+		{ name: 'Green 20', variable: '--color-sub-green-20', hex: '#cff3d8' },
+		{ name: 'Green 30', variable: '--color-sub-green-30', hex: '#86da9b' },
+		{ name: 'Green 40', variable: '--color-sub-green-40', hex: '#5ed07a' },
+		{ name: 'Green 50', variable: '--color-sub-green-50', hex: '#1aa96e' },
+	],
+	Red: [
+		{ name: 'Red 10', variable: '--color-sub-red-10', hex: '#fff9f9' },
+		{ name: 'Red 20', variable: '--color-sub-red-20', hex: '#ffbcbc' },
+		{ name: 'Red 30', variable: '--color-sub-red-30', hex: '#ff2626' },
 	],
 };
 
