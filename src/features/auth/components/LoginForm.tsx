@@ -17,48 +17,6 @@ import {
 
 import { useAuth } from '../context/AuthProvider';
 
-interface KakaoAuthResponse {
-	access_token: string;
-	refresh_token: string;
-	scope: string;
-	token_type: string;
-	expires_in: number;
-	refresh_token_expires_in: number;
-}
-
-interface KakaoUserResponse {
-	id: number;
-	properties: {
-		nickname: string;
-	};
-	kakao_account: {
-		email?: string;
-	};
-}
-
-declare global {
-	interface Window {
-		Kakao: {
-			init: (key: string) => void;
-			isInitialized: () => boolean;
-			Auth: {
-				login: (options: {
-					scope: string;
-					success: (authObj: KakaoAuthResponse) => void;
-					fail: (err: unknown) => void;
-				}) => void;
-			};
-			API: {
-				request: (options: {
-					url: string;
-					success: (res: KakaoUserResponse) => void;
-					fail: (err: unknown) => void;
-				}) => void;
-			};
-		};
-	}
-}
-
 export default function LoginForm() {
 	const { login } = useAuth();
 	const router = useRouter();
@@ -74,6 +32,7 @@ export default function LoginForm() {
 	};
 	const handleKakaoLogin = () => {
 		const kakaoUrl = getKakaoLoginUrl();
+		console.log(kakaoUrl);
 		window.location.href = kakaoUrl;
 	};
 

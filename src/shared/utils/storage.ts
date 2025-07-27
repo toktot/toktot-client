@@ -1,7 +1,5 @@
 import { User } from '../../features/auth/types/auth';
 
-const REST_API_KEY = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!;
-const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!;
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 
@@ -36,6 +34,20 @@ export const getUser = (): User | null => {
 export const removeUser = () => {
 	localStorage.removeItem(USER_KEY);
 };
-export const getKakaoLoginUrl = () => {
-	return `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+export const getKakaoLoginUrl = (): string => {
+	const clientId = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
+	const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
+
+	if (!clientId || !redirectUri) {
+		throw new Error(
+			'Kakao clientId or redirectUri is not defined in environment variables',
+		);
+	}
+
+	const kakaoAuthUrl = new URL('https://kauth.kakao.com/oauth/authorize');
+	kakaoAuthUrl.searchParams.set('client_id', clientId);
+	kakaoAuthUrl.searchParams.set('redirect_uri', redirectUri);
+	kakaoAuthUrl.searchParams.set('response_type', 'code');
+
+	return kakaoAuthUrl.toString();
 };
