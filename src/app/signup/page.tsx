@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import Icon from '@/widgets/icon';
 
+import AgreementModal from '@/features/auth/components/Agree';
 import NicknameInput from '@/features/auth/components/SignupNickname';
 
 import SignupEmailForm from '../../features/auth/components/SignupEmailForm';
@@ -16,10 +17,14 @@ import SignupPasswordForm from '../../features/auth/components/SignupPasswordFor
 
 // SignupPage.tsx
 
+// SignupPage.tsx
+
+// SignupPage.tsx
+
 export default function SignupPage() {
 	const [step, setStep] = useState<
-		'email' | 'password' | 'nickname' | 'complete'
-	>('email');
+		'agreement' | 'email' | 'password' | 'nickname' | 'complete'
+	>('agreement');
 	const [nickname, setNickname] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -69,13 +74,16 @@ export default function SignupPage() {
 				<h1 className="text-base font-semibold">회원가입</h1>
 				<Icon name={'None'} size="m" className="mr-15"></Icon>
 			</div>
-			{step !== 'complete' && (
+			{step !== 'complete' && step !== 'agreement' && (
 				<p className="text-lg font-semibold text-center mt-8">
 					{renderTitle()}
 				</p>
 			)}
 			<div className="flex flex-1 justify-center items-start">
 				<div className="w-full max-w-md mt-10 px-6">
+					{step === 'agreement' && (
+						<AgreementModal onAgree={() => setStep('email')} />
+					)}
 					{step === 'email' && (
 						<SignupEmailForm
 							onSuccess={(enteredEmail) => {

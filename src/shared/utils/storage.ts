@@ -1,5 +1,7 @@
 import { User } from '../../features/auth/types/auth';
 
+const REST_API_KEY = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!;
+const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!;
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 
@@ -21,9 +23,19 @@ export const setUser = (user: User) => {
 	localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 export const getUser = (): User | null => {
-	const userData = localStorage.getItem(USER_KEY);
-	return userData ? JSON.parse(userData) : null;
+	try {
+		const userData = localStorage.getItem(USER_KEY);
+		if (!userData || userData === 'undefined') return null;
+		return JSON.parse(userData);
+	} catch (e) {
+		console.error('getUser() JSON parse error:', e);
+		return null;
+	}
 };
+
 export const removeUser = () => {
 	localStorage.removeItem(USER_KEY);
+};
+export const getKakaoLoginUrl = () => {
+	return `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 };

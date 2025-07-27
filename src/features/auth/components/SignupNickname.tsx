@@ -96,15 +96,14 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 			</div>
 
 			{/* 메시지 영역 */}
-
-			{checkResult === 'duplicate' && isNickNameLengthValid && nickname && (
-				<p className="text-red-500 text-sm mt-3">
-					'{nickname}'은 다른 유저가 사용 중인 닉네임이에요.
-				</p>
-			)}
 			{checkResult === 'available' && (
 				<p className="text-green-500 text-sm mt-3">
 					'{nickname}'은 사용 가능한 닉네임이에요.
+				</p>
+			)}
+			{checkResult === 'duplicate' && isNickNameLengthValid && nickname && (
+				<p className="text-red-500 text-sm mt-3">
+					'{nickname}'은 다른 유저가 사용 중인 닉네임이에요.
 				</p>
 			)}
 
