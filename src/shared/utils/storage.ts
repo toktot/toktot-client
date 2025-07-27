@@ -1,3 +1,5 @@
+'use client';
+
 import { User } from '../../features/auth/types/auth';
 
 const TOKEN_KEY = 'token';
