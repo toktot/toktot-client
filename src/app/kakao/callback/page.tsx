@@ -1,7 +1,7 @@
 // app/kakao/callback/page.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -13,13 +13,7 @@ import { setEncryptedToken, setUser } from '@/shared/utils/storage';
 
 // app/kakao/callback/page.tsx
 
-// app/kakao/callback/page.tsx
-
-// app/kakao/callback/page.tsx
-
-// app/kakao/callback/page.tsx
-
-export default function KakaoCallbackPage() {
+function KakaoCallbackContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const code = searchParams.get('code');
@@ -58,4 +52,12 @@ export default function KakaoCallbackPage() {
 	}, [code, router]);
 
 	return <p className="p-4">카카오 로그인 처리 중입니다...</p>;
+}
+
+export default function KakaoCallbackPage() {
+	return (
+		<Suspense fallback={<p className="p-4">카카오 로그인 처리 중입니다...</p>}>
+			<KakaoCallbackContent />
+		</Suspense>
+	);
 }
