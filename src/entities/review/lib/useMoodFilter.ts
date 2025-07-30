@@ -9,7 +9,6 @@ export const useMoodFilter = (initialValue: MoodKeywordId[] = []) => {
 
 	const toggleMood = (moodId: MoodKeywordId) => {
 		setSelectedIds((prev) => {
-			// "전체" (id: 0) 선택 시 특별 처리
 			if (moodId === 0) {
 				return prev.includes(0 as MoodKeywordId)
 					? []
