@@ -56,7 +56,7 @@ export default function LoginForm() {
 		}
 
 		try {
-			const res = await fetch('http://13.209.53.44:8080/api/v1/auth/login', {
+			const res = await fetch('http://13.209.53.44/api/v1/auth/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
