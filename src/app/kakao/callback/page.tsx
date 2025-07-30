@@ -11,6 +11,14 @@ import { setEncryptedToken, setUser } from '@/shared/utils/storage';
 
 // app/kakao/callback/page.tsx
 
+// app/kakao/callback/page.tsx
+
+// app/kakao/callback/page.tsx
+
+// app/kakao/callback/page.tsx
+
+// app/kakao/callback/page.tsx
+
 export default function KakaoCallbackPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -47,7 +55,7 @@ export default function KakaoCallbackPage() {
 		};
 
 		loginWithKakao();
-	}, [code]);
+	}, [code, router]);
 
 	return <p className="p-4">카카오 로그인 처리 중입니다...</p>;
 }
