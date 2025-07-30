@@ -1,16 +1,17 @@
 import { useState } from 'react';
 
 import { Tooltip } from '@/entities/review/model/tooltip';
+import { TooltipId } from '@/shared/model/types';
 import { nanoid } from 'nanoid';
 
 export function useTooltipManager(
-	initialTooltips: Record<string, Tooltip> = {},
+	initialTooltips: Record<TooltipId, Tooltip> = {},
 ) {
 	const [tooltips, setTooltips] =
-		useState<Record<string, Tooltip>>(initialTooltips);
+		useState<Record<TooltipId, Tooltip>>(initialTooltips);
 
 	const addTooltip = (newTooltipData: Omit<Tooltip, 'id'>) => {
-		const id = nanoid();
+		const id = nanoid() as TooltipId;
 		const newTooltip: Tooltip = { ...newTooltipData, id } as Tooltip;
 		setTooltips((prev) => ({ ...prev, [id]: newTooltip }));
 
@@ -18,20 +19,20 @@ export function useTooltipManager(
 	};
 
 	function updateTooltip(
-		id: string,
+		id: TooltipId,
 		data: Partial<Omit<Extract<Tooltip, { category: 'food' }>, 'id'>>,
 	): void;
 	function updateTooltip(
-		id: string,
+		id: TooltipId,
 		data: Partial<Omit<Extract<Tooltip, { category: 'service' }>, 'id'>>,
 	): void;
 	function updateTooltip(
-		id: string,
+		id: TooltipId,
 		data: Partial<Omit<Extract<Tooltip, { category: 'clean' }>, 'id'>>,
 	): void;
 
 	function updateTooltip(
-		id: string,
+		id: TooltipId,
 		data:
 			| Partial<Omit<Extract<Tooltip, { category: 'food' }>, 'id'>>
 			| Partial<Omit<Extract<Tooltip, { category: 'service' }>, 'id'>>
@@ -64,7 +65,7 @@ export function useTooltipManager(
 		});
 	}
 
-	const removeTooltip = (id: string) => {
+	const removeTooltip = (id: TooltipId) => {
 		setTooltips((prev) => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [id]: _, ...rest } = prev;

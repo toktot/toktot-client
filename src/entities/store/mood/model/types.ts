@@ -1,4 +1,6 @@
+import { MoodKeywordId } from '@/shared/model/types';
+
 export interface MoodKeyword {
-	id: number;
+	id: MoodKeywordId;
 	label: string;
 }

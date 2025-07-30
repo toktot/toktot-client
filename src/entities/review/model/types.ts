@@ -1,14 +1,16 @@
-import { StoreData } from '@/entities/store';
-import { MoodKeyword } from '@/entities/store/mood/model/types';
-
 import { User } from '@/features/auth/types/auth';
 
-import { ReviewImage } from './image';
+import {
+	MoodKeywordId,
+	ReviewId,
+	ReviewImageId,
+	StoreId,
+} from '@/shared/model/types';
 
 export interface Review {
-	id: string;
+	id: ReviewId;
 	authorId: User['id'];
-	storeId: StoreData['id'];
-	imageIds: ReviewImage['id'][];
-	moodKeywordIds: MoodKeyword['id'][];
+	storeId: StoreId;
+	imageIds: ReviewImageId[];
+	moodKeywordIds: MoodKeywordId[];
 }

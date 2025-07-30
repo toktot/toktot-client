@@ -1,10 +1,11 @@
 import { GoHomeButton } from '@/features/navigation/go-home/ui/GoHomeButton';
 import { ViewWrittenReviewButton } from '@/features/review/write/ui/ViewWrittenReviewButton';
+import { ReviewId } from '@/shared/model/types';
 
 import Icon from '@/shared/ui/Icon';
 
 interface WriteCompleteWidgetProps {
-	newReviewId: string;
+	newReviewId: ReviewId;
 }
 
 export const WriteCompleteWidget = ({

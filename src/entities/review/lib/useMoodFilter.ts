@@ -2,14 +2,18 @@
 
 import { useState } from 'react';
 
-export const useMoodFilter = (initialValue: number[] = []) => {
-	const [selectedIds, setSelectedIds] = useState<number[]>(initialValue);
+import { MoodKeywordId } from '@/shared/model/types';
 
-	const toggleMood = (moodId: number) => {
+export const useMoodFilter = (initialValue: MoodKeywordId[] = []) => {
+	const [selectedIds, setSelectedIds] = useState<MoodKeywordId[]>(initialValue);
+
+	const toggleMood = (moodId: MoodKeywordId) => {
 		setSelectedIds((prev) => {
 			// "전체" (id: 0) 선택 시 특별 처리
 			if (moodId === 0) {
-				return prev.includes(0) ? [] : [0];
+				return prev.includes(0 as MoodKeywordId)
+					? []
+					: ([0] as MoodKeywordId[]);
 			}
 
 			// 다른 아이템 선택 시 "전체" 해제

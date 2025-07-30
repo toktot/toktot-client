@@ -1,3 +1,5 @@
+import { TooltipId } from '@/shared/model/types';
+
 export const CATEGORY_MAP = {
 	0: 'food',
 	1: 'service',
@@ -21,7 +23,7 @@ export type CategoryKey = keyof CategoryMap;
 export type TooltipCategory = CategoryMap[CategoryKey]; // 'food' | 'service' | 'clean'
 
 interface BaseTooltip {
-	id: string;
+	id: TooltipId;
 	x: number;
 	y: number;
 	category: TooltipCategory;

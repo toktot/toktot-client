@@ -1,6 +1,8 @@
+import { ReviewImageId, TooltipId } from '@/shared/model/types';
+
 export interface ReviewImage {
-	id: string;
+	id: ReviewImageId;
 	url: string;
 	file?: File;
-	tooltipIds: string[];
+	tooltipIds: TooltipId[];
 }
