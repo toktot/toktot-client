@@ -7,6 +7,7 @@ import { ReviewView } from '@/entities/review/model/view';
 import { ReviewStory } from '@/entities/review/ui/ReviewStory';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 
 import {
@@ -128,7 +129,7 @@ export function ReviewStoryFeed() {
 	const data = [mockReview1, mockReview2];
 	const [[page, direction], setPage] = useState<PageState>([0, 0]);
 	const currentIndex = page;
-	// const [showGuide, setShowGuide] = useState(true); // 가이드 UI 표시 상태
+	const [showGuide, setShowGuide] = useState(true);
 
 	// if (isLoading) {
 	// 	return (
@@ -182,10 +183,9 @@ export function ReviewStoryFeed() {
 
 	return (
 		<div className="relative h-screen w-screen overflow-hidden bg-black">
-			{/* <AnimatePresence>
+			<AnimatePresence>
 				{showGuide && <InteractionGuide onClose={() => setShowGuide(false)} />}
-			</AnimatePresence> */}
-
+			</AnimatePresence>
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
 					className="absolute h-full w-full"

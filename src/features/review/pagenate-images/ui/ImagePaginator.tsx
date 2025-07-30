@@ -3,10 +3,10 @@
 import { Tooltip, TooltipMarker } from '@/entities/review';
 import Image from 'next/image';
 
+import { ReviewImageId, TooltipId } from '@/shared/model/types';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 
 import { useImagePagination } from '../lib/useImagePagination';
-import { ReviewImageId, TooltipId } from '@/shared/model/types';
 
 interface ImagePaginatorProps {
 	images: { id: ReviewImageId; url: string; tooltipIds: TooltipId[] }[];
