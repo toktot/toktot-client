@@ -19,7 +19,7 @@ const ReviewMenuList: ReviewedMenuItemData[] = [
 	},
 	{
 		id: 'mock-menu-samgyeopsal',
-		name: '삼겹살',
+		name: '오겹살',
 		price: 15000,
 		servings: 1,
 		rating: 4,
