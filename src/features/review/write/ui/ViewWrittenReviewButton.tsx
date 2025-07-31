@@ -3,9 +3,10 @@
 import { useRouter } from 'next/navigation';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
+import { ReviewId } from '@/shared/model/types';
 
 interface ViewWrittenReviewButtonProps {
-	reviewId: string;
+	reviewId: ReviewId;
 }
 
 export const ViewWrittenReviewButton = ({

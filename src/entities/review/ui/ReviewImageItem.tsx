@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import Icon from '@/shared/ui/Icon';
 
-import { ReviewImage } from '../model/reviewImage';
+import { ReviewImage } from '../model/image';
 
 interface Props {
 	image: ReviewImage;
