@@ -3,9 +3,12 @@
 
 import { useState } from 'react';
 
-import Icon from '@/widgets/icon';
-
 import PrimaryButton from '@/shared/components/PrimaryButton';
+import Icon from '@/shared/ui/Icon';
+
+// components/AgreementModal.tsx
+
+// components/AgreementModal.tsx
 
 // components/AgreementModal.tsx
 

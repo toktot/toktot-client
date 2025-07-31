@@ -5,10 +5,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import Icon from '@/widgets/icon';
-
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
+import Icon from '@/shared/ui/Icon';
 import { getKakaoLoginUrl } from '@/shared/utils/storage';
 import {
 	setEncryptedToken,

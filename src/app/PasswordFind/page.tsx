@@ -3,10 +3,12 @@
 
 import { useState } from 'react';
 
-import Icon from '@/widgets/icon';
+import Icon from '@/shared/ui/Icon';
 
 import PassFindEmail from '../../features/auth/components/PassFindEmail';
 import PassSet from '../../features/auth/components/PassSet';
+
+// SignupPage.tsx
 
 // SignupPage.tsx
 

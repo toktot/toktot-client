@@ -1,8 +1,7 @@
 'use client';
 
-import Icon from '@/widgets/icon';
-
 import type { IconName } from '@/shared/icons/iconMap';
+import Icon from '@/shared/ui/Icon';
 
 interface CategoryItem {
 	name: string;
