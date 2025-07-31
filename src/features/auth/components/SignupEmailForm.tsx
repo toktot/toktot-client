@@ -24,6 +24,8 @@ import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 
 // SignupEmailForm.tsx
 
+// SignupEmailForm.tsx
+
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -152,7 +154,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				body: JSON.stringify({ email, verification_code: code }),
 			});
 			const data = await res.json();
-			console.log('verify 응답', data);
+
 			if (data.success) {
 				setCodeStatus('valid');
 				setVerifiedCode(code);
