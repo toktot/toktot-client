@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
+// import { Tooltip } from '@/entities/review';
 import { ReviewView } from '@/entities/review/model/view';
 import { ReviewStory } from '@/entities/review/ui/ReviewStory';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
+import { SaveReviewGesture } from '@/features/review/save/ui/SaveReviewGesture';
 
 import {
 	MoodKeywordId,
@@ -38,12 +40,12 @@ export const mockReview1: ReviewView = {
 	images: [
 		{
 			id: 'img-001' as ReviewImageId,
-			url: '/images/review1.png',
+			url: '/images/mockReview.jpg',
 			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId],
 		},
 		{
 			id: 'img-002' as ReviewImageId,
-			url: '/images/mockReview.jpg',
+			url: '/images/review1.png',
 			tooltipIds: ['t3' as TooltipId],
 		},
 		{
@@ -228,11 +230,13 @@ export function ReviewStoryFeed() {
 							</div>
 						}
 						interactiveLayer={
-							<ImagePaginator
-								images={currentPost.images}
-								tooltips={currentPost.tooltips}
-								onTooltipClick={handleTooltipClick}
-							/>
+							<SaveReviewGesture reviewId={currentPost.id}>
+								<ImagePaginator
+									images={currentPost.images}
+									tooltips={currentPost.tooltips}
+									onTooltipClick={handleTooltipClick}
+								/>
+							</SaveReviewGesture>
 						}
 					/>
 				</motion.div>
