@@ -1,6 +1,5 @@
 import { ReviewFolderId } from '@/shared/model/types';
 import { CustomCheckbox } from '@/shared/ui/CustomCheckbox';
-import Icon from '@/shared/ui/Icon';
 
 import { ReviewFolder } from '../model/types';
 
