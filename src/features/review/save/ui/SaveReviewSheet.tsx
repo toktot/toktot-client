@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 
+import { MAX_REVIEWS_PER_FOLDER } from '@/entities/review-folder/model/constants';
 import { useReviewFolderStore } from '@/entities/review-folder/model/store';
-import { FolderList } from '@/entities/review-folder/ui/FolderList';
+import { FolderListItem } from '@/entities/review-folder/ui/FolderList';
 
 import { AddFolderInput } from '@/features/review-folder/ui/AddFolderInput';
 
@@ -51,11 +52,21 @@ export const SaveReviewSheet = ({
 			<div className="mx-auto mb-3 h-1 w-6 rounded-full bg-grey-30" />
 			<h2 className="text-lg font-bold">저장할 폴더 선택</h2>
 			<div className="my-4 flex flex-col">
-				<FolderList
-					folders={folders}
-					selectedIds={selectedFolderIds}
-					onToggle={handleToggleFolder}
-				/>
+				{folders.map((folder) => {
+					const isAlreadySaved = folder.reviewIds.includes(reviewId);
+					const isFolderFull = folder.reviewCount >= MAX_REVIEWS_PER_FOLDER;
+
+					return (
+						<FolderListItem
+							key={folder.id}
+							folder={folder}
+							isFolderFull={isFolderFull}
+							isAlreadySaved={isAlreadySaved}
+							isSelected={selectedFolderIds.includes(folder.id)}
+							onToggle={() => handleToggleFolder(folder.id)}
+						/>
+					);
+				})}
 				<AddFolderInput onAdd={addFolder} />
 			</div>
 

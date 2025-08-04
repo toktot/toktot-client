@@ -1,37 +1,61 @@
-import { ReviewFolderId } from '@/shared/model/types';
+'use client';
+
+import clsx from 'clsx';
+
 import { CustomCheckbox } from '@/shared/ui/CustomCheckbox';
+import Icon from '@/shared/ui/Icon';
 
 import { ReviewFolder } from '../model/types';
 
-export const FolderList = ({
-	folders,
-	selectedIds,
+interface FolderListItemProps {
+	folder: ReviewFolder;
+	isFolderFull: boolean;
+	isAlreadySaved: boolean;
+	isSelected: boolean;
+	onToggle: () => void;
+}
+
+export const FolderListItem = ({
+	folder,
+	isFolderFull,
+	isAlreadySaved,
+	isSelected,
 	onToggle,
-}: {
-	folders: ReviewFolder[];
-	selectedIds: ReviewFolderId[];
-	onToggle: (id: ReviewFolderId) => void;
-}) => (
-	<ul className="max-h-[40vh] flex-grow overflow-y-auto pr-2">
-		{folders.map((folder) => {
-			const isChecked = selectedIds.includes(folder.id);
-			return (
-				<li
-					key={folder.id}
-					onClick={() => onToggle(folder.id)}
-					className="flex h-[54px] cursor-pointer items-center justify-between p-3 hover:bg-grey-10 border-b border-grey-10"
+}: FolderListItemProps) => {
+	const checked = isAlreadySaved || isSelected;
+	const disabled = isAlreadySaved;
+
+	return (
+		<li
+			onClick={() => !disabled && onToggle()}
+			className={clsx(
+				'flex items-center justify-between rounded-lg p-3 transition-colors',
+				disabled
+					? 'cursor-not-allowed bg-grey-10'
+					: 'cursor-pointer hover:bg-grey-10',
+			)}
+		>
+			<div
+				className={clsx('flex items-center gap-3', disabled && 'opacity-50')}
+			>
+				<Icon name="Bookmark" size="m" className="text-grey-60" />
+				<div className="flex flex-col">
+					<span className="font-medium text-grey-90">{folder.name}</span>
+				</div>
+				<span
+					className={clsx(
+						'text-sm',
+						isFolderFull ? 'text-sub-red-30 font-bold' : 'text-grey-50',
+					)}
 				>
-					<div className="flex items-center gap-3">
-						<span className="font-medium">{folder.name}</span>
-						<span className="text-sm text-grey-70">{folder.reviewCount}</span>
-					</div>
-					<CustomCheckbox
-						checked={isChecked}
-						onChange={() => onToggle(folder.id)}
-						aria-label={`${folder.name} 폴더 선택`}
-					/>
-				</li>
-			);
-		})}
-	</ul>
-);
+					{folder.reviewCount}
+				</span>
+			</div>
+			<CustomCheckbox
+				checked={checked}
+				onChange={() => !disabled && onToggle()}
+				aria-label={`${folder.name} 폴더 선택`}
+			/>
+		</li>
+	);
+};

@@ -128,9 +128,17 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => ({
 				reviewId,
 				folderIds,
 			});
-			// 실제로는 API 응답으로 받은, reviewCount가 업데이트된 폴더 정보로 상태를 갱신합니다.
+			// 실제로는 API 응답으로 받은, reviewCount와 reviewIds가 업데이트된 폴더 정보로 상태를 갱신합니다.
 			const updatedFolders = get().folders.map((f) =>
-				folderIds.includes(f.id) ? { ...f, reviewCount: f.reviewCount + 1 } : f,
+				folderIds.includes(f.id)
+					? {
+							...f,
+							reviewCount: f.reviewCount + 1,
+							reviewIds: f.reviewIds.includes(reviewId)
+								? f.reviewIds
+								: [...f.reviewIds, reviewId],
+						}
+					: f,
 			);
 			// ---
 
