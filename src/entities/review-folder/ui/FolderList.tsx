@@ -19,11 +19,11 @@ export const FolderList = ({
 				<li
 					key={folder.id}
 					onClick={() => onToggle(folder.id)}
-					className="flex cursor-pointer items-center justify-between rounded-lg p-3 hover:bg-grey-10"
+					className="flex h-[54px] cursor-pointer items-center justify-between p-3 hover:bg-grey-10 border-b border-grey-10"
 				>
 					<div className="flex items-center gap-3">
 						<span className="font-medium">{folder.name}</span>
-						<span className="text-sm text-grey-50">{folder.reviewCount}</span>
+						<span className="text-sm text-grey-70">{folder.reviewCount}</span>
 					</div>
 					<CustomCheckbox
 						checked={isChecked}

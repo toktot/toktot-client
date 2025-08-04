@@ -33,22 +33,24 @@ export const AddFolderInput = ({
 	}
 
 	return (
-		<div className="flex items-center gap-2 p-2">
+		<div className="flex items-center gap-2 h-12">
 			<input
 				type="text"
 				value={name}
 				onChange={(e) => setName(e.target.value)}
 				maxLength={10}
 				placeholder="폴더명 (10자 이내)"
-				className="flex-grow rounded-md border border-grey-30 px-3 py-2 focus:border-primary-50 focus:outline-none"
+				className="flex flex-1 h-full px-4 bg-grey-10 rounded-2xl"
 				onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
 				autoFocus
 			/>
 			<button
 				onClick={handleAdd}
-				className="rounded-md bg-primary-50 px-4 py-2 text-white"
+				className={`rounded-2xl h-full px-4 text-white ${
+					name.trim() ? 'bg-grey-90' : 'bg-grey-30'
+				}`}
 			>
-				추가
+				추가하기
 			</button>
 		</div>
 	);

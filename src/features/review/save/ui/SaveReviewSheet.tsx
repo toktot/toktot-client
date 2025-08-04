@@ -50,26 +50,21 @@ export const SaveReviewSheet = ({
 		<div className="flex h-full flex-col p-4">
 			<div className="mx-auto mb-3 h-1 w-6 rounded-full bg-grey-30" />
 			<h2 className="text-lg font-bold">저장할 폴더 선택</h2>
-
-			<div className="my-4 flex flex-grow flex-col overflow-hidden">
+			<div className="my-4 flex flex-col">
 				<FolderList
 					folders={folders}
 					selectedIds={selectedFolderIds}
 					onToggle={handleToggleFolder}
 				/>
-				<div className="mt-2 flex-shrink-0">
-					<AddFolderInput onAdd={addFolder} />
-				</div>
+				<AddFolderInput onAdd={addFolder} />
 			</div>
 
-			<div className="mt-auto pt-4">
-				<PrimaryButton
-					text="저장하기"
-					onClick={handleSave}
-					disabled={selectedFolderIds.length === 0}
-					className="w-full"
-				/>
-			</div>
+			<PrimaryButton
+				text="저장하기"
+				onClick={handleSave}
+				disabled={selectedFolderIds.length === 0}
+				className="w-full"
+			/>
 		</div>
 	);
 };
