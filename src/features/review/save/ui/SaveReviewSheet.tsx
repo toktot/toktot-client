@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { MAX_REVIEWS_PER_FOLDER } from '@/entities/review-folder/model/constants';
 import { useReviewFolderStore } from '@/entities/review-folder/model/store';
-import { FolderListItem } from '@/entities/review-folder/ui/FolderList';
+import { FolderListItem } from '@/entities/review-folder/ui/FolderListItem';
 
 import { AddFolderInput } from '@/features/review-folder/ui/AddFolderInput';
 
@@ -21,9 +21,20 @@ export const SaveReviewSheet = ({
 	onClose,
 }: SaveReviewSheetProps) => {
 	const { folders, addFolder, saveReviewsToFolders } = useReviewFolderStore();
-	const [selectedFolderIds, setSelectedFolderIds] = useState<ReviewFolderId[]>([
-		folders.find((f) => f.isDefault)!.id,
-	]);
+
+	const [selectedFolderIds, setSelectedFolderIds] = useState<ReviewFolderId[]>(
+		() => {
+			const alreadySavedIds = folders
+				.filter((f) => f.reviewIds.includes(reviewId))
+				.map((f) => f.id);
+
+			if (alreadySavedIds.length > 0) {
+				return alreadySavedIds;
+			}
+
+			return [folders.find((f) => f.isDefault)!.id];
+		},
+	);
 
 	const handleToggleFolder = (folderId: ReviewFolderId) => {
 		setSelectedFolderIds((prev) =>
@@ -35,45 +46,56 @@ export const SaveReviewSheet = ({
 
 	const handleSave = async () => {
 		const result = await saveReviewsToFolders(reviewId, selectedFolderIds);
-
 		if (result.success) {
 			onClose();
-			//TODO: toast 알림
-		} else {
-			const errorMessage = result.fullFolders?.length
-				? `다음 폴더는 저장 공간이 가득 찼습니다:\n[${result.fullFolders.join(', ')}]`
-				: '리뷰 저장에 실패했습니다.';
-			alert('error' + errorMessage);
 		}
 	};
 
+	const isSaveButtonDisabled = useMemo(() => {
+		const newlySelectedIds = selectedFolderIds.filter(
+			(selectedId) =>
+				!folders.find((f) => f.id === selectedId)?.reviewIds.includes(reviewId),
+		);
+
+		if (newlySelectedIds.length === 0) return true;
+
+		const areAllNewSelectionsFull = newlySelectedIds.every((id) => {
+			const folder = folders.find((f) => f.id === id);
+			return folder && folder.reviewCount >= MAX_REVIEWS_PER_FOLDER;
+		});
+
+		return areAllNewSelectionsFull;
+	}, [folders, selectedFolderIds, reviewId]);
+
 	return (
 		<div className="flex h-full flex-col p-4">
-			<div className="mx-auto mb-3 h-1 w-6 rounded-full bg-grey-30" />
-			<h2 className="text-lg font-bold">저장할 폴더 선택</h2>
-			<div className="my-4 flex flex-col">
+			<div className="my-4 flex flex-col gap-2">
 				{folders.map((folder) => {
 					const isAlreadySaved = folder.reviewIds.includes(reviewId);
 					const isFolderFull = folder.reviewCount >= MAX_REVIEWS_PER_FOLDER;
+					const isDisabled =
+						isAlreadySaved || (isFolderFull && !isAlreadySaved);
+					const isSelected = selectedFolderIds.includes(folder.id);
 
 					return (
 						<FolderListItem
 							key={folder.id}
 							folder={folder}
-							isFolderFull={isFolderFull}
 							isAlreadySaved={isAlreadySaved}
-							isSelected={selectedFolderIds.includes(folder.id)}
-							onToggle={() => handleToggleFolder(folder.id)}
+							isSelected={isSelected}
+							isDisabled={isDisabled}
+							onToggle={() => !isDisabled && handleToggleFolder(folder.id)}
 						/>
 					);
 				})}
+
 				<AddFolderInput onAdd={addFolder} />
 			</div>
 
 			<PrimaryButton
 				text="저장하기"
 				onClick={handleSave}
-				disabled={selectedFolderIds.length === 0}
+				disabled={isSaveButtonDisabled}
 				className="w-full"
 			/>
 		</div>

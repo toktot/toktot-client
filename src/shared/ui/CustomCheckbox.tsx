@@ -6,18 +6,21 @@ interface CustomCheckboxProps {
 	checked: boolean;
 	onChange: (checked: boolean) => void;
 	'aria-label': string;
+	disabled: boolean;
 }
 
 export const CustomCheckbox = ({
 	checked,
 	onChange,
 	'aria-label': ariaLabel,
+	disabled,
 }: CustomCheckboxProps) => {
 	return (
 		<label className="relative inline-block h-5 w-5 cursor-pointer">
 			<input
 				type="checkbox"
 				checked={checked}
+				disabled={disabled}
 				onChange={(e) => onChange(e.target.checked)}
 				className="peer absolute h-0 w-0 opacity-0"
 				aria-label={ariaLabel}

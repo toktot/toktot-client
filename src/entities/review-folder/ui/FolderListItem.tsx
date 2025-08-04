@@ -9,7 +9,7 @@ import { ReviewFolder } from '../model/types';
 
 interface FolderListItemProps {
 	folder: ReviewFolder;
-	isFolderFull: boolean;
+	isDisabled: boolean;
 	isAlreadySaved: boolean;
 	isSelected: boolean;
 	onToggle: () => void;
@@ -17,35 +17,39 @@ interface FolderListItemProps {
 
 export const FolderListItem = ({
 	folder,
-	isFolderFull,
+	isDisabled,
 	isAlreadySaved,
 	isSelected,
 	onToggle,
 }: FolderListItemProps) => {
 	const checked = isAlreadySaved || isSelected;
-	const disabled = isAlreadySaved;
 
 	return (
 		<li
-			onClick={() => !disabled && onToggle()}
+			onClick={() => !isDisabled && onToggle()}
 			className={clsx(
 				'flex items-center justify-between rounded-lg p-3 transition-colors',
-				disabled
+				isDisabled
 					? 'cursor-not-allowed bg-grey-10'
 					: 'cursor-pointer hover:bg-grey-10',
 			)}
 		>
 			<div
-				className={clsx('flex items-center gap-3', disabled && 'opacity-50')}
+				className={clsx('flex items-center gap-3', isDisabled && 'opacity-50')}
 			>
 				<Icon name="Bookmark" size="m" className="text-grey-60" />
 				<div className="flex flex-col">
 					<span className="font-medium text-grey-90">{folder.name}</span>
+					{isAlreadySaved && (
+						<span className="text-xs text-primary-50">저장됨</span>
+					)}
 				</div>
 				<span
 					className={clsx(
 						'text-sm',
-						isFolderFull ? 'text-sub-red-30 font-bold' : 'text-grey-50',
+						folder.reviewCount >= 100 && !isAlreadySaved
+							? 'text-sub-red-30 font-bold'
+							: 'text-grey-50',
 					)}
 				>
 					{folder.reviewCount}
@@ -53,7 +57,8 @@ export const FolderListItem = ({
 			</div>
 			<CustomCheckbox
 				checked={checked}
-				onChange={() => !disabled && onToggle()}
+				disabled={isDisabled}
+				onChange={() => !isDisabled && onToggle()}
 				aria-label={`${folder.name} 폴더 선택`}
 			/>
 		</li>
