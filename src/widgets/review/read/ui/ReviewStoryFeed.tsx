@@ -216,7 +216,7 @@ export function ReviewStoryFeed() {
 					}}
 				>
 					<ReviewStory
-						post={currentPost}
+						// post={currentPost}
 						infoLayer={
 							<div
 								className="p-4 text-white"

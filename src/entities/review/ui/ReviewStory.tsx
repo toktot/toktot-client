@@ -1,19 +1,16 @@
 import React from 'react';
 
-import { ReviewView } from '@/entities/review/model/view';
-
 interface ReviewStoryProps {
-	post: ReviewView;
+	// post: ReviewView;
 	infoLayer?: React.ReactNode;
 	interactiveLayer?: React.ReactNode;
 }
 
 export function ReviewStory({
-	post,
+	// post,
 	infoLayer,
 	interactiveLayer,
 }: ReviewStoryProps) {
-	console.log('🚀 ~ ReviewStory ~ post:', post);
 	// 현재는 post 데이터를 직접 사용하지 않지만,
 	// 향후 배경 이미지 등을 설정할 때 사용할 수 있습니다.
 	// 예: const backgroundImage = post.images[0]?.url;

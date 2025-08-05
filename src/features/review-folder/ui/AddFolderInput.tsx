@@ -36,6 +36,8 @@ export const AddFolderInput = ({
 		<div className="flex items-center gap-2 h-12">
 			<input
 				type="text"
+				id="folder-name-input"
+				name="folderName"
 				value={name}
 				onChange={(e) => setName(e.target.value)}
 				maxLength={10}
