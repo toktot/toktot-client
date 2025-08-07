@@ -11,6 +11,7 @@ export type MoodKeywordId = Brand<number, 'MoodKeywordId'>;
 export type ReviewId = Brand<string, 'ReviewId'>;
 export type ReviewImageId = Brand<string, 'ReviewImageId'>;
 export type TooltipId = Brand<string, 'TooltipId'>;
+export type ReviewFolderId = Brand<string, 'ReviewFolderId'>;
 
 // --- Menu Context ID Types ---
 export type MenuItemId = Brand<string, 'MenuItemId'>;
