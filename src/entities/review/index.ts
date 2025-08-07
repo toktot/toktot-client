@@ -4,6 +4,7 @@ export * from './model/types';
 export * from './model/tooltip';
 export * from './model/tooltipStyleMap';
 export * from './model/image';
+export * from './model/view';
 
 // ui exports
 export { TooltipBox } from './ui/TooltipBox';

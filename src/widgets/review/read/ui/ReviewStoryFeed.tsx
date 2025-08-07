@@ -8,10 +8,17 @@ import { ReviewView } from '@/entities/review/model/view';
 import { ReviewStory } from '@/entities/review/ui/ReviewStory';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { RelatedReviewsSheet } from '@/features/related-reviews/ui/RelatedReviewsSheet';
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
+import { SaveGestureGuideModal } from '@/features/review/guide/ui/SaveGestureGuideModal';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 import { SaveReviewGesture } from '@/features/review/save/ui/SaveReviewGesture';
 
+import {
+	BottomSheet,
+	BottomSheetContent,
+	BottomSheetOverlay,
+} from '@/shared/components/BottomSheet';
 import {
 	MoodKeywordId,
 	ReviewId,
@@ -127,11 +134,27 @@ const swipePower = (offset: number, velocity: number) => {
 // 애니메이션 방향과 페이지 인덱스를 함께 관리하기 위한 타입
 type PageState = [number, number]; // [page, direction]
 
+type GuideStep = 'saveGuide' | 'interactionGuide' | 'active';
+
 export function ReviewStoryFeed() {
 	const data = [mockReview1, mockReview2];
 	const [[page, direction], setPage] = useState<PageState>([0, 0]);
 	const currentIndex = page;
-	const [showGuide, setShowGuide] = useState(true);
+
+	const [guideStep, setGuideStep] = useState<GuideStep>('saveGuide');
+
+	const [selectedReview, setSelectedReview] = useState<ReviewView | null>(null);
+
+	const handleTooltipClick = (tooltip: Tooltip) => {
+		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
+		setSelectedReview(currentPost);
+		// TODO: 리뷰 리스트 바텀시트 오픈
+	};
+
+	// ⭐️ 3. 바텀시트가 닫힐 때, selectedReview 상태를 null로 초기화합니다.
+	const closeSheet = () => {
+		setSelectedReview(null);
+	};
 
 	// if (isLoading) {
 	// 	return (
@@ -177,17 +200,19 @@ export function ReviewStoryFeed() {
 		}),
 	};
 
-	const handleTooltipClick = (tooltip: Tooltip) => {
-		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
-
-		// TODO: 리뷰 리스트 바텀시트 오픈
-	};
-
 	return (
-		<div className="relative h-screen w-screen overflow-hidden bg-black">
+		<div className="relative h-screen w-screen bg-black isolate">
 			<AnimatePresence>
-				{showGuide && <InteractionGuide onClose={() => setShowGuide(false)} />}
+				{guideStep === 'saveGuide' && (
+					<SaveGestureGuideModal
+						onConfirm={() => setGuideStep('interactionGuide')}
+					/>
+				)}
+				{guideStep === 'interactionGuide' && (
+					<InteractionGuide onClose={() => setGuideStep('active')} />
+				)}
 			</AnimatePresence>
+
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
 					className="absolute h-full w-full"
@@ -240,6 +265,23 @@ export function ReviewStoryFeed() {
 						}
 					/>
 				</motion.div>
+
+				<BottomSheet
+					open={!!selectedReview}
+					onOpenChange={(open) => !open && closeSheet()}
+				>
+					<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
+					<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[460px] rounded-t-2xl bg-white shadow-lg">
+						<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
+						{/* selectedReview가 있을 때만 내용을 렌더링합니다. */}
+						{selectedReview && (
+							<RelatedReviewsSheet
+								clickedReview={selectedReview}
+								storeId={selectedReview.store.id}
+							/>
+						)}
+					</BottomSheetContent>
+				</BottomSheet>
 			</AnimatePresence>
 		</div>
 	);
