@@ -10,6 +10,16 @@ import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 
 // SignupEmailForm.tsx
 
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
 type PassFindEmailProps = {
 	onSuccess: () => void;
 };
@@ -35,16 +45,18 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 		const checkEmail = async () => {
 			try {
-				const res = await fetch(
-					'http://13.209.53.44:8080/api/v1/auth/email/check',
-					{
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ email }),
-					},
-				);
+				const res = await fetch('http://13.209.53.44/api/v1/auth/login', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email }),
+				});
 				const data = await res.json();
-				setEmailStatus(data.success ? 'valid' : 'not_found');
+				console.log(data.errorCode);
+				if (data.errorCode === 'USER_NOT_FOUND') {
+					setEmailStatus('not_found');
+				} else {
+					setEmailStatus('valid');
+				}
 			} catch (err) {
 				console.error(err);
 				setEmailStatus('not_found');
@@ -70,19 +82,16 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/send',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ email }),
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			);
+				body: JSON.stringify({ email }),
+			});
 			const data = await res.json();
-
-			if (data.success) {
+			console.log(data.message);
+			if (data.message === '이미 사용중인 이메일입니다.') {
 				setVerificationSent(true);
 				setTimer(300);
 				alert('인증번호가 전송됐습니다.');
@@ -98,15 +107,12 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleCheckCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/verify',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 
-					body: JSON.stringify({ email, verification_code: code }),
-				},
-			);
+				body: JSON.stringify({ email, verification_code: code }),
+			});
 			const data = await res.json();
 			console.log('verify 응답', data);
 			if (data.success) {
@@ -121,6 +127,27 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 	};
 	const canGoNext = emailStatus === 'valid' && codeStatus === 'valid';
 
+	const handleResetPassword = async () => {
+		try {
+			const res = await fetch(
+				'http://13.209.53.44/api/v1/auth/password/reset/send',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email }),
+				},
+			);
+			const data = await res.json();
+
+			if (data.success) {
+				onSuccess();
+			} else {
+				alert(data.message);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
 	return (
 		<div className="p-6 space-y-4 max-w-md">
 			<TextInputWithLabel
@@ -128,27 +155,19 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 				value={email}
 				onChange={(value) => setEmail(value)}
 				placeholder="이메일을 입력해주세요."
-				inputClassName={`w-[343px] h-[48px] rounded-[18px] mb-2 border ${
+				inputClassName={`w-[343px] h-[48px] rounded-[18px] mb-2 border hover:text-primary-40 hover:border-primary-40 ${
 					{
 						not_found: 'border-red-500',
 						invalid: 'border-red-500',
-						valid: 'border-green-500',
+						valid: 'border-grey-30 text-grey-90',
 						idle: 'border-grey-30',
 					}[emailStatus]
 				}`}
 			/>
-			{emailStatus === 'invalid' && (
-				<p className="text-red-500 text-sm mt-1">
-					이메일 형식이 올바르지 않습니다.
-				</p>
-			)}
 			{emailStatus === 'not_found' && (
 				<p className="text-red-500 text-sm mt-1">
 					이메일 주소를 다시 확인하세요.
 				</p>
-			)}
-			{emailStatus === 'valid' && (
-				<p className="text-green-500 text-sm mt-1">사용 가능한 이메일이에요.</p>
 			)}
 			<PrimaryButton
 				text={
@@ -198,10 +217,10 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 					</p>
 				)}
 			</div>
-			const a =1;
+
 			<PrimaryButton
 				text="다음"
-				onClick={onSuccess}
+				onClick={handleResetPassword}
 				disabled={!canGoNext}
 				className="w-[343px]"
 				bgColorWhenEnabled="bg-grey-90"

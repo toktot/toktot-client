@@ -3,9 +3,9 @@
 
 import { useState } from 'react';
 
+import AgreementModal from '@/features/auth/components/Agree';
 import NicknameInput from '@/features/auth/components/SignupNickname';
 
-// SignupPage.tsx
 import Icon from '@/shared/ui/Icon';
 
 import SignupEmailForm from '../../features/auth/components/SignupEmailForm';
@@ -19,10 +19,18 @@ import SignupPasswordForm from '../../features/auth/components/SignupPasswordFor
 
 // SignupPage.tsx
 
+// SignupPage.tsx
+
+// SignupPage.tsx
+
+// SignupPage.tsx
+
+// SignupPage.tsx
+
 export default function SignupPage() {
 	const [step, setStep] = useState<
-		'email' | 'password' | 'nickname' | 'complete'
-	>('email');
+		'agreement' | 'email' | 'password' | 'nickname' | 'complete'
+	>('agreement');
 	const [nickname, setNickname] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -41,7 +49,7 @@ export default function SignupPage() {
 	};
 	const handleRegister = async () => {
 		try {
-			const res = await fetch('http://13.209.53.44:8080/api/v1/auth/register', {
+			const res = await fetch('http://13.209.53.44/api/v1/auth/register', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -72,13 +80,16 @@ export default function SignupPage() {
 				<h1 className="text-base font-semibold">회원가입</h1>
 				<Icon name={'None'} size="m" className="mr-15"></Icon>
 			</div>
-			{step !== 'complete' && (
+			{step !== 'complete' && step !== 'agreement' && (
 				<p className="text-lg font-semibold text-center mt-8">
 					{renderTitle()}
 				</p>
 			)}
 			<div className="flex flex-1 justify-center items-start">
 				<div className="w-full max-w-md mt-10 px-6">
+					{step === 'agreement' && (
+						<AgreementModal onAgree={() => setStep('email')} />
+					)}
 					{step === 'email' && (
 						<SignupEmailForm
 							onSuccess={(enteredEmail) => {

@@ -8,16 +8,49 @@ import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 
 // SignupEmailForm.tsx
 
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+// SignupEmailForm.tsx
+
+function useDebounce<T>(value: T, delay: number): T {
+	const [debouncedValue, setDebouncedValue] = useState(value);
+
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+		return () => clearTimeout(handler);
+	}, [value, delay]);
+
+	return debouncedValue;
+}
+
 type SignupEmailFormProps = {
 	onSuccess: (email: string) => void;
 };
 
 export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const [email, setEmail] = useState('');
+	const debouncedEmail = useDebounce(email, 500);
 	const [emailStatus, setEmailStatus] = useState<
 		'idle' | 'valid' | 'invalid' | 'duplicate'
 	>('idle');
 	const [verificationSent, setVerificationSent] = useState(false);
+	const [verifiedCode, setVerifiedCode] = useState<string | null>(null);
 	const [code, setCode] = useState('');
 	const [codeStatus, setCodeStatus] = useState<'idle' | 'valid' | 'invalid'>(
 		'idle',
@@ -27,30 +60,43 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const isEmailValidFormat = (email: string) =>
 		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-	// 가짜 중복 체크 API
-	const checkDuplicateEmail = (email: string) => {
-		return new Promise<'duplicate' | 'valid'>((resolve) => {
-			setTimeout(() => {
-				resolve(email === 'test@example.com' ? 'duplicate' : 'valid');
-			}, 500);
-		});
-	};
-
 	useEffect(() => {
-		if (!email) {
+		if (!debouncedEmail) {
 			setEmailStatus('idle');
 			return;
 		}
+		// 가짜 중복 체크 API
+		const checkDuplicateEmail = async (
+			email: string,
+		): Promise<'duplicate' | 'invalid' | 'valid'> => {
+			if (!isEmailValidFormat(email)) {
+				return 'invalid';
+			}
+			try {
+				const res = await fetch(`http://13.209.53.44/api/v1/auth/email/send`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials: 'include',
+					body: JSON.stringify({ email }),
+				});
+				const data = await res.json();
+				if (data.message == '이미 사용중인 이메일입니다.') {
+					return 'duplicate';
+				} else {
+					return 'valid';
+				}
+			} catch (error) {
+				console.error('중복 확인 실패', error);
+				return 'invalid';
+			}
+		};
 
-		if (!isEmailValidFormat(email)) {
-			setEmailStatus('invalid');
-			return;
-		}
-
-		checkDuplicateEmail(email).then((res) => {
+		checkDuplicateEmail(debouncedEmail).then((res) => {
 			setEmailStatus(res);
 		});
-	}, [email]);
+	}, [debouncedEmail]);
 
 	useEffect(() => {
 		if (verificationSent && timer > 0) {
@@ -69,23 +115,21 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/send',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					credentials: 'include',
-					body: JSON.stringify({ email }),
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			);
+				credentials: 'include',
+				body: JSON.stringify({ email }),
+			});
 			const data = await res.json();
 
 			if (data.success) {
 				setVerificationSent(true);
 				setTimer(300);
-				alert('인증번호가 전송됐습니다.');
+				setVerifiedCode(null);
+				setCodeStatus('idle');
 			} else {
 				console.warn('인증 이메일 전송 실패', data);
 				alert(data.message || '인증번호 전송에 실패했습니다.');
@@ -97,21 +141,23 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	};
 
 	const handleCheckCode = async () => {
+		if (code === verifiedCode) {
+			setVerifiedCode(code);
+			setCodeStatus('valid');
+			return;
+		}
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/verify',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 
-					body: JSON.stringify({ email, verification_code: code }),
-				},
-			);
+				body: JSON.stringify({ email, verification_code: code }),
+			});
 			const data = await res.json();
-			console.log('verify 응답', data);
+
 			if (data.success) {
 				setCodeStatus('valid');
-				onSuccess(email);
+				setVerifiedCode(code);
 			} else {
 				setCodeStatus('invalid');
 			}
@@ -126,7 +172,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	return (
 		<div className="p-6 space-y-4 max-w-md">
 			<TextInputWithLabel
-				label="에메일"
+				label="이메일"
 				value={email}
 				onChange={(value) => setEmail(value)}
 				placeholder="이메일을 입력해주세요."
@@ -145,7 +191,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				</p>
 			)}
 			{emailStatus === 'duplicate' && (
-				<p className="text-red-500 text-sm mt-1">이미 사용한 이메일이에요.</p>
+				<p className="text-red-500 text-sm mt-1">이미 사용중인 이메일이에요.</p>
 			)}
 			{emailStatus === 'valid' && (
 				<p className="text-green-500 text-sm mt-1">사용가능한 이메일이에요.</p>
@@ -171,7 +217,9 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 						value={code}
 						onChange={(value) => {
 							setCode(value);
-							setCodeStatus('idle');
+							if (value !== verifiedCode) {
+								setCodeStatus('idle');
+							}
 						}}
 						placeholder="6자리를 입력해주세요."
 						inputClassName={`w-[236px] h-[48px] rounded-[18px] border ${

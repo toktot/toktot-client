@@ -16,8 +16,6 @@ import PassSet from '../../features/auth/components/PassSet';
 
 // SignupPage.tsx
 
-// SignupPage.tsx
-
 export default function SignupPage() {
 	const [step, setStep] = useState<'email' | 'password' | 'complete'>('email');
 
