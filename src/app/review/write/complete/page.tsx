@@ -2,11 +2,13 @@ import { Suspense } from 'react';
 
 import { WriteCompleteWidget } from '@/widgets/review/write/ui/WriteCompleteWidget';
 
+import { ReviewId } from '@/shared/model/types';
+
 // URL 쿼리 파라미터(예: ?reviewId=123)를 처리하기 위한 컴포넌트
 const CompletionPageContent = ({
 	reviewId,
 }: {
-	reviewId: string | undefined;
+	reviewId: ReviewId | undefined;
 }) => {
 	if (!reviewId) {
 		// reviewId가 없는 예외적인 상황 처리
@@ -33,10 +35,11 @@ export default async function ReviewWriteCompletePage({
 	searchParams: SearchParams;
 }) {
 	const resolvedSearchParams = await searchParams;
-	const reviewId =
+	const reviewId = (
 		typeof resolvedSearchParams.reviewId === 'string'
 			? resolvedSearchParams.reviewId
-			: undefined;
+			: undefined
+	) as ReviewId | undefined;
 
 	return (
 		<main className="flex items-center justify-center min-h-screen bg-gray-50">

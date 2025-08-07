@@ -13,14 +13,15 @@ import Image from 'next/image';
 import { getTailDirection } from '@/shared/bubble/lib/getTailDirection';
 import { getBubbleTransformFromMarker } from '@/shared/bubble/model/direction';
 import { Bubble } from '@/shared/bubble/ui/Bubble';
+import { TooltipId } from '@/shared/model/types';
 
 import { useImageCoordinate } from '../lib/useImageCoordinate';
 
 interface ReviewImageWithTooltipProps {
 	image: ReviewImage;
 	onImageClick: (coord: { x: number; y: number }) => void;
-	onRemoveTooltip: (tooltipId: string) => void;
-	tooltips: Record<string, Tooltip>;
+	onRemoveTooltip: (tooltipId: TooltipId) => void;
+	tooltips: Record<TooltipId, Tooltip>;
 }
 
 export const ReviewImageWithTooltip = ({

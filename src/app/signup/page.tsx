@@ -25,6 +25,8 @@ import SignupPasswordForm from '../../features/auth/components/SignupPasswordFor
 
 // SignupPage.tsx
 
+// SignupPage.tsx
+
 export default function SignupPage() {
 	const [step, setStep] = useState<
 		'agreement' | 'email' | 'password' | 'nickname' | 'complete'

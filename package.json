@@ -22,7 +22,8 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.60.0",
-		"zod": "^3.25.67"
+		"zod": "^3.25.67",
+		"zustand": "^5.0.7"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^4",

@@ -9,17 +9,19 @@ import {
 	VisitedStoreWidget,
 } from '@/widgets/review/write';
 
+import { MenuItemId, StoreId } from '@/shared/model/types';
+
 const ReviewMenuList: ReviewedMenuItemData[] = [
 	{
-		id: 'mock-menu-bulgogi',
+		id: 'mock-menu-bulgogi' as MenuItemId,
 		name: '불고기',
 		price: 12000,
 		servings: 2,
 		rating: 3,
 	},
 	{
-		id: 'mock-menu-samgyeopsal',
-		name: '오겹살',
+		id: 'mock-menu-samgyeopsal' as MenuItemId,
+		name: '삼겹살',
 		price: 15000,
 		servings: 1,
 		rating: 4,
@@ -27,7 +29,7 @@ const ReviewMenuList: ReviewedMenuItemData[] = [
 ];
 
 async function getVisitedStoreData(
-	storeId: string,
+	storeId: StoreId,
 ): Promise<StoreData & { distance: number }> {
 	// const store = await fetchStoreFromDB(storeId);
 	// const distance = await calculateDistanceToUser(store.coords);
@@ -46,7 +48,7 @@ type Params = Promise<{ storeId: string }>;
 
 export default async function ReviewWritePage({ params }: { params: Params }) {
 	const { storeId } = await params;
-	const visitedStoreData = await getVisitedStoreData(storeId);
+	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
 
 	return (
 		<AppShell headerTitle={`리뷰 쓰기`} showBottomNav={false}>

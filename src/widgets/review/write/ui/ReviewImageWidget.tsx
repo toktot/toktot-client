@@ -24,6 +24,7 @@ import {
 	BottomSheetContent,
 	BottomSheetOverlay,
 } from '@/shared/components/BottomSheet';
+import { ReviewImageId, TooltipId } from '@/shared/model/types';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
@@ -37,7 +38,9 @@ export const ReviewImageWidget = () => {
 		canAddMore,
 	} = useReviewImageManager();
 	console.log('🚀 ~ ReviewImageWidget ~ images:', images);
-	const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+	const [selectedImageId, setSelectedImageId] = useState<ReviewImageId | null>(
+		null,
+	);
 	const selectedImage =
 		images.find((img) => img.id === selectedImageId) ?? images[0];
 	const { tooltips, addTooltip, removeTooltip } = useTooltipManager();
@@ -69,7 +72,7 @@ export const ReviewImageWidget = () => {
 	// 	addTooltipToImage(imageId, tooltip.id);
 	// };
 
-	const handleRemoveTooltip = (tooltipId: string) => {
+	const handleRemoveTooltip = (tooltipId: TooltipId) => {
 		removeTooltipFromImage(tooltipId);
 		removeTooltip(tooltipId);
 	};

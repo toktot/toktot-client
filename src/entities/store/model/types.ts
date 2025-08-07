@@ -1,5 +1,7 @@
+import { StoreId } from '@/shared/model/types';
+
 export interface StoreData {
-	id: string;
+	id: StoreId;
 	storeName: string;
 	mainMenu: string;
 	address: string;
