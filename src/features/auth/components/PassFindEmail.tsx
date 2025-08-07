@@ -1,18 +1,9 @@
-// SignupEmailForm.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
 
 type PassFindEmailProps = {
 	onSuccess: () => void;

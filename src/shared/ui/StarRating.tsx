@@ -16,6 +16,7 @@ interface StarRatingProps {
 	fillColor?: string;
 	/** 비워진 아이콘의 색상 */
 	emptyColor?: string;
+	className?: string;
 }
 
 /**
@@ -35,6 +36,7 @@ const StarRating = ({
 	iconCount = 5,
 	fillColor = '#3AC8FF',
 	emptyColor = '#F6F9FB',
+	className = '',
 }: StarRatingProps) => {
 	const handleClick = (index: number) => {
 		const currentValue = index + 1;
@@ -45,7 +47,7 @@ const StarRating = ({
 	};
 
 	return (
-		<div style={{ display: 'flex', gap: '12px' }}>
+		<div className={`flex ${className}`}>
 			{[...Array(iconCount)].map((_, index) => {
 				const starValue = index + 1;
 				const isHalf = value === starValue - 0.5;

@@ -1,25 +1,14 @@
-// SignupPage.tsx
 'use client';
 
 import { useState } from 'react';
 
-import Icon from '@/widgets/icon';
-
 import AgreementModal from '@/features/auth/components/Agree';
 import NicknameInput from '@/features/auth/components/SignupNickname';
 
+import Icon from '@/shared/ui/Icon';
+
 import SignupEmailForm from '../../features/auth/components/SignupEmailForm';
 import SignupPasswordForm from '../../features/auth/components/SignupPasswordForm';
-
-// SignupPage.tsx
-
-// SignupPage.tsx
-
-// SignupPage.tsx
-
-// SignupPage.tsx
-
-// SignupPage.tsx
 
 export default function SignupPage() {
 	const [step, setStep] = useState<
@@ -43,7 +32,7 @@ export default function SignupPage() {
 	};
 	const handleRegister = async () => {
 		try {
-			const res = await fetch('http://13.209.53.44:8080/api/v1/auth/register', {
+			const res = await fetch('http://13.209.53.44/api/v1/auth/register', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

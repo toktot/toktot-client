@@ -1,6 +1,6 @@
 'use client';
 
-import { User } from '../../features/auth/types/auth';
+import { User } from '../../entities/user/types/auth';
 
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
@@ -39,7 +39,7 @@ export const removeUser = () => {
 export const getKakaoLoginUrl = (): string => {
 	const clientId = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
 	const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
-
+	const clientSecret = process.env.NEXT_PUBLIC_KAKAO_CLIENT_SECRET;
 	if (!clientId || !redirectUri) {
 		throw new Error(
 			'Kakao clientId or redirectUri is not defined in environment variables',
@@ -50,6 +50,9 @@ export const getKakaoLoginUrl = (): string => {
 	kakaoAuthUrl.searchParams.set('client_id', clientId);
 	kakaoAuthUrl.searchParams.set('redirect_uri', redirectUri);
 	kakaoAuthUrl.searchParams.set('response_type', 'code');
+	if (clientSecret) {
+		kakaoAuthUrl.searchParams.set('client_secret', clientSecret);
+	}
 
 	return kakaoAuthUrl.toString();
 };

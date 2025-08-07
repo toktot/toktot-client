@@ -24,7 +24,7 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 		const handleCheckNickname = async () => {
 			try {
 				const res = await fetch(
-					'http://13.209.53.44:8080/api/v1/auth/nickname/check',
+					'http://13.209.53.44/api/v1/auth/nickname/check',
 					{
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },

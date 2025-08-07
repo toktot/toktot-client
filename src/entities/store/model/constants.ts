@@ -10,6 +10,7 @@ interface MoodKeyWord {
 }
 
 export const PLACE_MOOD_KEYWORDS: MoodKeyWord[] = [
+	{ id: 0, label: '전체' },
 	{ id: 1, label: '오션뷰', iconName: 'Ocean' },
 	{ id: 2, label: '도시가 보이는', iconName: 'City' },
 	{ id: 3, label: '산이 보이는', iconName: 'Mountain' },

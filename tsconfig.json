@@ -22,7 +22,7 @@
 			"@/*": ["./src/*"],
 			"@/icons/*": ["./src/assets/icons/*"]
 		},
-		"types": ["node"]
+		"types": ["node", "kakao.maps.d.ts"]
 	},
 	"include": [
 		"next-env.d.ts",

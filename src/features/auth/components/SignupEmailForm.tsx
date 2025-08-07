@@ -1,18 +1,9 @@
-// SignupEmailForm.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
 
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
@@ -49,35 +40,33 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 	// 가짜 중복 체크 API
-	const checkDuplicateEmail = async (
-		email: string,
-	): Promise<'duplicate' | 'invalid' | 'valid'> => {
-		if (!isEmailValidFormat(email)) {
-			return 'invalid';
-		}
-		try {
-			const res = await fetch(
-				`http://13.209.53.44:8080/api/v1/auth/email/send`,
-				{
+	const checkDuplicateEmail = useCallback(
+		async (email: string): Promise<'duplicate' | 'invalid' | 'valid'> => {
+			if (!isEmailValidFormat(email)) {
+				return 'invalid';
+			}
+			try {
+				const res = await fetch(`http://13.209.53.44/api/v1/auth/email/send`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
 					},
 					credentials: 'include',
 					body: JSON.stringify({ email }),
-				},
-			);
-			const data = await res.json();
-			if (data.message == '이미 사용중인 이메일입니다.') {
-				return 'duplicate';
-			} else {
-				return 'valid';
+				});
+				const data = await res.json();
+				if (data.message == '이미 사용중인 이메일입니다.') {
+					return 'duplicate';
+				} else {
+					return 'valid';
+				}
+			} catch (error) {
+				console.error('중복 확인 실패', error);
+				return 'invalid';
 			}
-		} catch (error) {
-			console.error('중복 확인 실패', error);
-			return 'invalid';
-		}
-	};
+		},
+		[],
+	);
 
 	useEffect(() => {
 		if (!debouncedEmail) {
@@ -88,7 +77,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 		checkDuplicateEmail(debouncedEmail).then((res) => {
 			setEmailStatus(res);
 		});
-	}, [debouncedEmail]);
+	}, [checkDuplicateEmail, debouncedEmail]);
 
 	useEffect(() => {
 		if (verificationSent && timer > 0) {
@@ -107,17 +96,14 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/send',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					credentials: 'include',
-					body: JSON.stringify({ email }),
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			);
+				credentials: 'include',
+				body: JSON.stringify({ email }),
+			});
 			const data = await res.json();
 
 			if (data.success) {
@@ -142,15 +128,12 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			return;
 		}
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/verify',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 
-					body: JSON.stringify({ email, verification_code: code }),
-				},
-			);
+				body: JSON.stringify({ email, verification_code: code }),
+			});
 			const data = await res.json();
 			console.log('verify 응답', data);
 			if (data.success) {
