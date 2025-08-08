@@ -58,3 +58,4 @@ export { default as Jalimulhoe } from './jalimulhoe.svg';
 export { default as ReviewCurrent } from './Review_current.svg';
 export { default as ReviewDisabled } from './Review_disabled.svg';
 export { default as Logo } from './logo.svg';
+export { default as Kebab } from './kebab.svg';
