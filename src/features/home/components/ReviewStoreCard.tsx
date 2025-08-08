@@ -16,6 +16,8 @@ const ReviewStoreCard: React.FC<ReviewStoreCardProps> = ({ review }) => {
 				<Image
 					src={review.imageUrl}
 					alt={review.placeName}
+					width={185}
+					height={210}
 					className="w-full h-36 object-cover"
 				/>
 				<Icon

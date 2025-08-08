@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 import {
 	getDecryptedToken,
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		password: string,
 	): Promise<boolean> => {
 		try {
-			const res = await fetch('http://13.209.53.44/api/v1/auth/login', {
+			const res = await fetch('https://api.toktot.site/v1/auth/login', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -49,17 +49,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			if (!data.success || !data.data?.access_token) {
 				return false;
 			}
-
+			console.log('login response', data);
 			const accessToken = data.data.access_token;
-			const user = data.data.user; // ← 주의: data.user 말고 data.data.user 확인
-			if (!user) {
-				console.error('User info missing in response');
-				return false;
-			}
 
 			setEncryptedToken(accessToken);
-			setUser(user); // localStorage 저장
-			setUser(user); // 상태에도 저장
 
 			return true;
 		} catch (error) {

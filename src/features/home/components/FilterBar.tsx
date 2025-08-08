@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
-import { PLACE_MOOD_KEYWORDS } from '@/entities/store';
+import { PLACE_MOOD_KEYWORDS } from '@/entities/store/model/constants';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -45,6 +45,7 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 		return raw ? raw.split(',').map(Number) : [];
 	}, [searchParams]);
 	console.log(filterTags);
+	console.log(isQueryActive);
 
 	useEffect(() => {
 		const updatedItems = filterItems.map((item) => {
@@ -128,10 +129,10 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 
 	return (
 		<div className="flex items-center gap-2">
-			<div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+			<div className="w-10 h-7 rounded-full bg-gray-100 flex items-center justify-center">
 				<Icon
 					name={'Filter'}
-					className="text-gray-600 w-4 h-4"
+					className="text-grey-70 text-grey-20 w-4 h-4"
 					onClick={handleIconClick}
 				/>
 			</div>
@@ -141,19 +142,29 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 				onChange={handleFilterChange}
 				className="flex-wrap"
 			>
-				{displayItems.map((item) => (
-					<SingleCategorySelect.Item
-						key={item.value}
-						value={item.value}
-						className={clsx(
-							isQueryActive
-								? 'bg-grey-90 text-white'
-								: 'text-grey-50 text-grey-70',
-						)}
-					>
-						<div className="flex items-center gap-1">{item.label}</div>
-					</SingleCategorySelect.Item>
-				))}
+				{displayItems.map((item) => {
+					const isActive =
+						(item.value === 0 && distance) ||
+						(item.value === 1 && rating) ||
+						(item.value === 2 && menu) ||
+						(item.value === 3 && minPrice && maxPrice) ||
+						(item.value === 4 && mood.length > 0) ||
+						(item.value === 5 && mealTime);
+
+					return (
+						<SingleCategorySelect.Item
+							key={item.value}
+							value={item.value}
+							className={clsx(
+								isActive
+									? 'bg-grey-90 text-white'
+									: 'text-grey-60 text-grey-30',
+							)}
+						>
+							<div className="flex items-center gap-1">{item.label}</div>
+						</SingleCategorySelect.Item>
+					);
+				})}
 			</SingleCategorySelect>
 		</div>
 	);

@@ -2,8 +2,7 @@
 
 import { MOCK_LOCATIONS } from '@/entities/location/model/mockLocation';
 
-import { categories } from '@/features/home/components/FoodIcon';
-
+import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
 
 interface Props {
@@ -18,7 +17,7 @@ export default function AutocompleteList({
 	onCurrentLocationClick,
 }: Props) {
 	const filtered = MOCK_LOCATIONS.filter((item) => item.name.includes(query));
-
+	const { categories } = useCategories();
 	return (
 		<div className="bg-white mt-2 w-[343px] mx-auto z-10 relative">
 			{/* 현재 위치 */}
@@ -33,7 +32,7 @@ export default function AutocompleteList({
 			{/* 자동완성 목록 */}
 			{query.trim() &&
 				filtered.map((item) => {
-					const localFoodItem = categories.find((c) =>
+					const localFoodItem = categories?.find((c) =>
 						item.name.includes(c.name),
 					);
 					console.log(localFoodItem);

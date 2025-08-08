@@ -1,3 +1,4 @@
+import { TooltipId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 
 import { Tooltip } from '../model/tooltip';
@@ -5,7 +6,7 @@ import { RatingStarView } from './RatingStarView';
 
 interface TooltipBoxProps {
 	tooltip: Tooltip;
-	onDelete: (tooltipId: string) => void;
+	onDelete: (tooltipId: TooltipId) => void;
 }
 
 export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {

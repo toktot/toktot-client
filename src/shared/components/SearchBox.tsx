@@ -1,4 +1,5 @@
-// shared/components/SearchBox.tsx
+'use client';
+
 import type { ReactNode } from 'react';
 
 import Icon from '@/shared/ui/Icon';

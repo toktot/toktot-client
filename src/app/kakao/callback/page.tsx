@@ -1,7 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
-import { useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -14,6 +13,7 @@ function KakaoCallbackContent() {
 	const hasFetched = useRef(false);
 
 	useEffect(() => {
+		console.log(code);
 		if (!code) {
 			console.warn('No Kakao code found in URL');
 			return;
@@ -25,9 +25,8 @@ function KakaoCallbackContent() {
 		hasFetched.current = true;
 
 		const loginWithKakao = async () => {
-			console.log('Sending code to backend:', code);
 			try {
-				const res = await fetch('http://13.209.53.44/api/v1/auth/kakao/login', {
+				const res = await fetch('https://api.toktot.site/v1/auth/kakao/login', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -36,14 +35,15 @@ function KakaoCallbackContent() {
 				});
 
 				const data = await res.json();
-				console.log('Backend response:', data);
 
 				if (res.ok && data.success) {
-					console.log('Login successful. AccessToken:', data.data.accessToken);
-					console.log('User info:', data.data.user);
-					setEncryptedToken(data.data.accessToken);
-					setUser(data.data.user);
-					router.push('/dashboard');
+					const token = data.data.access_token; // snake_case로 변경
+					const user = data.data.user;
+
+					console.log('Login successful. AccessToken:', token);
+					setEncryptedToken(token);
+					setUser(user);
+					router.push('/home');
 				} else {
 					console.error('Login failed:', data.message);
 					alert(data.message || '카카오 로그인 실패');

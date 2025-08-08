@@ -2,16 +2,18 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { PLACE_MOOD_KEYWORDS } from '@/entities/store';
+import { PLACE_MOOD_KEYWORDS } from '@/entities/store/model/constants';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+
+import { BottomNav, BottomNavItem } from '@/widgets/layout';
+import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { mockHome } from '@/features/home/model/mockHome';
 import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 
-import BottomNav from '@/shared/components/BottomBox';
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
@@ -205,7 +207,17 @@ export default function SearchResultSection() {
 				</>
 			)}
 			<section>
-				<BottomNav />
+				<BottomNav>
+					<BottomNavItem href="/home" iconName="Home" label="홈" />
+					<BottomNavItem href="/review" iconName="Review" label="리뷰" />
+					<CenterButton
+						href="/write"
+						iconName="ReviewPlus"
+						aria-label="작성하기"
+					/>
+					<BottomNavItem href="/bookmark" iconName="Bookmark" label="찜" />
+					<BottomNavItem href="/mypage" iconName="My" label="마이페이지" />
+				</BottomNav>
 			</section>
 		</div>
 	);

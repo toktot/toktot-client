@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -21,18 +21,20 @@ export default function Search() {
 
 	return (
 		<main className="min-h-screen p-6 bg-white">
-			<HeaderBox />
-			<SearchBox
-				query={text}
-				onChange={(val) => {
-					setText(val);
-				}}
-				onSearchClick={() => handleSelect}
-			/>
-			<div className="mt-5">
-				<FilterBar value={filter} onChange={setFilter} />
-			</div>
-			<Auto query={text} onSelect={handleSelect} />
+			<Suspense fallback={<div>로딩 중...</div>}>
+				<HeaderBox />
+				<SearchBox
+					query={text}
+					onChange={(val) => {
+						setText(val);
+					}}
+					onSearchClick={() => handleSelect}
+				/>
+				<div className="mt-5">
+					<FilterBar value={filter} onChange={setFilter} />
+				</div>
+				<Auto query={text} onSelect={handleSelect} />
+			</Suspense>
 		</main>
 	);
 }

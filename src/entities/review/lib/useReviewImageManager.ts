@@ -2,8 +2,10 @@
 
 import { useId, useState } from 'react';
 
+import { ReviewImageId, TooltipId } from '@/shared/model/types';
+
 import { MAX_TOOLTIP_COUNT } from '../model/constants';
-import type { ReviewImage } from '../model/reviewImage';
+import { ReviewImage } from '../model/image';
 
 const MAX_IMAGES = 5;
 
@@ -26,7 +28,7 @@ export const useReviewImageManager = () => {
 			const uniqueId = `${idPrefix}-${file.name}-${Date.now()}-${index}`;
 
 			return {
-				id: uniqueId,
+				id: uniqueId as ReviewImageId,
 				file,
 				url: URL.createObjectURL(file),
 				tooltipIds: [],
@@ -36,11 +38,11 @@ export const useReviewImageManager = () => {
 		setImages((prev) => [...prev, ...newImages]);
 	};
 
-	const removeImage = (id: string) => {
+	const removeImage = (id: ReviewImageId) => {
 		setImages((prev) => prev.filter((img) => img.id !== id));
 	};
 
-	const addTooltipToImage = (imageId: string, tooltipId: string) => {
+	const addTooltipToImage = (imageId: ReviewImageId, tooltipId: TooltipId) => {
 		setImages((prev) =>
 			prev.map((img) => {
 				if (img.id !== imageId) return img;
@@ -53,7 +55,7 @@ export const useReviewImageManager = () => {
 		);
 	};
 
-	const removeTooltipFromImage = (tooltipId: string) => {
+	const removeTooltipFromImage = (tooltipId: TooltipId) => {
 		setImages((prev) =>
 			prev.map((img) => ({
 				...img,

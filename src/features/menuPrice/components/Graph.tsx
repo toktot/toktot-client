@@ -75,7 +75,7 @@ const PriceChart = () => {
 						type="monotone"
 						data={mockGraph}
 						dataKey="people"
-						stroke="bg-gradient-to-r from-[#E9FCFF] to-[#F6FCFF]"
+						stroke="#00bfff"
 						strokeWidth={3}
 						dot={false}
 						isAnimationActive={false}

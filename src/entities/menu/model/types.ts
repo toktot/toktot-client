@@ -1,6 +1,7 @@
-// 가장 기본적인 메뉴의 형태
+import { MenuItemId } from '@/shared/model/types';
+
 export interface MenuItemData {
-	id: string;
+	id: MenuItemId;
 	name: string;
 	price: number;
 	imageUrl?: string;

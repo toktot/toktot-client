@@ -1,4 +1,4 @@
-// shared/components/PrimaryButton.tsx
+'use client';
 
 type PrimaryButtonProps = {
 	text: string;

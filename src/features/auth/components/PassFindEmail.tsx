@@ -30,7 +30,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 		const checkEmail = async () => {
 			try {
-				const res = await fetch('http://13.209.53.44:8080/api/v1/auth/login', {
+				const res = await fetch('http://13.209.53.44/api/v1/auth/login', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ email }),
@@ -67,16 +67,13 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/send',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ email }),
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
 				},
-			);
+				body: JSON.stringify({ email }),
+			});
 			const data = await res.json();
 			console.log(data.message);
 			if (data.message === '이미 사용중인 이메일입니다.') {
@@ -95,15 +92,12 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleCheckCode = async () => {
 		try {
-			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/email/verify',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 
-					body: JSON.stringify({ email, verification_code: code }),
-				},
-			);
+				body: JSON.stringify({ email, verification_code: code }),
+			});
 			const data = await res.json();
 			console.log('verify 응답', data);
 			if (data.success) {
@@ -121,7 +115,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 	const handleResetPassword = async () => {
 		try {
 			const res = await fetch(
-				'http://13.209.53.44:8080/api/v1/auth/password/reset/send',
+				'http://13.209.53.44/api/v1/auth/password/reset/send',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

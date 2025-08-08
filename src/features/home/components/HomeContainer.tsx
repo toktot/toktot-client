@@ -5,7 +5,9 @@ import { useMemo, useState } from 'react';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useRouter } from 'next/navigation';
 
-import BottomNav from '@/shared/components/BottomBox';
+import { BottomNav, BottomNavItem } from '@/widgets/layout';
+import { CenterButton } from '@/widgets/layout/ui/BottomNav';
+
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
@@ -112,7 +114,17 @@ export default function HomeContainer() {
 				)}
 			</section>
 			<section>
-				<BottomNav />
+				<BottomNav>
+					<BottomNavItem href="/home" iconName="Home" label="홈" />
+					<BottomNavItem href="/review" iconName="Review" label="리뷰" />
+					<CenterButton
+						href="/write"
+						iconName="ReviewPlus"
+						aria-label="작성하기"
+					/>
+					<BottomNavItem href="/bookmark" iconName="Bookmark" label="찜" />
+					<BottomNavItem href="/mypage" iconName="My" label="마이페이지" />
+				</BottomNav>
 			</section>
 		</main>
 	);

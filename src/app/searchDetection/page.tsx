@@ -1,16 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
-import { PLACE_MOOD_KEYWORDS } from '@/entities/store';
+import { PLACE_MOOD_KEYWORDS } from '@/entities/store/model/constants';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import MapScreen from '@/widgets/MapScreen';
 
-import { categories } from '@/features/home/components/FoodIcon';
 import PriceRangeSlider from '@/features/home/filter/components/Slider';
 import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 import {
@@ -25,6 +24,7 @@ import {
 } from '@/shared/components/BottomSheet';
 import HeaderBox from '@/shared/components/HeaderBox';
 import PrimaryButton from '@/shared/components/PrimaryButton';
+import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
 import MultiCategorySelect from '@/shared/ui/MultiCategorySelect';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
@@ -49,16 +49,18 @@ export default function LocationSearchPage() {
 
 	return (
 		<RadiusProvider>
-			<HeaderBox />
-			<MapScreen />
-			<LocationSearchContent
-				rating={rating}
-				setRating={setRating}
-				selectedCategories={selectedCategories}
-				handleCategoryChange={handleCategoryChange}
-				mealTime={mealTime}
-				handleMealTimeChange={handleMealTimeChange}
-			/>
+			<Suspense fallback={<div>로딩 중...</div>}>
+				<HeaderBox />
+				<MapScreen />
+				<LocationSearchContent
+					rating={rating}
+					setRating={setRating}
+					selectedCategories={selectedCategories}
+					handleCategoryChange={handleCategoryChange}
+					mealTime={mealTime}
+					handleMealTimeChange={handleMealTimeChange}
+				/>
+			</Suspense>
 		</RadiusProvider>
 	);
 }
@@ -85,9 +87,10 @@ function LocationSearchContent({
 	const CategoryChange = (value: number) => {
 		setSelectCategory((prev) => (prev === value ? null : value));
 	};
+	const { categories } = useCategories();
 
 	const selectedCategoryName = useMemo(() => {
-		return categories.find((c) => c.id === selectCategory)?.name ?? null;
+		return categories?.find((c) => c.id === selectCategory)?.name ?? null;
 	}, [selectCategory]);
 
 	const priceSummary = useMemo(() => {
@@ -194,13 +197,13 @@ function LocationSearchContent({
 								value={selectCategory}
 								onChange={CategoryChange}
 							>
-								{categories.map((keyword) => {
+								{categories?.map((keyword) => {
 									const isActive = selectCategory === keyword.id;
 
 									return (
 										<SingleCategorySelect.Item
 											key={keyword.id}
-											value={keyword.id}
+											value={keyword.id || 0}
 											className={clsx(
 												`flex items-center gap-1`,
 												isActive

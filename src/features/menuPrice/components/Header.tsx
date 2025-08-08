@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { CategoryItem, categories } from '@/features/home/components/FoodIcon';
+import { CategoryItem } from '@/features/home/components/FoodIcon';
 
+import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
 
 export default function SearchResultSection() {
@@ -19,6 +20,7 @@ export default function SearchResultSection() {
 	const handleClick = (item: CategoryItem) => {
 		router.push(`/MenuPrice?q=${encodeURIComponent(item.name)}`);
 	};
+	const { categories } = useCategories();
 
 	useEffect(() => {
 		setQuery(q);
@@ -36,7 +38,7 @@ export default function SearchResultSection() {
 				<Icon name="Bell" />
 			</header>
 			<div className="w-full px-3 py-2 overflow-x-auto whitespace-nowrap flex gap-4 bg-white">
-				{categories.map((item, idx) => {
+				{categories?.map((item, idx) => {
 					const isSelected = item.name === query;
 					return (
 						<button

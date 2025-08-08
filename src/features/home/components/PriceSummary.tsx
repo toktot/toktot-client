@@ -46,11 +46,15 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 			<div className="flex items-center justify-between text-sm text-gray-500">
 				<span className="flex items-center gap-1">
 					<Icon name={icon} />
-					{MenuName} 1인 평균
+					<span className="text-grey-90 font-semibold">{MenuName}</span>
+					<span className="text-grey-80 text-[12px] mt-1">1인 평균</span>
+
+					<span className="text-grey-90 font-semibold">
+						{formatKRW(avgPrice)}
+					</span>
+					<span className="text-[12px] text-grey-90">원</span>
 				</span>
-				<span className="text-gray-900 font-semibold">
-					{formatKRW(avgPrice)}원
-				</span>
+				<Icon name={'ArrowRight'} size="xs" className="text-grey-50" />
 			</div>
 
 			{/* Progress bar */}
@@ -59,9 +63,9 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 			</div>
 
 			<div className="mt-2 flex justify-between text-xs text-gray-400">
-				<span>저렴한</span>
-				<span>평균</span>
-				<span>같이 있는</span>
+				<span className="text-grey-90">저렴한</span>
+				<span className="text-grey-90">평균</span>
+				<span className="text-grey-90">같이 있는</span>
 			</div>
 
 			<div className="mt-1 flex justify-between text-xs text-gray-500">

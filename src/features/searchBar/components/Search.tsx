@@ -27,6 +27,7 @@ export default function Search() {
 					setText(val);
 				}}
 				onSearchClick={() => handleSelect}
+				className="text-grey-80"
 			/>
 			<FilterBar value={filter} onChange={setFilter} />
 			<Auto query={text} onSelect={handleSelect} />

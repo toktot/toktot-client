@@ -2,15 +2,10 @@
 
 import { useState } from 'react';
 
-import {
-	CATEGORY_LABEL_MAP,
-	CATEGORY_MAP,
-	type TooltipCategory,
-} from '@/entities/review';
+import { type TooltipCategory } from '@/entities/review';
 
+import { ReviewCategorySelector } from '@/features/related-reviews/ui/ReviewCategorySelector';
 import { ReviewFormData } from '@/features/review/write/ui/ReviewFormRenderer';
-
-import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
 import DetailedReviewStep from './DetailedReviewStep';
 import InitialInfoStep from './InitialInfoStep';
@@ -26,12 +21,6 @@ interface CreateReviewSheetProps {
 	onComplete: (data: FinalReviewData) => void;
 }
 
-const CATEGORY_OPTIONS = Object.entries(CATEGORY_MAP).map(([key, value]) => ({
-	id: Number(key), // 0, 1, 2
-	label: CATEGORY_LABEL_MAP[value as TooltipCategory], // '음식', '서비스', '청결'
-	value: value as TooltipCategory, // 'food', 'service', 'clean'
-}));
-
 export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [selectedCategory, setSelectedCategory] =
@@ -40,14 +29,10 @@ export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
 		rating: 0,
 		formData: null as ReviewFormData | null,
 	});
-	console.log('🚀 ~ CreateReviewSheet ~ step1Data:', step1Data);
 
-	const handleCategoryChange = (newCategoryId: number) => {
-		const newCategory = CATEGORY_OPTIONS.find(
-			(opt) => opt.id === newCategoryId,
-		);
-		if (newCategory && newCategory.value !== selectedCategory) {
-			setSelectedCategory(newCategory.value);
+	const handleCategoryChange = (category: TooltipCategory) => {
+		if (category !== selectedCategory) {
+			setSelectedCategory(category);
 			setStep1Data({ rating: 0, formData: null });
 		}
 	};
@@ -90,8 +75,6 @@ export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
 
 	const CurrentStepComponent = steps[currentStep].component;
 	const isLastStep = currentStep === steps.length - 1;
-	const selectedCategoryId =
-		CATEGORY_OPTIONS.find((opt) => opt.value === selectedCategory)?.id ?? null;
 
 	const isNextButtonDisabled = () => {
 		// 현재 첫 번째 스텝이 아니면, 비활성화 로직을 적용하지 않음
@@ -112,16 +95,10 @@ export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
 			<div className="flex-grow space-y-3">
 				{currentStep === 0 && (
 					<div>
-						<SingleCategorySelect
-							value={selectedCategoryId}
-							onChange={handleCategoryChange}
-						>
-							{CATEGORY_OPTIONS.map((opt) => (
-								<SingleCategorySelect.Item key={opt.id} value={opt.id}>
-									{opt.label}
-								</SingleCategorySelect.Item>
-							))}
-						</SingleCategorySelect>
+						<ReviewCategorySelector
+							selectedCategory={selectedCategory}
+							onCategoryChange={handleCategoryChange}
+						/>
 					</div>
 				)}
 				{CurrentStepComponent}
