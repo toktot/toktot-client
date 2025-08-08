@@ -16,10 +16,10 @@ export type CenterActionItem = {
 
 export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 	{ type: 'link', href: '/home', iconName: 'Home', label: 'home' },
-	{ type: 'link', href: '/review', iconName: 'Review', label: 'review' },
+	{ type: 'link', href: '/review/view', iconName: 'Review', label: 'review' },
 	{
 		type: 'action',
-		href: '/review/write',
+		href: '/review/write/2324',
 		iconName: 'ReviewPlus',
 		'aria-label': '리뷰 작성하기',
 	},
