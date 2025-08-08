@@ -3,7 +3,7 @@
 :root {
 	--background: #ffffff;
 	--foreground: #171717;
-	--font-pretendard : Pretendard, sans-serif;
+	--font-pretendard: Pretendard, sans-serif;
 	--font-manrope: Manrope, sans-serif;
 }
 
@@ -23,14 +23,14 @@
 	--color-primary-80: #177bec;
 
 	--color-sub-orange-10: #fff6f0;
-	--color-sub-orange-20: #ffb380;
-	--color-sub-orange-30: #fccfb1;
+	--color-sub-orange-20: #fccfb1;
+	--color-sub-orange-30: #ffb380;
 	--color-sub-orange-40: #ffa970;
 	--color-sub-orange-50: #ff893a;
 
 	--color-sub-green-10: #f4fff7;
-	--color-sub-green-20: #86da9b;
-	--color-sub-green-30: #cff3d8;
+	--color-sub-green-20: #cff3d8;
+	--color-sub-green-30: #86da9b;
 	--color-sub-green-40: #5ed07a;
 	--color-sub-green-50: #1aa96e;
 
@@ -57,22 +57,21 @@
 	}
 }
 :lang(ko) {
-		font-family : var(--font-pretendard);
-	}
-	:lang(en) {
-		font-family: var(--font-manrope);
-	}
+	font-family: var(--font-pretendard);
+}
+:lang(en) {
+	font-family: var(--font-manrope);
+}
 
 body {
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-pretendard);
 
-
 	.font-en {
-		font-family : var(--font-manrope);
+		font-family: var(--font-manrope);
 	}
 	html {
-		font-family : var(--font-pretendard), var(--font-manrope), sans-serif;
+		font-family: var(--font-pretendard), var(--font-manrope), sans-serif;
 	}
 }

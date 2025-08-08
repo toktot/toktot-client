@@ -48,3 +48,6 @@ storybook-static
 # dependency-cruiser
 .dependency*
 dependency-graph*
+
+# cursor
+.cursor
