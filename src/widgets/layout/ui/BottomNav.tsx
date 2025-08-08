@@ -24,7 +24,7 @@ export const BottomNavItem = ({ href, iconName, label }: ItemProps) => {
 	return (
 		<Link
 			href={href}
-			className="flex flex-col items-center justify-center text-center gap-1"
+			className="flex flex-col items-center justify-center text-center"
 		>
 			<Icon
 				name={iconName}
@@ -80,7 +80,9 @@ export const BottomNav = ({ children }: BottomNavProps) => {
 			className="fixed bottom-0 left-0 right-0 bg-white shadow-top z-10"
 			style={{ height: BOTTOM_NAV_HEIGHT }}
 		>
-			<div className="grid grid-cols-5 h-full mx-auto">{children}</div>
+			<div className="flex items-center justify-around h-full mx-auto">
+				{children}
+			</div>
 		</nav>
 	);
 };
