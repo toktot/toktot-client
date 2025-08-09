@@ -6,7 +6,7 @@ export interface Review {
 	distance: string;
 	rating?: number;
 	mealTime?: string;
-	moods?: string[];
+	category?: string[];
 	mainMenu?: string;
 	startTime?: string;
 	endTime?: string;
@@ -18,7 +18,14 @@ export interface Review {
 	cleanNumber?: number;
 	serviceNumber?: number;
 	foodNumber?: number;
+	moods?: number[];
 	position?: { lat: number; lng: number };
+	price?: number[]; // 가격 관련 옵션
+	food?: number[]; // 음식 관련 옵션
+	service?: number[]; // 서비스 관련 옵션
+	clean?: number[]; // 청결 관련 옵션
+	mood?: number[]; // 분위기 관련 옵션
+	parking?: number[]; // 주차 관련 옵션
 }
 
 export const mockHome: Review[] = [
@@ -32,7 +39,7 @@ export const mockHome: Review[] = [
 		startTime: '10:00',
 		endTime: '20:00',
 		rating: 4.3,
-		moods: ['로컬', '오션뷰'],
+		category: ['로컬', '오션뷰'],
 		phoneNumber: '123 - 4567 - 4457',
 		ratingNumber: 23,
 		cleanNumber: 5,
@@ -42,6 +49,8 @@ export const mockHome: Review[] = [
 		servicerating: 4.2,
 		foodrating: 5.2,
 		position: { lat: 37.511225, lng: 127.059708 },
+		price: [1],
+		service: [1],
 	},
 	{
 		id: 2,
@@ -51,7 +60,6 @@ export const mockHome: Review[] = [
 		distance: '1km',
 		mealTime: '아침',
 		rating: 4.3,
-		moods: ['로컬', '오션뷰'],
 	},
 	{
 		id: 3,
@@ -61,7 +69,7 @@ export const mockHome: Review[] = [
 		distance: '거리',
 		mealTime: '아침',
 		rating: 4.3,
-		moods: ['로컬', '오션뷰'],
+		category: ['로컬', '오션뷰'],
 	},
 	{
 		id: 4,
@@ -71,6 +79,6 @@ export const mockHome: Review[] = [
 		distance: '거리',
 		mealTime: '아침',
 		rating: 4.3,
-		moods: ['로컬', '오션뷰'],
+		category: ['로컬', '오션뷰'],
 	},
 ];

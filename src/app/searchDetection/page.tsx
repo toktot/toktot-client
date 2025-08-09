@@ -2,8 +2,8 @@
 
 import { Suspense, useMemo, useState } from 'react';
 
+import { detailCategories } from '@/entities/cataegory/detailCategories';
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
-import { PLACE_MOOD_KEYWORDS } from '@/entities/store/model/constants';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -69,7 +69,7 @@ function LocationSearchContent({
 	rating,
 	setRating,
 	selectedCategories,
-	handleCategoryChange,
+
 	mealTime,
 	handleMealTimeChange,
 }: {
@@ -83,6 +83,9 @@ function LocationSearchContent({
 	const [tab, setTab] = useState<
 		'distance' | 'rating' | 'localFood' | 'price' | 'mood' | 'meal'
 	>('distance');
+	const [detailSelections, setDetailSelections] = useState<
+		Record<string, number[]>
+	>({});
 	const [selectCategory, setSelectCategory] = useState<number | null>(null);
 	const CategoryChange = (value: number) => {
 		setSelectCategory((prev) => (prev === value ? null : value));
@@ -127,8 +130,29 @@ function LocationSearchContent({
 		}
 		if (minPrice !== null) params.set('minPrice', minPrice.toString());
 		if (maxPrice !== null) params.set('maxPrice', maxPrice.toString());
+		Object.entries(detailSelections).forEach(([category, selectedIds]) => {
+			if (selectedIds.length > 0) {
+				params.set(category, selectedIds.join(','));
+			}
+		});
 
 		router.push(`/search?q=${query}&${params.toString()}`);
+	};
+	const toggleDetailSelection = (categoryId: string, optionId: number) => {
+		setDetailSelections((prev) => {
+			const selected = prev[categoryId] || [];
+			if (selected.includes(optionId)) {
+				return {
+					...prev,
+					[categoryId]: selected.filter((id) => id !== optionId),
+				};
+			} else {
+				return {
+					...prev,
+					[categoryId]: [...selected, optionId],
+				};
+			}
+		});
 	};
 
 	return (
@@ -158,7 +182,7 @@ function LocationSearchContent({
 						className={`pb-2 text-base font-semibold ${tab === 'mood' ? 'text-grey-90 border-b-1 border-[#333C4A]' : 'text-grey-40'}`}
 						onClick={() => setTab('mood')}
 					>
-						분위기
+						세부
 					</button>
 					<button
 						className={`pb-2 text-base font-semibold ${tab === 'meal' ? 'text-grey-90 border-b-1 border-[#333C4A]' : 'text-grey-40'}`}
@@ -259,42 +283,41 @@ function LocationSearchContent({
 
 				{tab === 'mood' && (
 					<div>
-						<p className="mb-3 mt-3 w-[80px] h-[25px] text-[#000000]">분위기</p>
-						<MultiCategorySelect
-							value={selectedCategories}
-							onChange={handleCategoryChange}
-						>
-							{PLACE_MOOD_KEYWORDS.map((keyword) => {
-								const isActive = selectedCategories.includes(keyword.id);
-
-								return (
-									<MultiCategorySelect.Item
-										key={keyword.id}
-										value={keyword.id}
-										className={clsx(
-											`flex items-center gap-1`,
-											isActive
-												? keyword.activeClassName ||
-														'bg-blue-100 border-blue-300 text-blue-600'
-												: 'border-grey-60 text-grey-60',
-											'border px-3 py-1 rounded-full text-sm font-medium select-none',
-										)}
+						<div className="mb-3 mt-3 w-[80px] h-[25px]text-[#000000]">
+							{detailCategories.map((category) => (
+								<div key={category.id} className="mb-4">
+									<div className="mb-2 font-semibold text-[#000]">
+										{category.label}
+									</div>
+									<MultiCategorySelect
+										value={detailSelections[category.id] || []}
+										onChange={(optionId: number) =>
+											toggleDetailSelection(category.id, optionId)
+										}
 									>
-										{keyword.iconName && (
-											<Icon
-												name={
-													isActive && keyword.activeIconName
-														? keyword.activeIconName
-														: keyword.iconName
-												}
-												className="w-4 h-4"
-											/>
-										)}
-										<span>{keyword.label}</span>
-									</MultiCategorySelect.Item>
-								);
-							})}
-						</MultiCategorySelect>
+										{category.options.map((option) => {
+											const isActive = (
+												detailSelections[category.id] || []
+											).includes(option.id);
+											return (
+												<MultiCategorySelect.Item
+													key={option.id}
+													value={option.id}
+													className={clsx(
+														'border px-3 py-1 rounded-full text-sm font-medium select-none',
+														isActive
+															? 'bg-blue-100 border-blue-300 text-blue-600'
+															: 'border-grey-60 text-grey-60',
+													)}
+												>
+													<span>{option.label}</span>
+												</MultiCategorySelect.Item>
+											);
+										})}
+									</MultiCategorySelect>
+								</div>
+							))}
+						</div>
 					</div>
 				)}
 				{tab === 'meal' && (

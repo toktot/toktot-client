@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { PLACE_MOOD_KEYWORDS } from '@/entities/store/model/constants';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -12,6 +11,7 @@ import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { mockHome } from '@/features/home/model/mockHome';
+import { Review } from '@/features/home/model/mockHome';
 import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 
 import HeaderBox from '@/shared/components/HeaderBox';
@@ -47,11 +47,38 @@ export default function SearchResultSection() {
 	const rating = Number(searchParams.get('rating') ?? 0);
 	const mealTime = searchParams.get('mealTime');
 	const menu = searchParams.get('menu');
-	const mood = useMemo(() => {
-		const raw = searchParams.get('mood');
-		return raw ? raw.split(',').map(Number) : [];
+	const detailFilters = useMemo(() => {
+		const detailCategories = [
+			'price',
+			'food',
+			'service',
+			'clean',
+			'mood',
+			'parking',
+		] as const;
+		const filters: Record<string, number[]> = {};
+
+		detailCategories.forEach((cat) => {
+			const raw = searchParams.get(cat);
+			if (raw) {
+				filters[cat] = raw.split(',').map(Number);
+			} else {
+				filters[cat] = [];
+			}
+		});
+
+		return filters;
 	}, [searchParams]);
+
 	const distance = searchParams.get('distance');
+	const categoryKeyMap = {
+		price: 'price',
+		food: 'foodO',
+		service: 'service',
+		cleanliness: 'clean',
+		mood: 'mood',
+		parking: 'parking',
+	} as const;
 
 	function parseDistance(distanceStr: string): number {
 		if (!distanceStr) return 0;
@@ -77,22 +104,29 @@ export default function SearchResultSection() {
 			if (rating && (r.rating ?? 0) < rating) return false;
 			if (mealTime && r.mealTime !== mealTime) return false;
 			if (menu && r.mainMenu !== menu) return false;
-			if (mood.length && !mood.some((m) => r.moods ?? ''.includes(String(m))))
-				return false;
+			for (const [category, selectedOptions] of Object.entries(detailFilters)) {
+				if (selectedOptions.length === 0) continue;
+				const key = categoryKeyMap[category as keyof typeof categoryKeyMap];
+				const reviewOptions = r[key as keyof Review] as number[] | undefined; // 예: r.price, r.food 등, 데이터 구조에 따라 조정 필요
+				console.log(reviewOptions);
+				if (!reviewOptions) return false;
+				if (!selectedOptions.every((opt) => reviewOptions.includes(opt)))
+					return false;
+			}
 			return r.placeName.includes(query);
 		});
-	}, [query, rating, mealTime, mood, distance, menu]);
+	}, [query, rating, mealTime, distance, menu, detailFilters]);
 	const filteredStores = useMemo(() => {
 		return mockStores.filter((s) => {
 			if (distance && Number(s.distance) > Number(distance)) return false;
 			if (rating && s.rating < rating) return false;
 			if (mealTime && s.mealTime !== mealTime) return false;
 			if (menu && s.mainMenu !== menu) return false;
-			if (mood.length && !mood.some((m) => s.moods.includes(String(m))))
-				return false;
+
+			return false;
 			return s.storeName.toLowerCase().includes(query.toLowerCase());
 		});
-	}, [query, rating, mealTime, mood, distance, menu]);
+	}, [query, rating, mealTime, distance, menu]);
 
 	const handleFilterChange = (newFilter: number | null) => {
 		setFilter(newFilter);
@@ -116,15 +150,9 @@ export default function SearchResultSection() {
 				`${searchParams.get('minPrice')} ~ ${searchParams.get('maxPrice')}만원`,
 			);
 		}
-		if (mood.length) {
-			const moods = PLACE_MOOD_KEYWORDS.filter((k) => mood.includes(k.id)).map(
-				(k) => k.label,
-			);
-			summaryParts.push(...moods);
-		}
 
 		setFilterSummary(summaryParts.join(' '));
-	}, [mood, rating, searchParams]);
+	}, [rating, searchParams]);
 
 	return (
 		<div className="px-4 py-6 bg-white">
