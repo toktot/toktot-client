@@ -94,7 +94,7 @@ function LocationSearchContent({
 
 	const selectedCategoryName = useMemo(() => {
 		return categories?.find((c) => c.id === selectCategory)?.name ?? null;
-	}, [selectCategory]);
+	}, [selectCategory, categories]);
 
 	const priceSummary = useMemo(() => {
 		if (!selectedCategoryName) return undefined;

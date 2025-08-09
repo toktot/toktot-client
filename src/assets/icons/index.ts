@@ -62,3 +62,4 @@ export { default as dinner } from './dinner.svg';
 export { default as evening } from './evening.svg';
 export { default as morning } from './morning.svg';
 export { default as call } from './call.svg';
+export { default as Kebab } from './kebab.svg';

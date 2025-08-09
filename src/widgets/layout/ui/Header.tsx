@@ -1,34 +1,36 @@
 import type { ReactNode } from 'react';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import clsx from 'clsx';
 
-/**
- *
- *  children이 존재하면(외부에서 주입되면), 그 children을 렌더링합니다.
- *  children이 존재하지 않으면(undefined), 기본값인 <BackButton />을 렌더링합니다.
- */
+interface HeaderPartProps {
+	children: ReactNode;
+}
 
-const Left = ({ children }: { children?: ReactNode }) => (
-	<div className="flex-shrink-0">
-		{children !== undefined ? children : <BackButton />}
-	</div>
+const Left = ({ children }: HeaderPartProps) => (
+	<div className="flex-shrink-0">{children}</div>
 );
-const Center = ({ children }: { children: ReactNode }) => (
+const Center = ({ children }: HeaderPartProps) => (
 	<div className="absolute left-1/2 -translate-x-1/2 font-semibold">
 		{children}
 	</div>
 );
-const Right = ({ children }: { children: ReactNode }) => (
+const Right = ({ children }: HeaderPartProps) => (
 	<div className="flex-shrink-0">{children}</div>
 );
 
 interface HeaderProps {
 	children: ReactNode;
+	className?: string;
 }
 
-export const Header = ({ children }: HeaderProps) => {
+export const Header = ({ children, className }: HeaderProps) => {
 	return (
-		<header className="relative flex items-center justify-between h-16 px-4">
+		<header
+			className={clsx(
+				'relative flex items-center justify-between h-12 px-4',
+				className,
+			)}
+		>
 			{children}
 		</header>
 	);

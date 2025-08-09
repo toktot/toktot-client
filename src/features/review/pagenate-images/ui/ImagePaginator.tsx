@@ -63,7 +63,7 @@ export const ImagePaginator = ({
 					</div>
 				);
 			})}
-			<div className="absolute bottom-2 left-4 right-4">
+			<div className="absolute bottom-18 left-4 right-4">
 				<ProgressBar total={images.length} current={currentIndex} />
 			</div>
 		</div>

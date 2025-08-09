@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { mockStores } from '@/entities/store/model/mockStore';
+import { Store, mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
@@ -71,14 +71,17 @@ export default function SearchResultSection() {
 	}, [searchParams]);
 
 	const distance = searchParams.get('distance');
-	const categoryKeyMap = {
-		price: 'price',
-		food: 'foodO',
-		service: 'service',
-		cleanliness: 'clean',
-		mood: 'mood',
-		parking: 'parking',
-	} as const;
+	const categoryKeyMap = useMemo(
+		() => ({
+			price: 'price',
+			food: 'foodO',
+			service: 'service',
+			cleanliness: 'clean',
+			mood: 'mood',
+			parking: 'parking',
+		}),
+		[],
+	);
 
 	function parseDistance(distanceStr: string): number {
 		if (!distanceStr) return 0;
@@ -115,18 +118,26 @@ export default function SearchResultSection() {
 			}
 			return r.placeName.includes(query);
 		});
-	}, [query, rating, mealTime, distance, menu, detailFilters]);
+	}, [query, rating, mealTime, distance, menu, detailFilters, categoryKeyMap]);
 	const filteredStores = useMemo(() => {
 		return mockStores.filter((s) => {
 			if (distance && Number(s.distance) > Number(distance)) return false;
 			if (rating && s.rating < rating) return false;
 			if (mealTime && s.mealTime !== mealTime) return false;
 			if (menu && s.mainMenu !== menu) return false;
+			for (const [category, selectedOptions] of Object.entries(detailFilters)) {
+				if (selectedOptions.length === 0) continue;
+				const key = categoryKeyMap[category as keyof typeof categoryKeyMap];
+				const reviewOptions = s[key as keyof Store] as number[] | undefined; // 예: r.price, r.food 등, 데이터 구조에 따라 조정 필요
+				console.log(reviewOptions);
+				if (!reviewOptions) return false;
+				if (!selectedOptions.every((opt) => reviewOptions.includes(opt)))
+					return false;
+			}
 
-			return false;
 			return s.storeName.toLowerCase().includes(query.toLowerCase());
 		});
-	}, [query, rating, mealTime, distance, menu]);
+	}, [query, rating, mealTime, distance, menu, categoryKeyMap, detailFilters]);
 
 	const handleFilterChange = (newFilter: number | null) => {
 		setFilter(newFilter);

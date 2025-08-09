@@ -1,13 +1,15 @@
 import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
-import { AppShell } from '@/widgets/layout';
+import { AppShell, Header } from '@/widgets/layout';
 import {
 	RegisteredMenuListWidget,
 	ReviewImageWidget,
 	ReviewMoodFilterWidget,
 	VisitedStoreWidget,
 } from '@/widgets/review/write';
+
+import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
 import { MenuItemId, StoreId } from '@/shared/model/types';
 
@@ -51,7 +53,13 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
 
 	return (
-		<AppShell headerTitle={`리뷰 쓰기`} showBottomNav={false}>
+		<AppShell showBottomNav={false}>
+			<Header>
+				<Header.Left>
+					<BackButton />
+				</Header.Left>
+				<Header.Center>리뷰 쓰기</Header.Center>
+			</Header>
 			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />

@@ -201,7 +201,7 @@ export function ReviewStoryFeed() {
 	};
 
 	return (
-		<div className="relative h-screen w-screen bg-black isolate">
+		<div className="relative flex flex-col h-full bg-black isolate">
 			<AnimatePresence>
 				{guideStep === 'saveGuide' && (
 					<SaveGestureGuideModal
