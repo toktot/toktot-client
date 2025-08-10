@@ -29,7 +29,7 @@ import {
 } from '@/shared/model/types';
 
 export const mockReview1: ReviewView = {
-	id: 'review-001' as ReviewId,
+	id: '456' as ReviewId,
 	author: {
 		id: 1 as UserId,
 		username: 'food91',
