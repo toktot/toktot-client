@@ -11,7 +11,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { RelatedReviewsSheet } from '@/features/related-reviews/ui/RelatedReviewsSheet';
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
-import { SaveReviewGesture } from '@/features/review/save/ui/SaveReviewGesture';
 
 import {
 	BottomSheet,
@@ -245,13 +244,11 @@ export function ReviewStoryFeed() {
 							</div>
 						}
 						interactiveLayer={
-							<SaveReviewGesture reviewId={currentPost.id}>
-								<ImagePaginator
-									images={currentPost.images}
-									tooltips={currentPost.tooltips}
-									onTooltipClick={handleTooltipClick}
-								/>
-							</SaveReviewGesture>
+							<ImagePaginator
+								images={currentPost.images}
+								tooltips={currentPost.tooltips}
+								onTooltipClick={handleTooltipClick}
+							/>
 						}
 					/>
 				</motion.div>
