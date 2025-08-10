@@ -10,7 +10,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { RelatedReviewsSheet } from '@/features/related-reviews/ui/RelatedReviewsSheet';
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
-import { SaveGestureGuideModal } from '@/features/review/guide/ui/SaveGestureGuideModal';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 import { SaveReviewGesture } from '@/features/review/save/ui/SaveReviewGesture';
 
@@ -134,14 +133,12 @@ const swipePower = (offset: number, velocity: number) => {
 // 애니메이션 방향과 페이지 인덱스를 함께 관리하기 위한 타입
 type PageState = [number, number]; // [page, direction]
 
-type GuideStep = 'saveGuide' | 'interactionGuide' | 'active';
-
 export function ReviewStoryFeed() {
 	const data = [mockReview1, mockReview2];
 	const [[page, direction], setPage] = useState<PageState>([0, 0]);
 	const currentIndex = page;
 
-	const [guideStep, setGuideStep] = useState<GuideStep>('saveGuide');
+	const [showGuide, setShowGuide] = useState(true);
 
 	const [selectedReview, setSelectedReview] = useState<ReviewView | null>(null);
 
@@ -203,14 +200,7 @@ export function ReviewStoryFeed() {
 	return (
 		<div className="relative flex flex-col h-full bg-black isolate">
 			<AnimatePresence>
-				{guideStep === 'saveGuide' && (
-					<SaveGestureGuideModal
-						onConfirm={() => setGuideStep('interactionGuide')}
-					/>
-				)}
-				{guideStep === 'interactionGuide' && (
-					<InteractionGuide onClose={() => setGuideStep('active')} />
-				)}
+				{showGuide && <InteractionGuide onClose={() => setShowGuide(false)} />}
 			</AnimatePresence>
 
 			<AnimatePresence initial={false} custom={direction}>
