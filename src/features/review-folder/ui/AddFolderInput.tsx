@@ -11,11 +11,11 @@ export const AddFolderInput = ({
 	const [name, setName] = useState('');
 
 	const handleAdd = () => {
-		if (name.trim()) {
-			onAdd(name.trim());
-			setName('');
-			setIsEditing(false);
-		}
+		const trimmedName = name.trim();
+
+		onAdd(trimmedName);
+		setName('');
+		setIsEditing(false);
 	};
 
 	if (!isEditing) {
@@ -48,9 +48,7 @@ export const AddFolderInput = ({
 			/>
 			<button
 				onClick={handleAdd}
-				className={`rounded-2xl h-full px-4 text-white ${
-					name.trim() ? 'bg-grey-90' : 'bg-grey-30'
-				}`}
+				className="rounded-2xl h-full px-4 text-white bg-grey-90"
 			>
 				추가하기
 			</button>

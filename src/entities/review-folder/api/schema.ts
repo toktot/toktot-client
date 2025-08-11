@@ -10,7 +10,7 @@ export const FolderServerSchema = z.object({
 
 // 요청 바디 (create) 스키마 — 클라이언트에서 보내는 것
 export const CreateFolderPayloadSchema = z.object({
-	folder_name: z.string().min(1).max(50),
+	folder_name: z.string().max(50),
 });
 
 // 요청 바디 (리뷰 저장) 스키마

@@ -73,12 +73,13 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 		addFolder: async (name: string) => {
 			const { folders } = get();
 
-			if (
-				folders.length >= MAX_FOLDERS ||
-				name.length < 1 ||
-				name.length > MAX_FOLDER_LENGTH
-			) {
-				alert('폴더 개수 또는 이름 길이 제한을 초과했습니다. (1-50자)');
+			if (folders.length >= MAX_FOLDERS) {
+				alert('폴더는 총 10개까지 가질 수 있습니다.');
+				return { success: false };
+			}
+
+			if (name.length > MAX_FOLDER_LENGTH) {
+				alert('폴더 이름 길이 제한을 초과했습니다. (50자까지)');
 				return { success: false };
 			}
 
