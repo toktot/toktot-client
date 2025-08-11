@@ -42,12 +42,12 @@ export const ImagePaginator = ({
 	};
 
 	return (
-		<div className="w-full h-full cursor-pointer" onClick={handleTap}>
+		<div className="w-full h-full relative" onClick={handleTap}>
 			<Image
 				src={currentImage.url}
 				alt="리뷰 이미지"
-				layout="fill"
-				objectFit="contain"
+				fill
+				className="object-fill"
 				priority={true}
 			/>
 			{currentImage.tooltipIds.map((id) => {
@@ -63,7 +63,7 @@ export const ImagePaginator = ({
 					</div>
 				);
 			})}
-			<div className="absolute bottom-18 left-4 right-4">
+			<div className="absolute bottom-0 left-0 right-0">
 				<ProgressBar total={images.length} current={currentIndex} />
 			</div>
 		</div>

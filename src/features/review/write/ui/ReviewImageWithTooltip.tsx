@@ -38,6 +38,7 @@ export const ReviewImageWithTooltip = ({
 
 	const handleImageClick = (e: React.MouseEvent) => {
 		const coord = getRelativeCoord(e);
+
 		if (!coord) return;
 
 		onImageClick(coord);
@@ -55,7 +56,7 @@ export const ReviewImageWithTooltip = ({
 				onClick={handleImageClick}
 				fill
 				alt="리뷰이미지"
-				className="object-cover rounded-t-lg"
+				className="object-fill rounded-t-lg"
 			/>
 			{image.tooltipIds.map((id) => {
 				const tip = tooltips[id];
