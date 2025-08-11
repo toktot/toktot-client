@@ -25,7 +25,10 @@ const page = () => {
 					</span>
 				</Header.Right>
 			</Header>
-			<ReviewStoryFeed />
+
+			<main className="flex-1">
+				<ReviewStoryFeed />
+			</main>
 		</AppShell>
 	);
 };
