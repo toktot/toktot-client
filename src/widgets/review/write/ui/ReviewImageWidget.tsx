@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
 	FoodTooltip,
@@ -41,8 +41,7 @@ export const ReviewImageWidget = () => {
 	const [selectedImageId, setSelectedImageId] = useState<ReviewImageId | null>(
 		null,
 	);
-	const selectedImage =
-		images.find((img) => img.id === selectedImageId) ?? images[0];
+	const selectedImage = images.find((img) => img.id === selectedImageId);
 	const {
 		tooltips,
 		addTooltip,
@@ -57,6 +56,18 @@ export const ReviewImageWidget = () => {
 		null,
 	);
 	const [isCompleted, setIsCompleted] = useState(false);
+
+	useEffect(() => {
+		// 조건 1: 명시적으로 선택된 이미지가 없거나 (초기 상태)
+		// 조건 2: 이전에 선택했던 이미지가 삭제되어 더 이상 목록에 없는 경우
+		if (!selectedImageId || !images.some((img) => img.id === selectedImageId)) {
+			if (images.length > 0) {
+				setSelectedImageId(images[0].id);
+			} else {
+				setSelectedImageId(null);
+			}
+		}
+	}, [images, selectedImageId]);
 
 	const handleRemoveTooltip = (tooltipId: TooltipId) => {
 		removeTooltipFromImage(tooltipId);
