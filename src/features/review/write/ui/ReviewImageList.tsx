@@ -1,14 +1,13 @@
 import { ReviewImage, ReviewImageItem } from '@/entities/review';
-import { ReviewImageId } from '@/shared/model/types';
 
 export const ReviewImageList = ({
 	images,
 	onSelectImage,
-	onDeleteImage,
+	selectedImageId,
 }: {
 	images: ReviewImage[];
 	onSelectImage: (image: ReviewImage) => void;
-	onDeleteImage: (id: ReviewImageId) => void;
+	selectedImageId: string | null;
 }) => {
 	return (
 		<div className="h-full flex">
@@ -17,7 +16,7 @@ export const ReviewImageList = ({
 					key={image.id}
 					image={image}
 					onSelectImage={() => onSelectImage(image)}
-					onDeleteImage={() => onDeleteImage(image.id)}
+					isSelected={image.id === selectedImageId}
 				/>
 			))}
 		</div>

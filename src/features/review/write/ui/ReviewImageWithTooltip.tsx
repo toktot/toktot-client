@@ -49,7 +49,7 @@ export const ReviewImageWithTooltip = ({
 	};
 
 	return (
-		<div className="absolute inset-0 z-20">
+		<div className="absolute inset-0">
 			<Image
 				ref={imgRef}
 				src={image.url}

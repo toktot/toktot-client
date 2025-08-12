@@ -125,8 +125,8 @@ export const ReviewImageWidget = () => {
 					<div className="h-9 flex justify-between w-full">
 						<ReviewImageList
 							images={images}
+							selectedImageId={selectedImageId}
 							onSelectImage={(img) => setSelectedImageId(img.id)}
-							onDeleteImage={removeImage}
 						/>
 						<button
 							onClick={() => setIsCompleted(true)}
@@ -176,6 +176,7 @@ export const ReviewImageWidget = () => {
 							setIsCompleted(false);
 							setSelectedImageId(image.id);
 						}}
+						onDelete={() => removeImage(image.id)}
 					/>
 				))}
 			</div>
