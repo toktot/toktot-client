@@ -1,8 +1,11 @@
 import { useState } from 'react';
 
-import { Tooltip } from '@/entities/review/model/tooltip';
-import { TooltipId } from '@/shared/model/types';
+import { Tooltip, TooltipCategory } from '@/entities/review/model/tooltip';
 import { nanoid } from 'nanoid';
+
+import { FinalReviewData } from '@/widgets/review/write/ui/CreateReviewSheet';
+
+import { TooltipId } from '@/shared/model/types';
 
 export function useTooltipManager(
 	initialTooltips: Record<TooltipId, Tooltip> = {},
@@ -18,52 +21,89 @@ export function useTooltipManager(
 		return newTooltip;
 	};
 
-	function updateTooltip(
-		id: TooltipId,
-		data: Partial<Omit<Extract<Tooltip, { category: 'food' }>, 'id'>>,
-	): void;
-	function updateTooltip(
-		id: TooltipId,
-		data: Partial<Omit<Extract<Tooltip, { category: 'service' }>, 'id'>>,
-	): void;
-	function updateTooltip(
-		id: TooltipId,
-		data: Partial<Omit<Extract<Tooltip, { category: 'clean' }>, 'id'>>,
-	): void;
-
-	function updateTooltip(
-		id: TooltipId,
-		data:
-			| Partial<Omit<Extract<Tooltip, { category: 'food' }>, 'id'>>
-			| Partial<Omit<Extract<Tooltip, { category: 'service' }>, 'id'>>
-			| Partial<Omit<Extract<Tooltip, { category: 'clean' }>, 'id'>>,
-	): void {
+	/**
+	 * 툴팁의 세부 정보를 업데이트합니다. (폼 완료 시 사용)
+	 */
+	const updateTooltipDetails = (id: TooltipId, formData: FinalReviewData) => {
 		setTooltips((prev) => {
 			const existing = prev[id];
 			if (!existing) return prev;
 
-			switch (existing.category) {
-				case 'food': {
-					const foodData = data as Partial<
-						Omit<Extract<Tooltip, { category: 'food' }>, 'id'>
-					>;
-					return { ...prev, [id]: { ...existing, ...foodData } };
-				}
-				case 'service': {
-					const serviceData = data as Partial<
-						Omit<Extract<Tooltip, { category: 'service' }>, 'id'>
-					>;
-					return { ...prev, [id]: { ...existing, ...serviceData } };
-				}
-				case 'clean': {
-					const cleanData = data as Partial<
-						Omit<Extract<Tooltip, { category: 'clean' }>, 'id'>
-					>;
-					return { ...prev, [id]: { ...existing, ...cleanData } };
-				}
+			let newTooltip: Tooltip;
+			// ... (이전 updateTooltip의 Case 1 로직과 동일)
+			switch (formData.category) {
+				case 'food':
+					if (formData.formData && 'menuName' in formData.formData) {
+						newTooltip = {
+							...existing,
+							category: 'food',
+							rating: formData.rating,
+							description: formData.detailedText,
+							menuName: formData.formData.menuName,
+							price: formData.formData.price,
+						};
+					} else {
+						return prev;
+					}
+					break;
+				case 'service':
+					newTooltip = {
+						...existing,
+						category: 'service',
+						rating: formData.rating,
+						description: formData.detailedText,
+					};
+					break;
+				case 'clean':
+					newTooltip = {
+						...existing,
+						category: 'clean',
+						rating: formData.rating,
+						description: formData.detailedText,
+					};
+					break;
+				default:
+					return prev;
 			}
+			return { ...prev, [id]: newTooltip };
 		});
-	}
+	};
+
+	/**
+	 * 툴팁의 카테고리를 변경합니다.
+	 * 카테고리 변경 시, 해당 카테고리에 맞지 않는 속성은 초기화됩니다.
+	 */
+	const changeTooltipCategory = (id: TooltipId, category: TooltipCategory) => {
+		setTooltips((prev) => {
+			const existing = prev[id];
+			if (!existing || existing.category === category) return prev;
+
+			const base = {
+				id: existing.id,
+				x: existing.x,
+				y: existing.y,
+				rating: 0,
+				description: '',
+			};
+			let newTooltip: Tooltip;
+
+			switch (category) {
+				case 'food':
+					newTooltip = { ...base, category: 'food', menuName: '', price: 0 };
+					break;
+				case 'service':
+					newTooltip = { ...base, category: 'service' };
+					break;
+				case 'clean':
+					newTooltip = { ...base, category: 'clean' };
+					break;
+				default:
+					newTooltip = existing;
+					break;
+			}
+			return { ...prev, [id]: newTooltip };
+		});
+	};
 
 	const removeTooltip = (id: TooltipId) => {
 		setTooltips((prev) => {
@@ -74,5 +114,11 @@ export function useTooltipManager(
 		});
 	};
 
-	return { tooltips, addTooltip, updateTooltip, removeTooltip };
+	return {
+		tooltips,
+		addTooltip,
+		updateTooltipDetails,
+		changeTooltipCategory,
+		removeTooltip,
+	};
 }

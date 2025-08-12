@@ -3,8 +3,8 @@
 import { useState } from 'react';
 
 import {
+	FoodTooltip,
 	MAX_IMAGE_COUNT,
-	Tooltip,
 	useReviewImageManager,
 	useTooltipManager,
 } from '@/entities/review';
@@ -43,79 +43,67 @@ export const ReviewImageWidget = () => {
 	);
 	const selectedImage =
 		images.find((img) => img.id === selectedImageId) ?? images[0];
-	const { tooltips, addTooltip, removeTooltip } = useTooltipManager();
+	const {
+		tooltips,
+		addTooltip,
+		removeTooltip,
+		updateTooltipDetails,
+		changeTooltipCategory,
+	} = useTooltipManager();
 	const [showGuide, setShowGuide] = useState(true);
 
-	// const handleAddTooltip = (
-	// 	imageId: string,
-	// 	coord: { x: number; y: number },
-	// ) => {
-	// 	// TODO: 목데이터 삭제 후 카테고리 별 추가
-	// 	// switch (tooltip.category) {
-	// 	// 	case 'food':
-	// 	// 		return ;
-	// 	// 	case 'service':
-	// 	// 		return ;
-	// 	// 	case 'clean':
-	// 	// 		return ;
-	// 	// }
-
-	// 	const tooltip = addTooltip({
-	// 		x: coord.x,
-	// 		y: coord.y,
-	// 		category: 'food',
-	// 		rating: 4,
-	// 		// 100자
-	// 		description:
-	// 			'글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글자수 초과시 인풋박스 안 텍스트 입니다.글dsfdsfd',
-	// 	});
-	// 	addTooltipToImage(imageId, tooltip.id);
-	// };
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
+	const [activeTooltipId, setActiveTooltipId] = useState<TooltipId | null>(
+		null,
+	);
+	const [isCompleted, setIsCompleted] = useState(false);
 
 	const handleRemoveTooltip = (tooltipId: TooltipId) => {
 		removeTooltipFromImage(tooltipId);
 		removeTooltip(tooltipId);
 	};
 
-	const [isSheetOpen, setIsSheetOpen] = useState(false);
-	const [newTooltipCoords, setNewTooltipCoords] = useState<{
-		x: number;
-		y: number;
-	} | null>(null);
-	const [isCompleted, setIsCompleted] = useState(false);
-
 	const handleImageClick = (coord: { x: number; y: number }) => {
-		setNewTooltipCoords(coord);
+		if (activeTooltipId) {
+			alert('먼저 현재 툴팁 작성을 완료해주세요.');
+			return;
+		}
+		if (!selectedImage) return;
+
+		const placeholderTooltip: Omit<FoodTooltip, 'id'> = {
+			category: 'food',
+			x: coord.x,
+			y: coord.y,
+			rating: 0,
+			menuName: '',
+			price: 0,
+			description: '',
+		};
+
+		const newTooltip = addTooltip(placeholderTooltip);
+		addTooltipToImage(selectedImage.id, newTooltip.id);
+		setActiveTooltipId(newTooltip.id);
 		setIsSheetOpen(true);
 	};
 
 	const handleTooltipFormComplete = (formData: FinalReviewData) => {
-		if (!newTooltipCoords || !selectedImage) return;
+		if (!activeTooltipId) {
+			console.error('업데이트할 활성 툴팁이 없습니다.');
+			return;
+		}
+		updateTooltipDetails(activeTooltipId, formData);
 
-		// 폼 데이터와 좌표를 조합하여 새로운 툴팁 데이터를 만듭니다.
-		const newTooltipData: Omit<Tooltip, 'id'> = {
-			x: newTooltipCoords.x,
-			y: newTooltipCoords.y,
-			category: formData.category,
-			rating: formData.rating,
-			description: formData.detailedText,
-			// 'food' 카테고리일 경우 추가 정보 매핑
-			...(formData.category === 'food' &&
-			formData.formData &&
-			'menuName' in formData.formData
-				? {
-						menuName: formData.formData.menuName,
-						price: formData.formData.price,
-					}
-				: {}),
-		};
-
-		const newTooltip = addTooltip(newTooltipData);
-		addTooltipToImage(selectedImage.id, newTooltip.id);
-
-		// 상태 초기화 및 바텀시트 닫기
+		setActiveTooltipId(null);
 		setIsSheetOpen(false);
-		setNewTooltipCoords(null);
+	};
+
+	const handleSheetOpenChange = (isOpen: boolean) => {
+		if (!isOpen && activeTooltipId) {
+			removeTooltip(activeTooltipId);
+			removeTooltipFromImage(activeTooltipId);
+			setActiveTooltipId(null);
+		}
+		setIsSheetOpen(isOpen);
 	};
 
 	if (images.length > 0 && selectedImage && !isCompleted) {
@@ -149,11 +137,19 @@ export const ReviewImageWidget = () => {
 					</div>
 				</div>
 
-				<BottomSheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+				<BottomSheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
 					<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
 					<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white shadow-lg">
 						<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
-						<CreateReviewSheet onComplete={handleTooltipFormComplete} />
+						<CreateReviewSheet
+							onComplete={handleTooltipFormComplete}
+							initialCategory={'food'}
+							onCategoryChange={(category) => {
+								if (activeTooltipId) {
+									changeTooltipCategory(activeTooltipId, category);
+								}
+							}}
+						/>
 					</BottomSheetContent>
 				</BottomSheet>
 			</div>
