@@ -26,6 +26,8 @@ export interface Review {
 	clean?: number[]; // 청결 관련 옵션
 	mood?: number[]; // 분위기 관련 옵션
 	parking?: number[]; // 주차 관련 옵션
+	writer?: string;
+	time?: string;
 }
 
 export const mockHome: Review[] = [
@@ -33,7 +35,7 @@ export const mockHome: Review[] = [
 		id: 1,
 		imageUrl: '/images/foodImage1.png',
 		placeName: '다요이네 삼밥',
-		location: '제주시 특별자치도, 원노형남1길 16 1층',
+		location: '서귀포시 중구',
 		distance: '100m',
 		mealTime: '아침',
 		startTime: '10:00',
@@ -51,6 +53,8 @@ export const mockHome: Review[] = [
 		position: { lat: 37.511225, lng: 127.059708 },
 		price: [1],
 		service: [1],
+		writer: '혼잣말 잘해요',
+		time: '1분',
 	},
 	{
 		id: 2,

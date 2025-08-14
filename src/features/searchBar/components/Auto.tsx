@@ -46,7 +46,7 @@ export default function Auto({ query, onSelect }: Props) {
 							<Icon name={item.icon} />
 						</div>
 						<p className="text-sm">{highlightMatch(item.name, query)}</p>
-						<span className="text-[12px] text-grey-80">{item.type}</span>
+						<span className="text-[12px] text-grey-80 mt-0.5">향토음식</span>
 					</div>
 					<Icon name="ArrowRight" className="text-grey-50 text-[12px]" />
 				</div>

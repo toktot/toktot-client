@@ -14,7 +14,9 @@ export default function StoreCategoryTag({ type }: StoreCategoryTagProps) {
 			: 'bg-priamary-10 text-primary-50';
 
 	return (
-		<span className={clsx('px-2 py-1 rounded-full text-xs font-medium', color)}>
+		<span
+			className={clsx('px-1.5 py-0.5 rounded-full text-xs font-medium', color)}
+		>
 			{type}
 		</span>
 	);

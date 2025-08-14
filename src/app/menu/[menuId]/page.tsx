@@ -5,6 +5,9 @@ import { useMemo } from 'react';
 import { mockMenu } from '@/entities/store/menu/mockMenu';
 import { useParams } from 'next/navigation';
 
+import { BottomNav, BottomNavItem } from '@/widgets/layout';
+import { CenterButton } from '@/widgets/layout/ui/BottomNav';
+
 import MenuChart from '@/features/StoreDetail/components/[menuId]/MenuGraph';
 
 export default function MenuDetailPage() {
@@ -34,7 +37,7 @@ export default function MenuDetailPage() {
 					backgroundImage: `url('${store.imageUrl ?? '/images/default.jpg'}')`,
 				}}
 			>
-				<div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-xl px-4 py-3 shadow-md w-[343px] z-20">
+				<div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-white rounded-xl px-4 py-3 shadow-md w-[343px] z-20">
 					<h1 className="text-[20px] font-semibold text-grey-85">
 						{store.menuName}
 					</h1>
@@ -53,10 +56,24 @@ export default function MenuDetailPage() {
 				</div>
 			</div>
 
-			<div className="relative z-10 -mt-8 pt-[100px] bg-white rounded-t-3xl px-6 pb-10 shadow-md">
+			<div className="relative z-10 -mt-8 pt-[100px] bg-grey-10 px-6 pb-10">
 				<div className="flex items-center mb-2">
 					<MenuChart />
 				</div>
+				<section>
+					<BottomNav>
+						<BottomNavItem
+							href="/home"
+							iconName="Home"
+							label="home"
+							foreActive
+						/>
+						<BottomNavItem href="/review" iconName="Review" label="review" />
+						<CenterButton href="/write" iconName="Plus" aria-label="plus" />
+						<BottomNavItem href="/bookmark" iconName="Route" label="route" />
+						<BottomNavItem href="/mypage" iconName="My" label="my" />
+					</BottomNav>
+				</section>
 			</div>
 		</div>
 	);

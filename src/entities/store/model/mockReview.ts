@@ -12,6 +12,7 @@ export interface Reviews {
 	mealTime: string;
 	type?: string;
 	rating?: string;
+	text?: string;
 }
 
 export const mockReviews: Reviews[] = [
@@ -24,5 +25,28 @@ export const mockReviews: Reviews[] = [
 		mealTime: '점심',
 		type: '서비스',
 		rating: '4',
+		text: '아 진짜 너무 더럽고요 이게 뭔지 모르겠어요',
+	},
+	{
+		id: '2',
+		auth: mockUser[1],
+		image: '/images/foodImage1.png',
+		menu: ['돔베고기'],
+		date: '2025-08-05T14:30:00', // 시간 정보 포함
+		mealTime: '점심',
+		type: '음식',
+		rating: '4',
+		text: '아 진짜 너무 더럽고요 이게 뭔지 모르겠어요',
+	},
+	{
+		id: '3',
+		auth: mockUser[2],
+		image: '/images/foodImage1.png',
+		menu: ['고기국수'],
+		date: '2025-08-05T14:30:00', // 시간 정보 포함
+		mealTime: '점심',
+		type: '청결',
+		rating: '4',
+		text: '아 진짜 너무 더럽고요 이게 뭔지 모르겠어요',
 	},
 ];

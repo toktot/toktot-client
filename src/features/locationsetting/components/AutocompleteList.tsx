@@ -9,28 +9,45 @@ interface Props {
 	query: string;
 	onSelect: (address: string, dixsplayName: string) => void;
 	onCurrentLocationClick?: () => void;
+	onGoNextStep?: () => void;
 }
 
 export default function AutocompleteList({
 	query,
 	onSelect,
 	onCurrentLocationClick,
+	onGoNextStep,
 }: Props) {
 	const filtered = MOCK_LOCATIONS.filter((item) => item.name.includes(query));
 	const { categories } = useCategories();
+
 	return (
-		<div className="bg-white mt-2 w-[343px] mx-auto z-10 relative">
+		<div className="bg-white mt-2 w-full max-w-[375px] mx-auto z-10 relative">
 			{/* 현재 위치 */}
 			<div
 				onClick={onCurrentLocationClick}
 				className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer "
 			>
-				<Icon name={'Current'} className="text-grey-50" />
+				<Icon name={'Current'} className="text-grey-50" size="xs" />
+
 				<span className="text-grey-70 text-[14px]">현재 위치로 설정</span>
+				<span className="ml-auto text-grey-20">
+					<Icon name="ArrowRight" className="text-grey-50" size="xs" />
+				</span>
 			</div>
-			<div className="border-t border-grey-60"></div>
-			{/* 자동완성 목록 */}
+			<div className="border-t border-grey-60 w-full"></div>
+			{query.trim().length === 0 && (
+				<div className="text-center text-grey-60 py-4 mt-15 mb-15">
+					검색 내역이 없어요.
+				</div>
+			)}
+			{query.trim().length > 0 && filtered.length === 0 && (
+				<div className="text-center flex justify-center text-grey-60 py-4 mt-8 mb-8">
+					검색 내역이 없어요.
+				</div>
+			)}
 			{query.trim() &&
+				filtered.length > 0 &&
 				filtered.map((item) => {
 					const localFoodItem = categories?.find((c) =>
 						item.name.includes(c.name),
@@ -46,7 +63,11 @@ export default function AutocompleteList({
 							className="flex justify-between items-center p-3 hover:bg-gray-100 cursor-pointer"
 						>
 							<div className="flex items-start gap-2">
-								<Icon name={iconName} className="text-grey-70 mt-[2px]" />
+								<Icon
+									name={iconName}
+									className="text-grey-70 mt-[2px]"
+									size="xs"
+								/>
 								<div>
 									<div className="flex items-center gap-1">
 										{isAddress ? (
@@ -64,7 +85,16 @@ export default function AutocompleteList({
 									</div>
 								</div>
 							</div>
-							<Icon name="ArrowRight" className="text-grey-50" />
+							<Icon
+								name="ArrowRight"
+								size="xs"
+								className="text-grey-50"
+								onClick={(e) => {
+									e.stopPropagation();
+									onSelect(item.address, item.name);
+									onGoNextStep?.();
+								}}
+							/>
 						</div>
 					);
 				})}

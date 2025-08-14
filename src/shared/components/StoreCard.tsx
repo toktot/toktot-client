@@ -2,6 +2,7 @@
 
 import StoreCategoryTag from '@/entities/storeCard/components/StoreCategoryTag';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 
@@ -20,8 +21,12 @@ interface StoreInfoCardProps {
 }
 
 export default function StoreInfoCard({ review }: StoreInfoCardProps) {
+	const router = useRouter();
 	return (
-		<div className="flex gap-3 p-3 b-border-1 bg-white  w-full">
+		<div
+			className="flex gap-3 p-3 b-border-1 bg-white  w-full"
+			onClick={() => router.push(`/storemenu/${review.id}`)}
+		>
 			<Image
 				src={review.storeImageUrl}
 				alt={`${review.storeName} 이미지`}
@@ -34,7 +39,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 					<span className="text-[16px] font-semibold">{review.storeName}</span>
 					{review.isKindStore && (
 						<StoreCategoryTag
-							className="text-sm text-green-700 bg-green-100"
+							className="text-[9px] text-green-700 bg-green-100"
 							type="착한가게"
 						/>
 					)}

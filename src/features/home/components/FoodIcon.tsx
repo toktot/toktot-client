@@ -27,8 +27,8 @@ const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 	};
 	return (
 		<div className="bg-[#F9FAFB] rounded-xl p-4">
-			<h2 className="text-base font-semibold text-gray-800 mb-4">향토음식</h2>
-			<div className="grid grid-cols-5 gap-x-2 gap-y-4">
+			<h2 className="text-base font-semibold text-gray-800 mb-2">향토음식</h2>
+			<div className="grid grid-cols-5 gap-x-1 gap-y-2">
 				{categories?.map((item, idx) => (
 					<button
 						key={idx}

@@ -8,7 +8,7 @@ export default function AlarmBox({ alarmText }: AlarmBoxProps) {
 	if (!alarmText.trim()) return null;
 
 	return (
-		<div className="mx-4 mt-3">
+		<div className="mx-4 mt-3 bg-white">
 			<div className="inline-flex items-center justify-between gap-3 w-full px-4 py-2 rounded-xl bg-primary-5 text-primary-60 text-sm shadow-sm">
 				<div className="flex items-center gap-2">
 					<span className="text-xs text-gray-400">1분 전</span>

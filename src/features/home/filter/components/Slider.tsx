@@ -27,6 +27,7 @@ export default function PriceRangeSlider({
 		type: 'min' | 'max',
 	) => {
 		e.preventDefault();
+		e.stopPropagation();
 		const moveListener = (moveEvent: MouseEvent | TouchEvent) => {
 			if (!trackRef.current) return;
 
@@ -65,24 +66,28 @@ export default function PriceRangeSlider({
 
 	return (
 		<div className="w-full mt-8">
-			<div className="relative h-2 bg-gray-200 rounded-full" ref={trackRef}>
+			<div
+				className="relative h-2 bg-grey-20 rounded-full touch-none"
+				ref={trackRef}
+			>
 				<div
-					className="absolute h-2 bg-red-200 rounded-full"
+					className="absolute h-2 rounded-full bg-gradient-to-r from-[#EDD067] via-[#EF9874] to-[#F17A7A] p-[3px]"
 					style={{
 						left: `${minPercent}%`,
 						width: `${maxPercent - minPercent}%`,
 					}}
 				/>
 				{/* Min handle */}
+
 				<div
-					className="absolute w-6 h-6 bg-white border border-yellow-200 rounded-full cursor-pointer -top-1"
+					className="absolute w-6 h-6 bg-white border border-yellow-200 rounded-full cursor-pointer -top-2"
 					style={{ left: `${minPercent}%` }}
 					onMouseDown={(e) => handleDrag(e, 'min')}
 					onTouchStart={(e) => handleDrag(e, 'min')}
 				/>
 				{/* Max handle */}
 				<div
-					className="absolute w-6 h-6 bg-white border border-red-300 rounded-full cursor-pointer -top-1"
+					className="absolute w-6 h-6 bg-white border border-red-300 rounded-full cursor-pointer -top-2"
 					style={{ left: `${maxPercent}%` }}
 					onMouseDown={(e) => handleDrag(e, 'max')}
 					onTouchStart={(e) => handleDrag(e, 'max')}
@@ -96,15 +101,15 @@ export default function PriceRangeSlider({
 
 			<div className="flex justify-between mt-2 text-sm text-grey-90 font-semibold">
 				<div className="flex flex-col items-center">
-					<span>저렴한</span>
+					<span className="text-[11px] text-grey-85">최저가</span>
 					<span className="text-xs text-grey-60">{min.toLocaleString()}원</span>
 				</div>
 				<div className="flex flex-col items-center">
-					<span>평균</span>
+					<span className="text-[11px] text-grey-85">평균</span>
 					<span className="text-xs text-grey-60">{avg.toLocaleString()}원</span>
 				</div>
 				<div className="flex flex-col items-center">
-					<span>값이 있는</span>
+					<span className="text-[11px] text-grey-85">값이 있는</span>
 					<span className="text-xs text-grey-60">{max.toLocaleString()}원</span>
 				</div>
 			</div>

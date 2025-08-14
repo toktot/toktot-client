@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
+import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
@@ -24,7 +25,7 @@ export default function HomeContainer() {
 	const [query, setQuery] = useState('');
 	const [tab, setTab] = useState<number>(0);
 	const router = useRouter();
-
+	const [showToast, setShowToast] = useState(false);
 	const handleSearchClick = () => {
 		console.log('검색어', query);
 	};
@@ -35,6 +36,12 @@ export default function HomeContainer() {
 			),
 		[query],
 	);
+	const handleLocationSaved = () => {
+		setShowToast(true);
+	};
+	useEffect(() => {
+		router.prefetch('/searchBar');
+	}, [router]);
 
 	const filteredStores = useMemo(
 		() =>
@@ -43,28 +50,37 @@ export default function HomeContainer() {
 			),
 		[query],
 	);
+	const handleToastClose = () => {
+		setShowToast(false);
+	};
 	const [alarm] = useState(mockAlarmText[0]);
 	return (
-		<main className="min-h-screen bg-white">
-			<HeaderBox />
-			<section className="mt-2 flex items-center gap-2">
-				<Icon name={'ArrowLeft'} className="w-5 h-5 text-gray-600" />
-				<div className="p-[1/2px] rounded-[18px] border border-[linear-gradient(30deg,#171D29,#3AC8FF,#2295C0)]">
-					<div className="rounded-[10px] bg-gradient-to-r from-[#E9FCFF] to-[#F6FCFF]"></div>
-					<SearchBox
-						query={query}
-						onChange={setQuery}
-						onFocus={() => router.push('/searchBar')}
-						onSearchClick={handleSearchClick}
-						className="text-primary-40 placeholder-primary-40 bg-transparent mr-1"
-						placeholder="제주도 여행가서 먹고 싶은 음식은?"
-					/>
-				</div>
-			</section>
-			<AlarmBox alarmText={alarm.text} />
-			<section className="mt-6 px-4">
-				<CategoryGrid />
-			</section>
+		<main className="min-h-screen">
+			<div className="bg-grey-10">
+				<HeaderBox onLocationSaved={handleLocationSaved} />
+				<section className="relative mt-2 justify-center flex items-center gap-2">
+					<div className="rounded-[18px] bg-gradient-to-r from-[#171D29] via-[#3AC8FF] to-[#2295C0] p-[2px]">
+						<div className="w-[351px] h-[48px] rounded-[16px] bg-gradient-to-r from-[#F6FCFF] to-[#F9FCFF] flex items-center">
+							<SearchBox
+								query={query}
+								onChange={setQuery}
+								onClick={() => router.push('/searchBar')}
+								onSearchClick={handleSearchClick}
+								leftIcon={
+									<Icon name="Search" size="s" className="text-primary-40" />
+								}
+								className="w-[351px] h-[48px] flex items-center"
+								placeholder="제주도 여행가서 먹고 싶은 음식은?"
+								placeholderColor="placeholder-primary-60"
+							/>
+						</div>
+					</div>
+				</section>
+				<AlarmBox alarmText={alarm.text} />
+				<section className="mt-6 px-4">
+					<CategoryGrid />
+				</section>
+			</div>
 			<section className="mt-8 px-4">
 				<div className="flex items-center justify-between mb-3">
 					<h2 className="text-base font-semibold text-grey-90 text-[18px]">
@@ -112,18 +128,22 @@ export default function HomeContainer() {
 						)}
 					</div>
 				)}
+				{showToast && (
+					<Toast
+						message="위치가 설정되었어요."
+						duration={2000}
+						onClose={handleToastClose}
+					/>
+				)}
 			</section>
+
 			<section>
 				<BottomNav>
-					<BottomNavItem href="/home" iconName="Home" label="홈" />
-					<BottomNavItem href="/review" iconName="Review" label="리뷰" />
-					<CenterButton
-						href="/write"
-						iconName="ReviewPlus"
-						aria-label="작성하기"
-					/>
-					<BottomNavItem href="/bookmark" iconName="Bookmark" label="찜" />
-					<BottomNavItem href="/mypage" iconName="My" label="마이페이지" />
+					<BottomNavItem href="/home" iconName="Home" label="home" />
+					<BottomNavItem href="/review" iconName="Review" label="review" />
+					<CenterButton href="/write" iconName="Plus" aria-label="plus" />
+					<BottomNavItem href="/bookmark" iconName="Route" label="route" />
+					<BottomNavItem href="/mypage" iconName="My" label="my" />
 				</BottomNav>
 			</section>
 		</main>

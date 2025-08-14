@@ -3,6 +3,8 @@
 import { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
 
+import { TSizeName } from '../icons/types';
+
 interface StarRatingProps {
 	/** 현재 별점 값 (0에서 iconCount까지) */
 	value: number;
@@ -17,6 +19,7 @@ interface StarRatingProps {
 	/** 비워진 아이콘의 색상 */
 	emptyColor?: string;
 	className?: string;
+	iconSize?: TSizeName | undefined;
 }
 
 /**
@@ -37,6 +40,7 @@ const StarRating = ({
 	fillColor = '#3AC8FF',
 	emptyColor = '#F6F9FB',
 	className = '',
+	iconSize = 'xl',
 }: StarRatingProps) => {
 	const handleClick = (index: number) => {
 		const currentValue = index + 1;
@@ -60,7 +64,12 @@ const StarRating = ({
 							onClick={() => handleClick(index)}
 							style={{ position: 'relative', cursor: 'pointer' }}
 						>
-							<Icon name={icon} fill={emptyColor} size="xl" color={'#D4DEE5'} />
+							<Icon
+								name={icon}
+								fill={emptyColor}
+								size={iconSize}
+								color={'#D4DEE5'}
+							/>
 							<div
 								style={{
 									position: 'absolute',
@@ -73,7 +82,7 @@ const StarRating = ({
 								<Icon
 									name={icon}
 									fill={fillColor}
-									size="xl"
+									size={iconSize}
 									color={'#D4DEE5'}
 								/>
 							</div>
@@ -94,7 +103,7 @@ const StarRating = ({
 							name={icon}
 							color={isFilled ? fillColor : '#D4DEE5'}
 							fill={isFilled ? fillColor : emptyColor}
-							size="xl"
+							size={iconSize}
 						/>
 					</div>
 				);

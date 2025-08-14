@@ -17,6 +17,7 @@ import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
+import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
 
 import PriceSummary from './PriceSummary';
@@ -31,6 +32,9 @@ export default function SearchResultSection() {
 	const [filter, setFilter] = useState<number | null>(null);
 	const [filterSummary, setFilterSummary] = useState('');
 	console.log(filterSummary);
+	const handleReset = () => {
+		setQuery('');
+	};
 
 	useEffect(() => {
 		setQuery(q);
@@ -41,7 +45,14 @@ export default function SearchResultSection() {
 	const priceSummary = useMemo(() => {
 		return priceSummaryMap[query as keyof typeof priceSummaryMap];
 	}, [query]);
+	const [showToast, setShowToast] = useState(false);
+	const handleLocationSaved = () => {
+		setShowToast(true);
+	};
 
+	const handleToastClose = () => {
+		setShowToast(false);
+	};
 	// 리뷰 필터링
 	const router = useRouter();
 	const rating = Number(searchParams.get('rating') ?? 0);
@@ -167,18 +178,27 @@ export default function SearchResultSection() {
 
 	return (
 		<div className="px-4 py-6 bg-white">
-			<HeaderBox />
+			<HeaderBox onLocationSaved={handleLocationSaved} />
 			<section className="mt-2 flex items-center gap-2">
-				<Icon name={'ArrowLeft'} className="w-5 h-5 text-gray-600" />
+				<Icon
+					name={'ArrowLeft'}
+					className="w-5 h-5 text-gray-600"
+					onClick={() => router.back()}
+				/>
 				{/* 검색창 */}
+
 				<SearchBox
 					query={query}
 					onChange={setQuery}
 					onSearchClick={() => console.log('search', query)}
+					leftIcon={<Icon name="Search" size="s" className="text-grey-50" />}
+					rightIcon={<Icon name="Cancel" size="s" className="text-grey-50" />}
+					className="max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+					rightIconOnClick={handleReset}
 				/>
 			</section>
 			{/* 탭 (리뷰 / 가게명) */}
-			<div className="flex gap-6 mt-6 border-b border-gray-100">
+			<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40">
 				<button
 					className={`pb-2 text-base font-semibold ${
 						tab === 'review'
@@ -221,7 +241,7 @@ export default function SearchResultSection() {
 					)}
 
 					{/* 리뷰 리스트 */}
-					<div className="mt-4 flex flex-wrap justify-between gap-y-4">
+					<div className="mt-4 flex flex-wrap -mx-4 justify-between">
 						{filteredReviews.map((review) => (
 							<ReviewStoreCard key={review.id} review={review} />
 						))}
@@ -239,23 +259,36 @@ export default function SearchResultSection() {
 							onSummaryChange={setFilterSummary}
 						/>
 					</div>
-					<div className="mt-4 flex flex-wrap justify-between gap-y-4"></div>
-					{filteredStores.map((store) => (
-						<StoreInfoCard key={store.id} review={store} />
-					))}
+					<div className="mt-4 w-full flex flex-col">
+						{filteredStores.map((store, index) => (
+							<div
+								key={store.id}
+								className={`w-full ${
+									index < filteredStores.length - 1
+										? 'border-b border-grey-10' // 얇은 회색 선
+										: ''
+								}`}
+							>
+								<StoreInfoCard review={store} />
+							</div>
+						))}
+					</div>
+					{showToast && (
+						<Toast
+							message="위치가 설정되었어요."
+							duration={2000}
+							onClose={handleToastClose}
+						/>
+					)}
 				</>
 			)}
 			<section>
 				<BottomNav>
-					<BottomNavItem href="/home" iconName="Home" label="홈" />
-					<BottomNavItem href="/review" iconName="Review" label="리뷰" />
-					<CenterButton
-						href="/write"
-						iconName="ReviewPlus"
-						aria-label="작성하기"
-					/>
-					<BottomNavItem href="/bookmark" iconName="Bookmark" label="찜" />
-					<BottomNavItem href="/mypage" iconName="My" label="마이페이지" />
+					<BottomNavItem href="/home" iconName="Home" label="home" />
+					<BottomNavItem href="/review" iconName="Review" label="review" />
+					<CenterButton href="/write" iconName="Plus" aria-label="plus" />
+					<BottomNavItem href="/bookmark" iconName="Route" label="route" />
+					<BottomNavItem href="/mypage" iconName="My" label="my" />
 				</BottomNav>
 			</section>
 		</div>

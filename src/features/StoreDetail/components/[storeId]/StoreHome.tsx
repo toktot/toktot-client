@@ -29,29 +29,34 @@ export default function StoreHome() {
 	)},${store.position?.lat},${store.position?.lng}`;
 
 	return (
-		<div className="bg-grey-10 flex justify-center pt-4 pb-8 px-4 max-w-[375px] mx-auto">
-			<div className="bg-white rounded-xl shadow mt-4 w-full max-w-md flex flex-col">
-				<div className="flex justify-start">
+		<div className="bg-grey-10 flex justify-center pt-4 pb-8 px-4 mx-auto">
+			<div className="bg-white rounded-3xl shadow mt-4 w-full max-w-md flex flex-col">
+				<div className="flex justify-start px-2">
 					<span className="text-[18px] font-semibold text-black mb-2 ml-2 mt-2">
 						오는 길
 					</span>
 				</div>
-				<div id="map" className="w-full h-48 rounded-md mb-4" />
-				<div className="flex items-center mb-2">
+				<div
+					id="map"
+					className="h-48 w-[311px] flex items-center rounded-2xl mb-4 ml-4"
+				/>
+				<div className="flex items-center mb-2 px-4">
 					<Icon name={'Location'} className="mr-2 w-5 h-5 text-grey-50" />
 					<span className="text-grey-80 text-base text-[12px]">
 						{store.location}
 					</span>
 					<CopyButton text={store.location} />
 				</div>
-				<Link
-					href={kakaoRouteUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="mb-4 gap-2 inline-flex justify-center items-center py-3 px-10 border border-grey-50 text-black text-base font-bold rounded-3xl"
-				>
-					길찾기
-				</Link>
+				<div className="ml-4">
+					<Link
+						href={kakaoRouteUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="mb-4 gap-2 inline-flex justify-center items-center py-3 w-[303px] border border-grey-50 text-black text-base font-bold rounded-3xl"
+					>
+						길찾기
+					</Link>
+				</div>
 			</div>
 		</div>
 	);

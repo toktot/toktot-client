@@ -64,12 +64,12 @@ export const RangeSelector = () => {
 			</div>
 
 			{/* 라벨 */}
-			<div className="mt-2 flex ml-1 justify-between text-[] text-gray-500">
+			<div className="mt-2 gap-5 ml-1 flex justify-center text-[11px] text-grey-70">
 				{RANGE_STEPS.map((step) => (
 					<span key={step}>{`${step}m`}</span>
 				))}
 			</div>
-			<div className="mt-4 text-xl text-grey-90 text-center">
+			<div className="mt-5 text-xl text-[#000000] text-[20px] font-semibold text-center">
 				{radius === 0 ? '전체 거리' : `${radius}m 이내`}
 			</div>
 		</div>

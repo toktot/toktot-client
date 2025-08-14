@@ -56,12 +56,16 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 			let active = false;
 			switch (item.value) {
 				case 0:
-					if (distance) label = `${distance}m 이내`;
-					active = true;
+					if (distance) {
+						label = `${distance}m 이내`;
+						active = true;
+					}
 					break;
 				case 1:
-					if (rating) label = `${rating}점 이상`;
-					active = true;
+					if (rating) {
+						label = `${rating}점 이상`;
+						active = true;
+					}
 					break;
 				case 2:
 					if (menu) label = `${menu} `;
@@ -158,10 +162,11 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 
 	return (
 		<div className="flex items-center gap-2">
-			<div className="w-10 h-7 rounded-full bg-gray-100 flex items-center justify-center">
+			<div className="min-w-[24px] h-[24px] rounded-full bg-grey-20 flex items-center justify-center">
 				<Icon
 					name={'Filter'}
-					className="text-grey-70 text-grey-20 w-4 h-4"
+					className="text-grey-70"
+					size="xs"
 					onClick={handleIconClick}
 				/>
 			</div>
@@ -169,13 +174,14 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 			<SingleCategorySelect
 				value={value}
 				onChange={handleFilterChange}
-				className="flex-wrap"
+				className="flex-nowrap overflow-x-auto scrollbar-hide"
 			>
 				{displayItems.map((item) => (
 					<SingleCategorySelect.Item
 						key={item.value}
 						value={item.value}
 						className={clsx(
+							'shrink-0 px-3 py-1 rounded-full',
 							item.active
 								? 'bg-grey-90 text-white'
 								: 'text-grey-60 text-grey-30',

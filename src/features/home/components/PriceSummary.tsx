@@ -26,14 +26,6 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 	minPrice,
 	maxPrice,
 }) => {
-	const percent = ((avgPrice - minPrice) / (maxPrice - minPrice)) * 100;
-	const gradientStyle = {
-		width: `${percent}%`,
-		height: '100%',
-		borderRadius: '9999px',
-		background:
-			'linear-gradient(to right, #EDD067, #F1AC7A, #F17A7A, #E7B897, #F4EE2c)',
-	};
 	const router = useRouter();
 	const handleClick = () => {
 		router.push(`/MenuPrice?q=${encodeURIComponent(MenuName)}`);
@@ -59,7 +51,14 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 
 			{/* Progress bar */}
 			<div className="relative mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
-				<div className="absolute top-0 left-0" style={gradientStyle} />
+				<div
+					className="absolute top-0 left-0 h-full rounded-full"
+					style={{
+						width: `100%`,
+						background:
+							'linear-gradient(to right, #EDD067, #F1AC7A, #F17A7A, #E7B897, #F4EE2c)',
+					}}
+				/>
 			</div>
 
 			<div className="mt-2 flex justify-between text-xs text-gray-400">

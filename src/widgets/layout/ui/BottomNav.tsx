@@ -13,14 +13,22 @@ interface ItemProps {
 	href: string;
 	iconName: IconName;
 	label: string;
+	foreActive?: boolean;
 }
 
-export const BottomNavItem = ({ href, iconName, label }: ItemProps) => {
+export const BottomNavItem = ({
+	href,
+	iconName,
+	label,
+	foreActive,
+}: ItemProps) => {
 	const pathname = usePathname();
 	// 현재 경로가 이 아이템의 href로 시작하는지 확인하여 활성화 상태를 결정합니다.
 	//  (예: 현재 경로가 /review/write일 때, href가 /review인 아이템도 active로 처리)
-	const isActive = pathname.startsWith(href);
-
+	const isActive =
+		foreActive ||
+		pathname.startsWith(href) ||
+		(href === '/home' && pathname.startsWith('/search'));
 	return (
 		<Link
 			href={href}
