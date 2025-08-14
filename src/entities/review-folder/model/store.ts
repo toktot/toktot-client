@@ -27,14 +27,6 @@ interface ReviewFolderState {
 	) => Promise<{ success: boolean; fullFolders?: string[] }>;
 }
 
-const initialDefaultFolder: ReviewFolder = {
-	id: '32432432' as ReviewFolderId,
-	name: '기본 폴더',
-	reviewCount: 0,
-	isDefault: true,
-	reviewIds: [],
-};
-
 const mapFolderClientToReviewFolder = (f: FolderClient): ReviewFolder => ({
 	id: f.id as ReviewFolderId,
 	name: f.name,
@@ -55,7 +47,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 	const api = createFolderApi(authKy);
 
 	return {
-		folders: [initialDefaultFolder],
+		folders: [],
 		isLoading: false,
 
 		fetchFolders: async () => {
@@ -63,7 +55,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 			try {
 				const serverFolders = await api.getFolders(); // FolderClient[]
 				const mapped = serverFolders.map(mapFolderClientToReviewFolder);
-				set({ folders: [initialDefaultFolder, ...mapped], isLoading: false });
+				set({ folders: mapped, isLoading: false });
 			} catch (err: unknown) {
 				console.error('폴더 목록 조회 실패:', err);
 				set({ isLoading: false });
@@ -123,7 +115,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 				});
 
 				const mapped = updatedServerFolders.map(mapFolderClientToReviewFolder);
-				set({ folders: [initialDefaultFolder, ...mapped], isLoading: false });
+				set({ folders: mapped, isLoading: false });
 
 				return { success: true };
 			} catch (err: unknown) {

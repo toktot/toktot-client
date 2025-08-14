@@ -25,7 +25,7 @@ import { ReviewTooltipSheet } from './ReviewTooltipSheet';
 import ReviewUser from './ReviewUser';
 
 export const mockReview1: ReviewView = {
-	id: '456' as ReviewId,
+	id: '1' as ReviewId,
 	author: {
 		id: 1 as UserId,
 		username: 'food91',
@@ -91,7 +91,7 @@ export const mockReview1: ReviewView = {
 	],
 };
 export const mockReview2: ReviewView = {
-	id: 'review-002' as ReviewId,
+	id: '2' as ReviewId,
 	author: {
 		id: 2 as UserId,
 		username: 'cleane22',
