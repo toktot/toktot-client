@@ -5,6 +5,7 @@ export function validateFiles(
 	validFiles: File[];
 	errorMessage?: string;
 } {
+	// Check file count
 	if (files.length > maxCount) {
 		return {
 			validFiles: files.slice(0, maxCount),

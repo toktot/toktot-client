@@ -1,3 +1,7 @@
+import { ChangeEvent } from 'react';
+
+import { MAX_IMAGES_SIZE } from '@/entities/review';
+
 import { validateFiles } from '@/shared/lib/validateFiles';
 import Icon from '@/shared/ui/Icon';
 
@@ -5,10 +9,10 @@ export const ReviewImageUploader = ({
 	onUpload,
 	maxCount,
 }: {
-	onUpload: (files: FileList) => void;
+	onUpload: (files: File[]) => void;
 	maxCount: number;
 }) => {
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
 
@@ -19,9 +23,9 @@ export const ReviewImageUploader = ({
 			alert(errorMessage);
 		}
 
-		const dataTransfer = new DataTransfer();
-		validFiles.forEach((file) => dataTransfer.items.add(file));
-		onUpload(dataTransfer.files);
+		onUpload(validFiles);
+
+		e.target.value = '';
 	};
 
 	return (
@@ -32,7 +36,8 @@ export const ReviewImageUploader = ({
 					className="hidden"
 					onChange={handleChange}
 					multiple
-					accept="image/*"
+					accept=".jpeg, .jpg, .png"
+					max={MAX_IMAGES_SIZE}
 				/>
 				<Icon className="text-grey-50" name={'Plus'} size="s" />
 			</label>

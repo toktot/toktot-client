@@ -37,7 +37,7 @@ export const useReviewImageManager = (restaurantId: number) => {
 		setTotalCount(total_image_count);
 	};
 
-	// 페이지 진입 시, 기존 이미지 세션이 있는지 확인
+	// 기존 이미지 세션이 있는지 확인
 	const initializeImages = useCallback(async () => {
 		if (!restaurantId) return;
 		setIsLoading(true);
@@ -62,7 +62,6 @@ export const useReviewImageManager = (restaurantId: number) => {
 	const uploadImages = async (files: File[]) => {
 		if (!restaurantId) return;
 
-		// Validate files (count and size)
 		const { validFiles, errorMessage } = validateFiles(
 			files,
 			remainingSlots ?? MAX_IMAGE_COUNT,
