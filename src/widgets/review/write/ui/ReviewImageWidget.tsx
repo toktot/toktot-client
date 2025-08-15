@@ -1,13 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
 	FoodTooltip,
+	type InteractiveReviewImage,
 	MAX_IMAGE_COUNT,
+	MAX_TOOLTIP_COUNT,
 	useReviewImageManager,
 	useTooltipManager,
 } from '@/entities/review';
+import { ReviewImageItem } from '@/entities/review';
 
 import {
 	CreateReviewSheet,
@@ -15,7 +18,6 @@ import {
 } from '@/widgets/review/write/ui/CreateReviewSheet';
 
 import { ReviewImageBox } from '@/features/review/write/ui/ReviewImageBox';
-import { ReviewImageList } from '@/features/review/write/ui/ReviewImageList';
 import { ReviewImageUploader } from '@/features/review/write/ui/ReviewImageUploader';
 import { ReviewImageWithTooltip } from '@/features/review/write/ui/ReviewImageWithTooltip';
 
@@ -28,20 +30,15 @@ import { ReviewImageId, TooltipId } from '@/shared/model/types';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
+// TODO: props로 받아오고 페이지에서는 path로 storeId 받아오기
 export const ReviewImageWidget = () => {
 	const {
 		images,
-		addImages,
-		removeImage,
-		addTooltipToImage,
-		removeTooltipFromImage,
-		canAddMore,
-	} = useReviewImageManager();
-	console.log('🚀 ~ ReviewImageWidget ~ images:', images);
-	const [selectedImageId, setSelectedImageId] = useState<ReviewImageId | null>(
-		null,
-	);
-	const selectedImage = images.find((img) => img.id === selectedImageId);
+		uploadImages,
+		deleteImage,
+		initializeImages,
+		remainingSlots,
+	} = useReviewImageManager(1);
 	const {
 		tooltips,
 		addTooltip,
@@ -49,29 +46,66 @@ export const ReviewImageWidget = () => {
 		updateTooltipDetails,
 		changeTooltipCategory,
 	} = useTooltipManager();
-	const [showGuide, setShowGuide] = useState(true);
 
-	const [isSheetOpen, setIsSheetOpen] = useState(false);
+	const [tooltipsByImageId, setTooltipsByImageId] = useState<
+		Record<ReviewImageId, TooltipId[]>
+	>({});
+
+	const [selectedImageId, setSelectedImageId] = useState<ReviewImageId | null>(
+		null,
+	);
 	const [activeTooltipId, setActiveTooltipId] = useState<TooltipId | null>(
 		null,
 	);
-	const [isCompleted, setIsCompleted] = useState(false);
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
+	const [showGuide, setShowGuide] = useState(true);
+
+	const [isEditing, setIsEditing] = useState(false);
 
 	useEffect(() => {
-		// 조건 1: 명시적으로 선택된 이미지가 없거나 (초기 상태)
-		// 조건 2: 이전에 선택했던 이미지가 삭제되어 더 이상 목록에 없는 경우
-		if (!selectedImageId || !images.some((img) => img.id === selectedImageId)) {
-			if (images.length > 0) {
-				setSelectedImageId(images[0].id);
-			} else {
-				setSelectedImageId(null);
-			}
-		}
-	}, [images, selectedImageId]);
+		initializeImages();
+	}, [initializeImages]);
+
+	const interactiveImages: InteractiveReviewImage[] = useMemo(() => {
+		return images.map((img) => ({
+			...img,
+			tooltipIds: tooltipsByImageId[img.id] || [],
+		}));
+	}, [images, tooltipsByImageId]);
+
+	const selectedImage = interactiveImages.find(
+		(img) => img.id === selectedImageId,
+	);
+
+	const handleDeleteImage = (imageId: ReviewImageId) => {
+		const tooltipIdsToDelete = tooltipsByImageId[imageId] || [];
+		tooltipIdsToDelete.forEach((tooltipId) => removeTooltip(tooltipId));
+
+		setTooltipsByImageId((prev) => {
+			const newRelations = { ...prev };
+			delete newRelations[imageId];
+			return newRelations;
+		});
+
+		deleteImage(imageId);
+	};
 
 	const handleRemoveTooltip = (tooltipId: TooltipId) => {
-		removeTooltipFromImage(tooltipId);
 		removeTooltip(tooltipId);
+		setTooltipsByImageId((prev) => {
+			return Object.keys(prev).reduce(
+				(acc, imageId) => {
+					const filteredIds = prev[imageId as ReviewImageId].filter(
+						(id: TooltipId) => id !== tooltipId,
+					);
+					if (filteredIds.length > 0) {
+						acc[imageId as ReviewImageId] = filteredIds;
+					}
+					return acc;
+				},
+				{} as Record<ReviewImageId, TooltipId[]>,
+			);
+		});
 	};
 
 	const handleImageClick = (coord: { x: number; y: number }) => {
@@ -80,6 +114,12 @@ export const ReviewImageWidget = () => {
 			return;
 		}
 		if (!selectedImage) return;
+		if (selectedImage.tooltipIds.length >= MAX_TOOLTIP_COUNT) {
+			alert(
+				`툴팁은 이미지당 최대 ${MAX_TOOLTIP_COUNT}개까지 추가할 수 있습니다.`,
+			);
+			return;
+		}
 
 		const placeholderTooltip: Omit<FoodTooltip, 'id'> = {
 			category: 'food',
@@ -92,32 +132,31 @@ export const ReviewImageWidget = () => {
 		};
 
 		const newTooltip = addTooltip(placeholderTooltip);
-		addTooltipToImage(selectedImage.id, newTooltip.id);
+		setTooltipsByImageId((prev) => ({
+			...prev,
+			[selectedImage.id]: [...(prev[selectedImage.id] || []), newTooltip.id],
+		}));
+
 		setActiveTooltipId(newTooltip.id);
 		setIsSheetOpen(true);
 	};
 
 	const handleTooltipFormComplete = (formData: FinalReviewData) => {
-		if (!activeTooltipId) {
-			console.error('업데이트할 활성 툴팁이 없습니다.');
-			return;
-		}
+		if (!activeTooltipId) return;
 		updateTooltipDetails(activeTooltipId, formData);
-
 		setActiveTooltipId(null);
 		setIsSheetOpen(false);
 	};
 
 	const handleSheetOpenChange = (isOpen: boolean) => {
 		if (!isOpen && activeTooltipId) {
-			removeTooltip(activeTooltipId);
-			removeTooltipFromImage(activeTooltipId);
+			handleRemoveTooltip(activeTooltipId);
 			setActiveTooltipId(null);
 		}
 		setIsSheetOpen(isOpen);
 	};
 
-	if (images.length > 0 && selectedImage && !isCompleted) {
+	if (isEditing) {
 		return (
 			<div className="fixed inset-0 z-50 bg-grey-90">
 				{showGuide && (
@@ -125,23 +164,34 @@ export const ReviewImageWidget = () => {
 				)}
 
 				<div className="absolute inset-x-0 top-0 bottom-[100px] z-20 rounded-3xl overflow-hidden">
-					<ReviewImageWithTooltip
-						image={selectedImage}
-						onRemoveTooltip={handleRemoveTooltip}
-						onImageClick={handleImageClick}
-						tooltips={tooltips}
-					/>
+					{selectedImage && (
+						<ReviewImageWithTooltip
+							image={selectedImage}
+							tooltips={tooltips}
+							onImageClick={handleImageClick}
+							onRemoveTooltip={handleRemoveTooltip}
+						/>
+					)}
 				</div>
+
 				<div className="absolute bottom-0 left-0 right-0 z-10 h-[100px] flex items-center px-4">
 					<div className="h-9 flex justify-between w-full">
-						<ReviewImageList
-							images={images}
-							selectedImageId={selectedImageId}
-							onSelectImage={(img) => setSelectedImageId(img.id)}
-						/>
+						<div className="flex-1 overflow-x-auto">
+							<div className="flex h-full items-center space-x-2">
+								{images.map((image) => (
+									<div key={image.id} className="relative flex-shrink-0">
+										<ReviewImageItem
+											image={image}
+											isSelected={image.id === selectedImageId}
+											onSelect={() => setSelectedImageId(image.id)}
+										/>
+									</div>
+								))}
+							</div>
+						</div>
 						<button
-							onClick={() => setIsCompleted(true)}
-							className="flex items-center justify-center rounded-2xl bg-primary-40 w-28  h-full"
+							onClick={() => setIsEditing(false)}
+							className="flex items-center justify-center rounded-2xl bg-primary-40 w-28 h-full ml-4 flex-shrink-0"
 						>
 							완료
 						</button>
@@ -168,28 +218,31 @@ export const ReviewImageWidget = () => {
 	}
 
 	return (
-		<section className="w-full  space-y-3">
+		<section className="w-full space-y-3">
 			<h3 className="text-base font-semibold">사진을 등록해주세요</h3>
-			<div className="flex items-center h-[100px] gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-				{canAddMore && (
-					<div className="h-full flex items-center justify-center">
-						<ReviewImageUploader
-							onUpload={addImages}
-							maxCount={MAX_IMAGE_COUNT}
-						/>
-					</div>
-				)}
-				{images.map((image) => (
-					<ReviewImageBox
-						key={image.id}
-						image={image}
-						onClick={() => {
-							setIsCompleted(false);
-							setSelectedImageId(image.id);
-						}}
-						onDelete={() => removeImage(image.id)}
+			<div className="flex items-center h-[100px] gap-2">
+				<div className="h-full flex items-center justify-center">
+					<ReviewImageUploader
+						onUpload={uploadImages}
+						maxCount={remainingSlots ?? MAX_IMAGE_COUNT - images.length}
 					/>
-				))}
+				</div>
+				<div className="flex h-full gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+					{images.map((image) => (
+						<ReviewImageBox
+							key={image.id}
+							image={{
+								...image,
+								tooltipIds: tooltipsByImageId[image.id] || [],
+							}}
+							onClick={() => {
+								setSelectedImageId(image.id);
+								setIsEditing(true);
+							}}
+							onDelete={() => handleDeleteImage(image.id)}
+						/>
+					))}
+				</div>
 			</div>
 		</section>
 	);

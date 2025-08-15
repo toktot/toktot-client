@@ -1,75 +1,129 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { ReviewImageId, TooltipId } from '@/shared/model/types';
+import { createWriteReviewApi } from '@/features/review/write/api/api';
 
-import { MAX_TOOLTIP_COUNT } from '../model/constants';
-import { ReviewImage } from '../model/image';
+import { createAuthApi } from '@/shared/api';
+import { validateFiles } from '@/shared/lib/validateFiles';
+import { ReviewImageId } from '@/shared/model/types';
+import { getDecryptedToken } from '@/shared/utils/storage';
 
-const MAX_IMAGES = 5;
+import { mapServerImagesToUploadReviewImages } from '../api/mappers';
+import { MAX_IMAGE_COUNT } from '../model/constants';
+import { UploadReviewImage } from '../model/image';
 
-export const useReviewImageManager = () => {
-	const [images, setImages] = useState<ReviewImage[]>([]);
-	const idPrefix = useId();
+export const useReviewImageManager = (restaurantId: number) => {
+	const [images, setImages] = useState<UploadReviewImage[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [remainingSlots, setRemainingSlots] = useState<number | null>(null);
+	console.log('🚀 ~ useReviewImageManager ~ remainingSlots:', remainingSlots);
+	const [totalCount, setTotalCount] = useState<number | null>(null);
 
-	const addImages = (files: FileList) => {
-		const currentImageCount = images.length;
-		const availableSlots = MAX_IMAGES - currentImageCount;
+	const api = useMemo(() => {
+		const getToken = () => getDecryptedToken() ?? undefined;
+		const authKy = createAuthApi({ getToken });
+		return createWriteReviewApi(authKy);
+	}, []);
 
-		if (availableSlots <= 0) {
-			alert(`이미지는 최대 ${MAX_IMAGES}개까지 추가할 수 있습니다.`);
+	const updateStateFromResponse = ({
+		remaining_slots,
+		total_image_count,
+	}: {
+		remaining_slots: number;
+		total_image_count: number;
+	}) => {
+		setRemainingSlots(remaining_slots);
+		setTotalCount(total_image_count);
+	};
+
+	// 페이지 진입 시, 기존 이미지 세션이 있는지 확인
+	const initializeImages = useCallback(async () => {
+		if (!restaurantId) return;
+		setIsLoading(true);
+		try {
+			const sessionData = await api.getImageSession(restaurantId);
+
+			if (sessionData.has_session) {
+				const clientImages = mapServerImagesToUploadReviewImages(
+					sessionData.images,
+				);
+
+				setImages(clientImages);
+			}
+		} catch (error) {
+			console.error('이미지 세션 조회 실패:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [restaurantId, api]);
+
+	// 이미지 업로드
+	const uploadImages = async (files: File[]) => {
+		if (!restaurantId) return;
+
+		// Validate files (count and size)
+		const { validFiles, errorMessage } = validateFiles(
+			files,
+			remainingSlots ?? MAX_IMAGE_COUNT,
+		);
+
+		if (errorMessage) {
+			alert(errorMessage);
+		}
+
+		if (validFiles.length === 0) {
 			return;
 		}
 
-		const filesToAdd = Array.from(files).slice(0, availableSlots);
+		setIsLoading(true);
+		const formData = new FormData();
+		validFiles.forEach((file) => formData.append('files', file));
+		formData.append('restaurant_id', String(restaurantId));
 
-		const newImages: ReviewImage[] = filesToAdd.map((file, index) => {
-			const uniqueId = `${idPrefix}-${file.name}-${Date.now()}-${index}`;
+		try {
+			const response = await api.uploadImages(formData);
+			console.log('🚀 ~ uploadImages ~ response:', response);
+			const { total_image_count, remaining_slots } = response;
+			updateStateFromResponse({ total_image_count, remaining_slots });
 
-			return {
-				id: uniqueId as ReviewImageId,
-				file,
-				url: URL.createObjectURL(file),
-				tooltipIds: [],
-			};
-		});
+			const clientImages = mapServerImagesToUploadReviewImages(
+				response.all_images,
+			);
 
-		setImages((prev) => [...prev, ...newImages]);
+			setImages(clientImages);
+		} catch (error) {
+			console.error('이미지 업로드 실패:', error);
+			alert(error instanceof Error ? error.message : '알 수 없는 오류');
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	const removeImage = (id: ReviewImageId) => {
-		setImages((prev) => prev.filter((img) => img.id !== id));
-	};
+	// 이미지 삭제
+	const deleteImage = async (imageId: ReviewImageId) => {
+		if (!restaurantId) return;
+		setIsLoading(true);
+		try {
+			const response = await api.deleteImage(imageId, restaurantId);
+			const clientImages = mapServerImagesToUploadReviewImages(response.images);
 
-	const addTooltipToImage = (imageId: ReviewImageId, tooltipId: TooltipId) => {
-		setImages((prev) =>
-			prev.map((img) => {
-				if (img.id !== imageId) return img;
-				if (img.tooltipIds.length >= MAX_TOOLTIP_COUNT) {
-					alert('툴팁은 이미지당 최대 5개까지 등록할 수 있습니다.');
-					return img;
-				}
-				return { ...img, tooltipIds: [...img.tooltipIds, tooltipId] };
-			}),
-		);
-	};
-
-	const removeTooltipFromImage = (tooltipId: TooltipId) => {
-		setImages((prev) =>
-			prev.map((img) => ({
-				...img,
-				tooltipIds: img.tooltipIds.filter((id) => id !== tooltipId),
-			})),
-		);
+			setImages(clientImages);
+		} catch (error) {
+			console.error('이미지 삭제 실패:', error);
+			alert(error instanceof Error ? error.message : '알 수 없는 오류');
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return {
 		images,
-		addImages,
-		removeImage,
-		addTooltipToImage,
-		removeTooltipFromImage,
-		canAddMore: images.length < MAX_IMAGES,
+		isLoading,
+		initializeImages,
+		uploadImages,
+		deleteImage,
+		remainingSlots,
+		totalCount,
 	};
 };
