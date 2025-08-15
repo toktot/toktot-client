@@ -3,7 +3,6 @@ import ky, { Options } from 'ky';
 const baseOptions: Options = {
 	prefixUrl: process.env.NEXT_PUBLIC_API_URL,
 	timeout: 10_000,
-	headers: { 'Content-Type': 'application/json' },
 };
 
 export const publicApi = ky.create({ ...baseOptions });
@@ -12,12 +11,6 @@ export const createAuthApi = (opts?: {
 	getToken?: () => string | undefined;
 	onAuthError?: (status: number) => void;
 }) => {
-	const baseOptions: Options = {
-		prefixUrl: process.env.NEXT_PUBLIC_API_URL,
-		timeout: 10_000,
-		headers: { 'Content-Type': 'application/json' },
-	};
-
 	const instance = ky.create({
 		...baseOptions,
 		hooks: {
