@@ -1,9 +1,7 @@
-import { ReviewedMenuItemData } from '@/entities/menu';
 import { StoreData } from '@/entities/store';
 
 import { AppShell, Header } from '@/widgets/layout';
 import {
-	RegisteredMenuListWidget,
 	ReviewImageWidget,
 	ReviewMoodFilterWidget,
 	VisitedStoreWidget,
@@ -11,24 +9,7 @@ import {
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
-import { MenuItemId, StoreId } from '@/shared/model/types';
-
-const ReviewMenuList: ReviewedMenuItemData[] = [
-	{
-		id: 'mock-menu-bulgogi' as MenuItemId,
-		name: '불고기',
-		price: 12000,
-		servings: 2,
-		rating: 3,
-	},
-	{
-		id: 'mock-menu-samgyeopsal' as MenuItemId,
-		name: '삼겹살',
-		price: 15000,
-		servings: 1,
-		rating: 4,
-	},
-];
+import { StoreId } from '@/shared/model/types';
 
 async function getVisitedStoreData(
 	storeId: StoreId,
@@ -63,7 +44,6 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
-				<RegisteredMenuListWidget menuList={ReviewMenuList} />
 				<ReviewMoodFilterWidget />
 			</div>
 		</AppShell>

@@ -1,14 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
-	FoodTooltip,
-	type InteractiveReviewImage,
 	MAX_IMAGE_COUNT,
 	MAX_TOOLTIP_COUNT,
 	useReviewImageManager,
-	useTooltipManager,
 } from '@/entities/review';
 import { ReviewImageItem } from '@/entities/review';
 
@@ -16,7 +13,9 @@ import {
 	CreateReviewSheet,
 	type FinalReviewData,
 } from '@/widgets/review/write/ui/CreateReviewSheet';
+import { RegisteredMenuListWidget } from '@/widgets/review/write/ui/RegisteredMenuListWidget';
 
+import { useReviewWriteStore } from '@/features/review/write/model/useReviewWriteStore';
 import { ReviewImageBox } from '@/features/review/write/ui/ReviewImageBox';
 import { ReviewImageUploader } from '@/features/review/write/ui/ReviewImageUploader';
 import { ReviewImageWithTooltip } from '@/features/review/write/ui/ReviewImageWithTooltip';
@@ -27,6 +26,7 @@ import {
 	BottomSheetOverlay,
 } from '@/shared/components/BottomSheet';
 import { ReviewImageId, TooltipId } from '@/shared/model/types';
+import Typography from '@/shared/ui/Typography';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
@@ -39,17 +39,16 @@ export const ReviewImageWidget = () => {
 		initializeImages,
 		remainingSlots,
 	} = useReviewImageManager(1);
-	const {
-		tooltips,
-		addTooltip,
-		removeTooltip,
-		updateTooltipDetails,
-		changeTooltipCategory,
-	} = useTooltipManager();
 
-	const [tooltipsByImageId, setTooltipsByImageId] = useState<
-		Record<ReviewImageId, TooltipId[]>
-	>({});
+	const {
+		buildInteractiveImages,
+		beginTooltipForImage,
+		commitTooltipDetails,
+		changeTooltipCategory,
+		removeTooltipDeep,
+		detachImage,
+		tooltips,
+	} = useReviewWriteStore();
 
 	const [selectedImageId, setSelectedImageId] = useState<ReviewImageId | null>(
 		null,
@@ -66,46 +65,18 @@ export const ReviewImageWidget = () => {
 		initializeImages();
 	}, [initializeImages]);
 
-	const interactiveImages: InteractiveReviewImage[] = useMemo(() => {
-		return images.map((img) => ({
-			...img,
-			tooltipIds: tooltipsByImageId[img.id] || [],
-		}));
-	}, [images, tooltipsByImageId]);
-
+	const interactiveImages = buildInteractiveImages(images);
 	const selectedImage = interactiveImages.find(
 		(img) => img.id === selectedImageId,
 	);
 
 	const handleDeleteImage = (imageId: ReviewImageId) => {
-		const tooltipIdsToDelete = tooltipsByImageId[imageId] || [];
-		tooltipIdsToDelete.forEach((tooltipId) => removeTooltip(tooltipId));
-
-		setTooltipsByImageId((prev) => {
-			const newRelations = { ...prev };
-			delete newRelations[imageId];
-			return newRelations;
-		});
-
+		detachImage(imageId);
 		deleteImage(imageId);
 	};
 
 	const handleRemoveTooltip = (tooltipId: TooltipId) => {
-		removeTooltip(tooltipId);
-		setTooltipsByImageId((prev) => {
-			return Object.keys(prev).reduce(
-				(acc, imageId) => {
-					const filteredIds = prev[imageId as ReviewImageId].filter(
-						(id: TooltipId) => id !== tooltipId,
-					);
-					if (filteredIds.length > 0) {
-						acc[imageId as ReviewImageId] = filteredIds;
-					}
-					return acc;
-				},
-				{} as Record<ReviewImageId, TooltipId[]>,
-			);
-		});
+		removeTooltipDeep(tooltipId);
 	};
 
 	const handleImageClick = (coord: { x: number; y: number }) => {
@@ -121,36 +92,29 @@ export const ReviewImageWidget = () => {
 			return;
 		}
 
-		const placeholderTooltip: Omit<FoodTooltip, 'id'> = {
-			category: 'food',
-			x: coord.x,
-			y: coord.y,
-			rating: 0,
-			menuName: '',
-			price: 0,
-			description: '',
-		};
-
-		const newTooltip = addTooltip(placeholderTooltip);
-		setTooltipsByImageId((prev) => ({
-			...prev,
-			[selectedImage.id]: [...(prev[selectedImage.id] || []), newTooltip.id],
-		}));
-
-		setActiveTooltipId(newTooltip.id);
-		setIsSheetOpen(true);
+		const result = beginTooltipForImage(
+			selectedImage.id,
+			coord,
+			MAX_TOOLTIP_COUNT,
+		);
+		if (result.ok) {
+			setActiveTooltipId(result.tooltipId);
+			setIsSheetOpen(true);
+		} else if (result.reason === 'LIMIT_REACHED') {
+			alert('툴팁 개수 제한에 도달했습니다.');
+		}
 	};
 
 	const handleTooltipFormComplete = (formData: FinalReviewData) => {
 		if (!activeTooltipId) return;
-		updateTooltipDetails(activeTooltipId, formData);
+		commitTooltipDetails(activeTooltipId, formData);
 		setActiveTooltipId(null);
 		setIsSheetOpen(false);
 	};
 
 	const handleSheetOpenChange = (isOpen: boolean) => {
 		if (!isOpen && activeTooltipId) {
-			handleRemoveTooltip(activeTooltipId);
+			removeTooltipDeep(activeTooltipId);
 			setActiveTooltipId(null);
 		}
 		setIsSheetOpen(isOpen);
@@ -219,7 +183,7 @@ export const ReviewImageWidget = () => {
 
 	return (
 		<section className="w-full space-y-3">
-			<h3 className="text-base font-semibold">사진을 등록해주세요</h3>
+			<Typography as="h3">사진을 등록해주세요</Typography>
 			<div className="flex items-center h-[100px] gap-2">
 				<div className="h-full flex items-center justify-center">
 					<ReviewImageUploader
@@ -228,13 +192,10 @@ export const ReviewImageWidget = () => {
 					/>
 				</div>
 				<div className="flex h-full gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-					{images.map((image) => (
+					{buildInteractiveImages(images).map((image) => (
 						<ReviewImageBox
 							key={image.id}
-							image={{
-								...image,
-								tooltipIds: tooltipsByImageId[image.id] || [],
-							}}
+							image={image}
 							onClick={() => {
 								setSelectedImageId(image.id);
 								setIsEditing(true);
@@ -244,6 +205,7 @@ export const ReviewImageWidget = () => {
 					))}
 				</div>
 			</div>
+			<RegisteredMenuListWidget images={images} />
 		</section>
 	);
 };

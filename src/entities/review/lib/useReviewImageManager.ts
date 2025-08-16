@@ -17,7 +17,6 @@ export const useReviewImageManager = (restaurantId: number) => {
 	const [images, setImages] = useState<UploadReviewImage[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [remainingSlots, setRemainingSlots] = useState<number | null>(null);
-	console.log('🚀 ~ useReviewImageManager ~ remainingSlots:', remainingSlots);
 	const [totalCount, setTotalCount] = useState<number | null>(null);
 
 	const api = useMemo(() => {
