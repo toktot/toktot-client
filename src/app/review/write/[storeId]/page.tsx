@@ -1,11 +1,10 @@
+import { KEYWORDS_BY_CATEGORY } from '@/entities/keyword/config/data';
 import { StoreData } from '@/entities/store';
 
 import { AppShell, Header } from '@/widgets/layout';
-import {
-	ReviewImageWidget,
-	ReviewMoodFilterWidget,
-	VisitedStoreWidget,
-} from '@/widgets/review/write';
+import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
+import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelectionWidget';
+import { ReviewMoodFilterWidget } from '@/widgets/review/write/ui/ReviewMoodFilterWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
@@ -45,6 +44,36 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
 				<ReviewMoodFilterWidget />
+				<KeywordSelectionWidget
+					title="음식"
+					category="food"
+					keywords={KEYWORDS_BY_CATEGORY.food}
+				/>
+				<KeywordSelectionWidget
+					title="청결"
+					category="cleanliness"
+					keywords={KEYWORDS_BY_CATEGORY.cleanliness}
+				/>
+				<KeywordSelectionWidget
+					title="가격"
+					category="price"
+					keywords={KEYWORDS_BY_CATEGORY.price}
+				/>
+				<KeywordSelectionWidget
+					title="서비스"
+					category="service"
+					keywords={KEYWORDS_BY_CATEGORY.service}
+				/>
+				<KeywordSelectionWidget
+					title="분위기"
+					category="atmosphere"
+					keywords={KEYWORDS_BY_CATEGORY.atmosphere}
+				/>
+				<KeywordSelectionWidget
+					title="접근성"
+					category="accessibility"
+					keywords={KEYWORDS_BY_CATEGORY.accessibility}
+				/>
 			</div>
 		</AppShell>
 	);

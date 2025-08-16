@@ -210,15 +210,10 @@ export const useReviewWriteStore = create<
 			});
 		},
 
-		// 셀렉터
 		selectTooltipsForImage: (imageId) => {
 			const { tooltips, tooltipsByImageId } = get();
-			console.log(
-				'🚀 ~ tooltips, tooltipsByImageId:',
-				tooltips,
-				tooltipsByImageId,
-			);
 			const ids = tooltipsByImageId[imageId] || [];
+
 			return ids.map((id) => tooltips[id]).filter(Boolean);
 		},
 

@@ -6,6 +6,7 @@ export type Brand<K, T> = K & { __brand: T };
 export type UserId = Brand<number, 'UserId'>;
 export type StoreId = Brand<string, 'StoreId'>;
 export type MoodKeywordId = Brand<number, 'MoodKeywordId'>;
+export type KeywordId = Brand<number, 'KeywordId'>;
 
 // --- Review Context ID Types ---
 export type ReviewId = Brand<string, 'ReviewId'>;
