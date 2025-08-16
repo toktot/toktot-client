@@ -57,6 +57,23 @@ export const useReviewImageManager = (restaurantId: number) => {
 		}
 	}, [restaurantId, api]);
 
+	// 모든 이미지 세션 초기화
+	const clearImages = async () => {
+		if (!restaurantId) return;
+		setIsLoading(true);
+		try {
+			await api.clearImageSession(restaurantId);
+			setImages([]);
+			setRemainingSlots(null);
+			setTotalCount(null);
+		} catch (error) {
+			console.error('이미지 세션 초기화 실패:', error);
+			alert(error instanceof Error ? error.message : '알 수 없는 오류');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	// 이미지 업로드
 	const uploadImages = async (files: File[]) => {
 		if (!restaurantId) return;
@@ -121,6 +138,7 @@ export const useReviewImageManager = (restaurantId: number) => {
 		initializeImages,
 		uploadImages,
 		deleteImage,
+		clearImages,
 		remainingSlots,
 		totalCount,
 	};

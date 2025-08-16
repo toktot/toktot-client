@@ -19,7 +19,7 @@ export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 	{ type: 'link', href: '/review/view', iconName: 'Review', label: 'review' },
 	{
 		type: 'action',
-		href: '/review/write/2324',
+		href: '/review/write',
 		iconName: 'ReviewPlus',
 		'aria-label': '리뷰 작성하기',
 	},

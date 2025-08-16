@@ -57,6 +57,7 @@ export type SessionData = z.infer<typeof SessionDataSchema>;
 
 export const ImageDeleteResponseSchema = SessionDataSchema;
 export const ImageSessionResponseSchema = SessionDataSchema;
+export const ImageSessionClearDataSchema = z.literal('cleared');
 
 export type ImageUploadData = z.infer<typeof ImageUploadResponseSchema>;
 export type ReviewSubmitData = z.infer<typeof ReviewSubmitResponseSchema>;
