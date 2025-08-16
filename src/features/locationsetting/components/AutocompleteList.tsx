@@ -1,6 +1,6 @@
 'use client';
 
-import { MOCK_LOCATIONS } from '@/entities/location/model/mockLocation';
+import { useEffect, useState } from 'react';
 
 import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
@@ -12,14 +12,53 @@ interface Props {
 	onGoNextStep?: () => void;
 }
 
+interface Place {
+	id: string;
+	place_name: string;
+	address_name: string;
+	road_address_name: string;
+	x: string;
+	y: string;
+}
+
 export default function AutocompleteList({
 	query,
 	onSelect,
 	onCurrentLocationClick,
 	onGoNextStep,
 }: Props) {
-	const filtered = MOCK_LOCATIONS.filter((item) => item.name.includes(query));
 	const { categories } = useCategories();
+	const [places, setPlaces] = useState<Place[]>([]);
+
+	useEffect(() => {
+		if (!query.trim()) {
+			setPlaces([]);
+			return;
+		}
+		const fetchPlaces = async () => {
+			try {
+				const JEJU_POLYGON =
+					'126.1453,33.1908,126.9722,33.1908,126.9722,33.5639,126.1453,33.5639';
+				const res = await fetch(
+					`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
+						query,
+					)}&polygon=${JEJU_POLYGON}&size=10`,
+					{
+						method: 'GET',
+						headers: {
+							Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
+						},
+					},
+				);
+				const data = await res.json();
+				console.log(data);
+				setPlaces(data.documents || []);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+		fetchPlaces();
+	}, [query]);
 
 	return (
 		<div className="bg-white mt-2 w-full max-w-[375px] mx-auto z-10 relative">
@@ -41,25 +80,26 @@ export default function AutocompleteList({
 					검색 내역이 없어요.
 				</div>
 			)}
-			{query.trim().length > 0 && filtered.length === 0 && (
+			{query.trim().length > 0 && places.length === 0 && (
 				<div className="text-center flex justify-center text-grey-60 py-4 mt-8 mb-8">
 					검색 내역이 없어요.
 				</div>
 			)}
+
 			{query.trim() &&
-				filtered.length > 0 &&
-				filtered.map((item) => {
+				places.length > 0 &&
+				places.map((item) => {
 					const localFoodItem = categories?.find((c) =>
-						item.name.includes(c.name),
+						item.place_name.includes(c.name),
 					);
 					console.log(localFoodItem);
-					const isAddress = /(?:시|읍|면|동)/.test(item.name);
+					const isAddress = /(?:시|읍|면|동)/.test(item.place_name);
 					const iconName = isAddress ? 'Search' : 'Location';
 
 					return (
 						<div
 							key={item.id}
-							onClick={() => onSelect(item.address, item.name)}
+							onClick={() => onSelect(item.address_name, item.place_name)}
 							className="flex justify-between items-center p-3 hover:bg-gray-100 cursor-pointer"
 						>
 							<div className="flex items-start gap-2">
@@ -72,13 +112,15 @@ export default function AutocompleteList({
 									<div className="flex items-center gap-1">
 										{isAddress ? (
 											<>
-												<p className="text-grey-80 text-[14px]">{item.name}</p>
+												<p className="text-grey-80 text-[14px]">
+													{item.place_name}
+												</p>
 											</>
 										) : (
 											<div>
-												<p className="text-grey-85">{item.name}</p>
+												<p className="text-grey-85">{item.place_name}</p>
 												<p className="text-[12px] text-grey-70">
-													{item.address}
+													{item.address_name}
 												</p>
 											</div>
 										)}
@@ -91,7 +133,7 @@ export default function AutocompleteList({
 								className="text-grey-50"
 								onClick={(e) => {
 									e.stopPropagation();
-									onSelect(item.address, item.name);
+									onSelect(item.address_name, item.place_name);
 									onGoNextStep?.();
 								}}
 							/>

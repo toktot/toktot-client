@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { getAddressFromLatLng } from '@/entities/location/lib/geo';
 import { MOCK_LOCATIONS } from '@/entities/location/model/mockLocation';
-
-import { getAddressFromLatLng } from '@/app/api/geo/coord2address/route';
 
 import AutocompleteList from '@/features/locationsetting/components/AutocompleteList';
 import SearchLocationMap from '@/features/locationsetting/components/SearchLocationMap';
@@ -109,7 +108,7 @@ export default function LocationSelector({
 		<>
 			<BottomSheetContent
 				className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl p-4 overflow-y-auto
-          ${address.trim() ? 'translate-y-50' : 'translate-y-114'} transition-transform duration-300 ease-in-out`}
+          ${address.trim() ? 'translate-y-50' : 'translate-y-70'} transition-transform duration-300 ease-in-out'}`}
 				style={{ paddingLeft: 0, paddingRight: 10 }}
 			>
 				<div className="w-6 h-[0.8px] bg-[#000000] rounded-full mx-auto" />
@@ -193,11 +192,13 @@ export default function LocationSelector({
 									className={` h-[43px] flex items-center bg-grey-10 text-[14px] ${address.trim() ? 'border border-primary-40 text-primary-40' : ''}`}
 								/>
 							</div>
-							<AutocompleteList
-								query={address}
-								onSelect={handleSelect}
-								onCurrentLocationClick={handleCurrentLocationClick}
-							/>
+							<div className="flex-1 overflow-y-auto mt-4 max-h-[60vh]">
+								<AutocompleteList
+									query={address}
+									onSelect={handleSelect}
+									onCurrentLocationClick={handleCurrentLocationClick}
+								/>
+							</div>
 							<div className="flex justify-start mt-6">
 								<button
 									disabled={!address.trim()}
