@@ -31,6 +31,7 @@ export interface Store {
 	parking?: number[]; // 주차 관련 옵션
 	writer?: string;
 	time?: string;
+	parkplace?: string;
 }
 export const mockStores = [
 	{
@@ -61,7 +62,8 @@ export const mockStores = [
 		menuPrices: [{ name: '돔베고기', price: 40000 }],
 		writer: '곰담놈',
 		time: '1분 전',
-		position: { lat: '33.31', lng: '33.31' },
+		position: { lat: 37.511225, lng: 127.059708 },
+		parkplace: '제주시 특별자치도, 원노현남길 16 지하 1층',
 	},
 	{
 		id: '2',
@@ -83,5 +85,6 @@ export const mockStores = [
 			{ name: '돔베고기', price: 40000 },
 			{ name: '돔베고기 대', price: 25000 },
 		],
+		position: { lat: 33.31, lng: 33.31 },
 	},
 ];
