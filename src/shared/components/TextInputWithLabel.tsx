@@ -1,4 +1,5 @@
-// TextInputWithLabel.tsx
+'use client';
+
 import { forwardRef } from 'react';
 
 export type TextInputWithLabelProps = {

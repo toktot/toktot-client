@@ -58,4 +58,8 @@ export { default as Jalimulhoe } from './jalimulhoe.svg';
 export { default as ReviewCurrent } from './Review_current.svg';
 export { default as ReviewDisabled } from './Review_disabled.svg';
 export { default as Logo } from './logo.svg';
+export { default as dinner } from './dinner.svg';
+export { default as evening } from './evening.svg';
+export { default as morning } from './morning.svg';
+export { default as call } from './call.svg';
 export { default as Kebab } from './kebab.svg';

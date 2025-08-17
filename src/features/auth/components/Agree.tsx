@@ -1,22 +1,9 @@
-// components/AgreementModal.tsx
 'use client';
 
 import { useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import Icon from '@/shared/ui/Icon';
-
-// components/AgreementModal.tsx
-
-// components/AgreementModal.tsx
-
-// components/AgreementModal.tsx
-
-// components/AgreementModal.tsx
-
-// components/AgreementModal.tsx
-
-// components/AgreementModal.tsx
 
 const termsList = [
 	{ id: 'terms1', label: '[필수] 개인정보 수집 및 이용 동의', required: true },

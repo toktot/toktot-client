@@ -9,10 +9,6 @@ import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 import Icon from '@/shared/ui/Icon';
 import { getKakaoLoginUrl } from '@/shared/utils/storage';
-import {
-	setEncryptedToken,
-	setUser as storeUser,
-} from '@/shared/utils/storage';
 
 import { useAuth } from '../context/AuthProvider';
 
@@ -54,36 +50,12 @@ export default function LoginForm() {
 			return;
 		}
 
-		try {
-			const res = await fetch('https://api.toktot.site/v1/auth/login', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ email: username, password }),
-			});
+		const success = await login(username, password); // 여기만 호출
 
-			const data = await res.json();
-			console.log('Login API response:', data);
-
-			if (!data.success) {
-				setError(data.message || '아이디 또는 비밀번호를 확인하세요.');
-				return;
-			}
-			const accessToken = data.data?.access_token;
-			if (!accessToken) {
-				setError('서버 응답이 올바르지 않습니다.');
-				return;
-			}
-			setEncryptedToken(accessToken);
-			storeUser(data.user);
-
-			console.log(data.user);
-			login(username, password);
-			router.push('/');
-		} catch (err) {
-			setError('서버와 연결할 수 없습니다.');
-			console.log(err);
+		if (success) {
+			router.push('/'); // 로그인 성공 시 이동
+		} else {
+			setError('아이디 또는 비밀번호를 확인하세요.');
 		}
 	};
 

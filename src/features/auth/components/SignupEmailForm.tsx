@@ -1,30 +1,9 @@
-// SignupEmailForm.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
-
-// SignupEmailForm.tsx
 
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
@@ -60,20 +39,14 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const isEmailValidFormat = (email: string) =>
 		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-	useEffect(() => {
-		if (!debouncedEmail) {
-			setEmailStatus('idle');
-			return;
-		}
-		// 가짜 중복 체크 API
-		const checkDuplicateEmail = async (
-			email: string,
-		): Promise<'duplicate' | 'invalid' | 'valid'> => {
+	// 가짜 중복 체크 API
+	const checkDuplicateEmail = useCallback(
+		async (email: string): Promise<'duplicate' | 'invalid' | 'valid'> => {
 			if (!isEmailValidFormat(email)) {
 				return 'invalid';
 			}
 			try {
-				const res = await fetch(`http://13.209.53.44/api/v1/auth/email/send`, {
+				const res = await fetch(`https://api.toktot.site/v1/auth/email/send`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -91,12 +64,20 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				console.error('중복 확인 실패', error);
 				return 'invalid';
 			}
-		};
+		},
+		[],
+	);
+
+	useEffect(() => {
+		if (!debouncedEmail) {
+			setEmailStatus('idle');
+			return;
+		}
 
 		checkDuplicateEmail(debouncedEmail).then((res) => {
 			setEmailStatus(res);
 		});
-	}, [debouncedEmail]);
+	}, [checkDuplicateEmail, debouncedEmail]);
 
 	useEffect(() => {
 		if (verificationSent && timer > 0) {
@@ -115,7 +96,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
+			const res = await fetch('https://api.toktot.site/v1/auth/email/send', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -132,11 +113,9 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				setCodeStatus('idle');
 			} else {
 				console.warn('인증 이메일 전송 실패', data);
-				alert(data.message || '인증번호 전송에 실패했습니다.');
 			}
 		} catch (err) {
 			console.error(err);
-			alert('서버에 연결할 수 없습니다.');
 		}
 	};
 
@@ -147,7 +126,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			return;
 		}
 		try {
-			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
+			const res = await fetch('https://api.toktot.site/v1/auth/email/verify', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 

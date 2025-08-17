@@ -34,7 +34,7 @@ export const mockReview1: ReviewView = {
 		id: 1 as UserId,
 		username: 'food91',
 		password: 'securepassword',
-		name: '정현',
+		nickname: '정현',
 	},
 	store: {
 		id: 'store-001' as StoreId,
@@ -92,7 +92,7 @@ export const mockReview2: ReviewView = {
 		id: 2 as UserId,
 		username: 'cleane22',
 		password: 'anotherpassword',
-		name: '지우',
+		nickname: '지우',
 	},
 	store: {
 		id: 'store-002' as StoreId,
@@ -250,7 +250,7 @@ export function ReviewStoryFeed() {
 										'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)',
 								}}
 							>
-								<p className="font-bold">{currentPost.author.name}</p>
+								<p className="font-bold">{currentPost.author.nickname}</p>
 								<p className="text-sm">{currentPost.store.storeName}</p>
 							</div>
 						}

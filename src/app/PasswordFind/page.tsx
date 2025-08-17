@@ -1,4 +1,3 @@
-// SignupPage.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,14 +6,6 @@ import Icon from '@/shared/ui/Icon';
 
 import PassFindEmail from '../../features/auth/components/PassFindEmail';
 import PassSet from '../../features/auth/components/PassSet';
-
-// SignupPage.tsx
-
-// SignupPage.tsx
-
-// SignupPage.tsx
-
-// SignupPage.tsx
 
 export default function SignupPage() {
 	const [step, setStep] = useState<'email' | 'password' | 'complete'>('email');

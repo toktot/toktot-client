@@ -1,4 +1,4 @@
-import { User } from '@/features/auth/types/auth';
+import { User } from '@/entities/user/types/auth';
 
 import {
 	MoodKeywordId,

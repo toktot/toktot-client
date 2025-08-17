@@ -33,7 +33,7 @@ export const ReviewDetailItem = ({
 			)}
 			<div className="flex items-center justify-between">
 				<div className="flex gap-2">
-					<span className="font-bold">{review.author.name}</span>
+					<span className="font-bold">{review.author.nickname}</span>
 					<span className="text-grey-70">평균</span>
 				</div>
 				<span className="text-sm text-grey-60">{review.createdAt}</span>

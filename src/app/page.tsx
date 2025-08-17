@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import { AppShell } from '@/widgets/layout';
@@ -23,6 +25,11 @@ export default function Home() {
 			<Link href="/review/write/2324">
 				<button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
 					Review
+				</button>
+			</Link>
+			<Link href="/home">
+				<button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+					Home
 				</button>
 			</Link>
 		</AppShell>
