@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { type TooltipCategory } from '@/entities/review';
 
@@ -19,21 +19,35 @@ export interface FinalReviewData {
 
 interface CreateReviewSheetProps {
 	onComplete: (data: FinalReviewData) => void;
+	initialCategory: TooltipCategory;
+	onCategoryChange: (category: TooltipCategory) => void;
 }
 
-export const CreateReviewSheet = ({ onComplete }: CreateReviewSheetProps) => {
+export const CreateReviewSheet = ({
+	onComplete,
+	initialCategory,
+	onCategoryChange,
+}: CreateReviewSheetProps) => {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [selectedCategory, setSelectedCategory] =
-		useState<TooltipCategory>('food');
+		useState<TooltipCategory>(initialCategory);
 	const [step1Data, setStep1Data] = useState({
 		rating: 0,
 		formData: null as ReviewFormData | null,
 	});
 
+	// Prop으로 받은 initialCategory가 변경되면 내부 상태도 동기화
+	useEffect(() => {
+		setSelectedCategory(initialCategory);
+	}, [initialCategory]);
+
 	const handleCategoryChange = (category: TooltipCategory) => {
 		if (category !== selectedCategory) {
 			setSelectedCategory(category);
 			setStep1Data({ rating: 0, formData: null });
+
+			// 부모 컴포넌트에 카테고리 변경 알림
+			onCategoryChange(category);
 		}
 	};
 

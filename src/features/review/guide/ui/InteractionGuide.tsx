@@ -10,7 +10,7 @@ export function InteractionGuide({ onClose }: InteractionGuideProps) {
 	return (
 		<div
 			onClick={onClose}
-			className="fixed px-2 inset-0 z-50 flex flex-col items-center justify-center gap-2 text-white animate-in fade-in duration-300"
+			className="absolute inset-0 px-2 z-10 flex flex-col items-center justify-center gap-2 text-white animate-in fade-in duration-300"
 		>
 			<div className="w-full h-40 bg-[#171D2966] rounded-2xl flex flex-col items-center gap-2 justify-center">
 				<Icon name={'ArrowUpBar'} />

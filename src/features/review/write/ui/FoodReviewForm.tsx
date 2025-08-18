@@ -16,7 +16,7 @@ const foodFormSchema = z.object({
 		.number()
 		.min(1, '가격을 입력해주세요.')
 		.max(999999, '6자리 이하의 숫자만 입력해주세요.'),
-	serving: z.number().int().min(1, '인원 수는 필수값입니다.'),
+	serving: z.number().int().min(1, '몇 인분인지 입력해주세요.'),
 });
 
 export type FoodFormState = z.infer<typeof foodFormSchema>;

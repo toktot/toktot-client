@@ -3,22 +3,13 @@
 import React, { useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
-// import { Tooltip } from '@/entities/review';
 import { ReviewView } from '@/entities/review/model/view';
-import { ReviewStory } from '@/entities/review/ui/ReviewStory';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { RelatedReviewsSheet } from '@/features/related-reviews/ui/RelatedReviewsSheet';
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
-import { SaveGestureGuideModal } from '@/features/review/guide/ui/SaveGestureGuideModal';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
-import { SaveReviewGesture } from '@/features/review/save/ui/SaveReviewGesture';
+import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
 
-import {
-	BottomSheet,
-	BottomSheetContent,
-	BottomSheetOverlay,
-} from '@/shared/components/BottomSheet';
 import {
 	MoodKeywordId,
 	ReviewId,
@@ -28,16 +19,22 @@ import {
 	UserId,
 } from '@/shared/model/types';
 
+import { InteractiveReview } from './InteractiveReview';
+import ReviewStore from './ReviewStore';
+import { ReviewTooltipSheet } from './ReviewTooltipSheet';
+import ReviewUser from './ReviewUser';
+
 export const mockReview1: ReviewView = {
-	id: 'review-001' as ReviewId,
+	id: '1' as ReviewId,
 	author: {
 		id: 1 as UserId,
-		username: 'food91',
-		password: 'securepassword',
-		nickname: '정현',
+		nickname: 'food91',
+		profileImageUrl: null,
+		reviewCount: 0,
+		averageRating: 0,
 	},
 	store: {
-		id: 'store-001' as StoreId,
+		id: '1' as StoreId,
 		storeName: '맛있는김밥천국',
 		mainMenu: '참치김밥',
 		address: '서울특별시 강남구 테헤란로 123',
@@ -48,7 +45,7 @@ export const mockReview1: ReviewView = {
 		{
 			id: 'img-001' as ReviewImageId,
 			url: '/images/mockReview.jpg',
-			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId],
+			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId, 't3' as TooltipId],
 		},
 		{
 			id: 'img-002' as ReviewImageId,
@@ -70,6 +67,7 @@ export const mockReview1: ReviewView = {
 			rating: 4,
 			menuName: '참치김밥',
 			price: 3500,
+			servings: 1,
 			description: '참치가 많이 들어가서 맛있었어요.',
 		},
 		['t2' as TooltipId]: {
@@ -80,6 +78,14 @@ export const mockReview1: ReviewView = {
 			rating: 5,
 			description: '직원분이 정말 친절했어요.',
 		},
+		['t3' as TooltipId]: {
+			id: 't2' as TooltipId,
+			x: 53.17647058823529,
+			y: 10,
+			category: 'clean',
+			rating: 5,
+			description: '직원분이 정말 친절했어요.',
+		},
 	},
 	moodKeywords: [
 		{ id: 1 as MoodKeywordId, label: '가성비 좋아요' },
@@ -87,15 +93,16 @@ export const mockReview1: ReviewView = {
 	],
 };
 export const mockReview2: ReviewView = {
-	id: 'review-002' as ReviewId,
+	id: '2' as ReviewId,
 	author: {
 		id: 2 as UserId,
-		username: 'cleane22',
-		password: 'anotherpassword',
-		nickname: '지우',
+		nickname: 'cleane22',
+		profileImageUrl: null,
+		reviewCount: 0,
+		averageRating: 0,
 	},
 	store: {
-		id: 'store-002' as StoreId,
+		id: '2' as StoreId,
 		storeName: '청결한국밥집',
 		mainMenu: '순대국밥',
 		address: '부산광역시 수영구 광안해변로 456',
@@ -131,88 +138,42 @@ const swipePower = (offset: number, velocity: number) => {
 	return Math.abs(offset) * velocity;
 };
 
-// 애니메이션 방향과 페이지 인덱스를 함께 관리하기 위한 타입
-type PageState = [number, number]; // [page, direction]
-
-type GuideStep = 'saveGuide' | 'interactionGuide' | 'active';
+// 슬라이드 애니메이션을 위한 variants
+const variants = {
+	enter: (direction: number) => ({
+		y: direction > 0 ? '100%' : '-100%',
+		opacity: 0,
+	}),
+	center: {
+		zIndex: 1,
+		y: 0,
+		opacity: 1,
+	},
+	exit: (direction: number) => ({
+		zIndex: 0,
+		y: direction < 0 ? '100%' : '-100%',
+		opacity: 0,
+	}),
+};
 
 export function ReviewStoryFeed() {
 	const data = [mockReview1, mockReview2];
-	const [[page, direction], setPage] = useState<PageState>([0, 0]);
+	const { page, direction, paginate } = useReviewPagination(0, data.length);
 	const currentIndex = page;
 
-	const [guideStep, setGuideStep] = useState<GuideStep>('saveGuide');
+	const [showGuide, setShowGuide] = useState(true);
 
 	const [selectedReview, setSelectedReview] = useState<ReviewView | null>(null);
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
 		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
 		setSelectedReview(currentPost);
-		// TODO: 리뷰 리스트 바텀시트 오픈
-	};
-
-	// ⭐️ 3. 바텀시트가 닫힐 때, selectedReview 상태를 null로 초기화합니다.
-	const closeSheet = () => {
-		setSelectedReview(null);
-	};
-
-	// if (isLoading) {
-	// 	return (
-	// 		<div className="flex h-screen w-screen items-center justify-center bg-black text-white">
-	// 			Loading...
-	// 		</div>
-	// 	);
-	// }
-	// if (!data.length) {
-	// 	return (
-	// 		<div className="flex h-screen w-screen items-center justify-center bg-black text-white">
-	// 			No reviews found.
-	// 		</div>
-	// 	);
-	// }
-
-	const paginate = (newDirection: number) => {
-		const newIndex = page + newDirection;
-		if (newIndex < 0 || newIndex >= data.length) {
-			return;
-		}
-
-		setPage([newIndex, newDirection]);
 	};
 
 	const currentPost = data[currentIndex];
 
-	// 슬라이드 애니메이션을 위한 variants
-	const variants = {
-		enter: (direction: number) => ({
-			y: direction > 0 ? '100%' : '-100%',
-			opacity: 0,
-		}),
-		center: {
-			zIndex: 1,
-			y: 0,
-			opacity: 1,
-		},
-		exit: (direction: number) => ({
-			zIndex: 0,
-			y: direction < 0 ? '100%' : '-100%',
-			opacity: 0,
-		}),
-	};
-
 	return (
-		<div className="relative flex flex-col h-full bg-black isolate">
-			<AnimatePresence>
-				{guideStep === 'saveGuide' && (
-					<SaveGestureGuideModal
-						onConfirm={() => setGuideStep('interactionGuide')}
-					/>
-				)}
-				{guideStep === 'interactionGuide' && (
-					<InteractionGuide onClose={() => setGuideStep('active')} />
-				)}
-			</AnimatePresence>
-
+		<div className="relative flex flex-col h-full">
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
 					className="absolute h-full w-full"
@@ -240,48 +201,41 @@ export function ReviewStoryFeed() {
 						}
 					}}
 				>
-					<ReviewStory
-						// post={currentPost}
-						infoLayer={
-							<div
-								className="p-4 text-white"
-								style={{
-									background:
-										'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)',
-								}}
-							>
-								<p className="font-bold">{currentPost.author.nickname}</p>
-								<p className="text-sm">{currentPost.store.storeName}</p>
-							</div>
-						}
-						interactiveLayer={
-							<SaveReviewGesture reviewId={currentPost.id}>
+					<div className="relative flex flex-col h-full">
+						<div className="flex-1 relative">
+							<InteractiveReview reviewId={currentPost.id}>
+								<AnimatePresence>
+									{showGuide && (
+										<InteractionGuide onClose={() => setShowGuide(false)} />
+									)}
+								</AnimatePresence>
 								<ImagePaginator
 									images={currentPost.images}
 									tooltips={currentPost.tooltips}
 									onTooltipClick={handleTooltipClick}
 								/>
-							</SaveReviewGesture>
-						}
-					/>
+							</InteractiveReview>
+						</div>
+						<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
+							<ReviewUser
+								author={currentPost.author}
+								extra={{ totalReviewCount: 200, averageRating: 300 }}
+							/>
+							<div className="bg-grey-90 rounded-xl">
+								<ReviewStore
+									store={currentPost.store}
+									extra={{ distance: 200 }}
+								/>
+							</div>
+						</div>
+					</div>
 				</motion.div>
 
-				<BottomSheet
+				<ReviewTooltipSheet
 					open={!!selectedReview}
-					onOpenChange={(open) => !open && closeSheet()}
-				>
-					<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
-					<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[460px] rounded-t-2xl bg-white shadow-lg">
-						<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
-						{/* selectedReview가 있을 때만 내용을 렌더링합니다. */}
-						{selectedReview && (
-							<RelatedReviewsSheet
-								clickedReview={selectedReview}
-								storeId={selectedReview.store.id}
-							/>
-						)}
-					</BottomSheetContent>
-				</BottomSheet>
+					onOpenChange={(o) => !o && setSelectedReview(null)}
+					review={selectedReview}
+				/>
 			</AnimatePresence>
 		</div>
 	);

@@ -15,5 +15,5 @@ export { ReviewImageItem } from './ui/ReviewImageItem';
 // lib exports
 export { useReviewImageManager } from './lib/useReviewImageManager';
 export { useMoodFilter } from './lib/useMoodFilter';
-export { useTooltipManager } from './lib/useTooltipManager';
+
 export { RATING_ICON_FOR_CATEGORY } from './lib/RatingIconType';
