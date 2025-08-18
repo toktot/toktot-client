@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import {
+	MAX_FILE_SIZE,
 	MAX_IMAGE_COUNT,
 	MAX_TOOLTIP_COUNT,
 	useReviewImageManager,
@@ -182,27 +183,30 @@ export const ReviewImageWidget = () => {
 	}
 
 	return (
-		<section className="w-full space-y-3">
-			<Typography as="h3">사진을 등록해주세요</Typography>
-			<div className="flex items-center h-[100px] gap-2">
-				<div className="h-full flex items-center justify-center">
-					<ReviewImageUploader
-						onUpload={uploadImages}
-						maxCount={remainingSlots ?? MAX_IMAGE_COUNT - images.length}
-					/>
-				</div>
-				<div className="flex h-full gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-					{buildInteractiveImages(images).map((image) => (
-						<ReviewImageBox
-							key={image.id}
-							image={image}
-							onClick={() => {
-								setSelectedImageId(image.id);
-								setIsEditing(true);
-							}}
-							onDelete={() => handleDeleteImage(image.id)}
+		<section className="w-full space-y-3 flex flex-col gap-9">
+			<div className="w-full space-y-3 ">
+				<Typography as="h3">사진을 등록해주세요</Typography>
+				<div className="flex items-center h-[100px] gap-2">
+					<div className="h-full flex items-center justify-center">
+						<ReviewImageUploader
+							onUpload={uploadImages}
+							maxCount={remainingSlots ?? MAX_IMAGE_COUNT - images.length}
+							maxFileSize={MAX_FILE_SIZE}
 						/>
-					))}
+					</div>
+					<div className="flex h-full gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+						{buildInteractiveImages(images).map((image) => (
+							<ReviewImageBox
+								key={image.id}
+								image={image}
+								onClick={() => {
+									setSelectedImageId(image.id);
+									setIsEditing(true);
+								}}
+								onDelete={() => handleDeleteImage(image.id)}
+							/>
+						))}
+					</div>
 				</div>
 			</div>
 			<RegisteredMenuListWidget images={images} />
