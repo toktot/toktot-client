@@ -15,8 +15,6 @@ export const ReviewDetailItem = ({
 	review,
 	isSelected,
 }: ReviewDetailItemProps) => {
-	console.log('🚀 ~ ReviewDetailItem ~ review:', review);
-
 	return (
 		<div className="py-3">
 			{isSelected && (
