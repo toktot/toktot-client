@@ -1,17 +1,18 @@
 import { Suspense } from 'react';
 
+import { AppShell, Header } from '@/widgets/layout';
 import { WriteCompleteWidget } from '@/widgets/review/write/ui/WriteCompleteWidget';
+
+import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
 import { ReviewId } from '@/shared/model/types';
 
-// URL 쿼리 파라미터(예: ?reviewId=123)를 처리하기 위한 컴포넌트
 const CompletionPageContent = ({
 	reviewId,
 }: {
 	reviewId: ReviewId | undefined;
 }) => {
 	if (!reviewId) {
-		// reviewId가 없는 예외적인 상황 처리
 		return (
 			<div className="text-center p-8">
 				<div className="bg-red-50 border text-sub-red-0 rounded-lg p-6">
@@ -42,17 +43,25 @@ export default async function ReviewWriteCompletePage({
 	) as ReviewId | undefined;
 
 	return (
-		<main className="flex items-center justify-center min-h-screen bg-gray-50">
-			<Suspense
-				fallback={
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-						<span className="ml-2 text-gray-600">Loading...</span>
-					</div>
-				}
-			>
-				<CompletionPageContent reviewId={reviewId} />
-			</Suspense>
-		</main>
+		<Suspense
+			fallback={
+				<div className="flex items-center justify-center">
+					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+					<span className="ml-2 text-gray-600">Loading...</span>
+				</div>
+			}
+		>
+			<AppShell showBottomNav={false}>
+				<Header>
+					<Header.Left>
+						<BackButton />
+					</Header.Left>
+					<Header.Center>리뷰 쓰기</Header.Center>
+				</Header>
+				<div className="flex flex-col items-center flex-1 justify-center p-4">
+					<CompletionPageContent reviewId={reviewId} />
+				</div>
+			</AppShell>
+		</Suspense>
 	);
 }

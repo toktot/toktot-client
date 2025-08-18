@@ -34,6 +34,8 @@ interface ReviewWriteActions {
 	removeTooltipDeep: (id: TooltipId) => void;
 
 	detachImage: (imageId: ReviewImageId) => void;
+
+	clearAllState: () => void;
 }
 
 interface ReviewWriteSelectors {
@@ -77,6 +79,7 @@ export const useReviewWriteStore = create<
 				menuName: '',
 				price: 0,
 				description: '',
+				servings: 1,
 			};
 
 			set((state) => {
@@ -106,6 +109,7 @@ export const useReviewWriteStore = create<
 								description: data.detailedText,
 								menuName: data.formData.menuName,
 								price: data.formData.price,
+								servings: data.formData.serving,
 							};
 						}
 						break;
@@ -175,6 +179,7 @@ export const useReviewWriteStore = create<
 							category: 'food',
 							menuName: '',
 							price: 0,
+							servings: 1,
 						};
 						break;
 					case 'service':
@@ -208,6 +213,14 @@ export const useReviewWriteStore = create<
 				tooltipIds.forEach((tid) => delete state.tooltips[tid]);
 				delete state.tooltipsByImageId[imageId];
 			});
+		},
+
+		clearAllState: () => {
+			set(() => ({
+				tooltips: {},
+				tooltipsByImageId: {},
+				draftTooltipId: null,
+			}));
 		},
 
 		selectTooltipsForImage: (imageId) => {

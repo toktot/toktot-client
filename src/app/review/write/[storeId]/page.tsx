@@ -1,12 +1,6 @@
-import { KEYWORDS_BY_CATEGORY } from '@/entities/keyword/config/data';
 import { StoreData } from '@/entities/store';
 
-import { AppShell, Header } from '@/widgets/layout';
-import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
-import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelectionWidget';
-import { ReviewMoodFilterWidget } from '@/widgets/review/write/ui/ReviewMoodFilterWidget';
-
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { ReviewWriteContent } from '@/widgets/review/write/ui/ReviewWriteContent';
 
 import { StoreId } from '@/shared/model/types';
 
@@ -33,48 +27,6 @@ export default async function ReviewWritePage({ params }: { params: Params }) {
 	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
 
 	return (
-		<AppShell showBottomNav={false}>
-			<Header>
-				<Header.Left>
-					<BackButton />
-				</Header.Left>
-				<Header.Center>리뷰 쓰기</Header.Center>
-			</Header>
-			<div className="flex flex-col items-center p-4 gap-9">
-				<VisitedStoreWidget store={visitedStoreData} />
-				<ReviewImageWidget />
-				<ReviewMoodFilterWidget />
-				<KeywordSelectionWidget
-					title="음식"
-					category="food"
-					keywords={KEYWORDS_BY_CATEGORY.food}
-				/>
-				<KeywordSelectionWidget
-					title="청결"
-					category="cleanliness"
-					keywords={KEYWORDS_BY_CATEGORY.cleanliness}
-				/>
-				<KeywordSelectionWidget
-					title="가격"
-					category="price"
-					keywords={KEYWORDS_BY_CATEGORY.price}
-				/>
-				<KeywordSelectionWidget
-					title="서비스"
-					category="service"
-					keywords={KEYWORDS_BY_CATEGORY.service}
-				/>
-				<KeywordSelectionWidget
-					title="분위기"
-					category="atmosphere"
-					keywords={KEYWORDS_BY_CATEGORY.atmosphere}
-				/>
-				<KeywordSelectionWidget
-					title="접근성"
-					category="accessibility"
-					keywords={KEYWORDS_BY_CATEGORY.accessibility}
-				/>
-			</div>
-		</AppShell>
+		<ReviewWriteContent storeId={storeId} visitedStoreData={visitedStoreData} />
 	);
 }

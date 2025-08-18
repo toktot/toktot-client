@@ -106,31 +106,21 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	/**
 	 * 이미지 세션 초기화 (새로 쓰기)
 	 */
-	async clearImageSession(
-		restaurantId: number,
-	): Promise<{ success: true; data: 'cleared' }> {
+	async clearImageSession(restaurantId: number): Promise<void> {
 		const raw = await kyInstance
 			.delete('v1/reviews/images', {
 				searchParams: { restaurant_id: restaurantId },
 			})
 			.json();
-		const parsed = ApiResponseSchema(ImageSessionClearDataSchema).safeParse(
-			raw,
-		);
 
-		if (!parsed.success) {
+		const parsed = ApiResponseSchema(ImageSessionClearDataSchema).parse(raw);
+
+		if (!parsed.success || !parsed.success) {
 			throw new ApiError(
-				'이미지 세션 초기화 응답 형식이 올바르지 않습니다.',
-				'CLIENT_SCHEMA_ERROR',
+				parsed.message ?? '이미지 세션 초기화에 실패했습니다.',
+				parsed.errorCode ?? 'UNKNOWN_ERROR',
 			);
 		}
-		if (!parsed.data.success) {
-			throw new ApiError(
-				parsed.data.message ?? '이미지 세션 초기화에 실패했습니다.',
-				parsed.data.errorCode ?? 'UNKNOWN_ERROR',
-			);
-		}
-		return { success: true, data: 'cleared' as const };
 	},
 
 	/**
@@ -141,20 +131,24 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	): Promise<ReviewSubmitData> {
 		const validated = ReviewSubmitPayloadSchema.parse(payload);
 		const raw = await kyInstance.post('v1/reviews', { json: validated }).json();
+
 		const parsed = ApiResponseSchema(ReviewSubmitResponseSchema).safeParse(raw);
 
-		if (!parsed.success)
+		if (!parsed.success) {
 			throw new ApiError(
 				'리뷰 제출 응답 형식이 올바르지 않습니다.',
 				'CLIENT_SCHEMA_ERROR',
 			);
-		if (!parsed.data.success)
+		}
+		if (!parsed.data.success) {
 			throw new ApiError(
 				parsed.data.message ?? '리뷰 제출에 실패했습니다.',
 				parsed.data.errorCode,
 			);
-		if (!parsed.data.data)
+		}
+		if (!parsed.data.data) {
 			throw new ApiError('리뷰 제출 후 데이터가 비어있습니다.', 'NO_DATA');
+		}
 
 		return parsed.data.data;
 	},

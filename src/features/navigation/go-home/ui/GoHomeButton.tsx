@@ -11,7 +11,13 @@ export const GoHomeButton = () => {
 		router.push('/');
 	};
 
-	return <SecondaryButton text="홈으로" onClick={handleClick} />;
+	return (
+		<SecondaryButton
+			className="border-grey-50 text-grey-90"
+			text="홈으로 돌아가기"
+			onClick={handleClick}
+		/>
+	);
 };
 
 type SecondaryButtonProps = {

@@ -23,7 +23,7 @@ export default function Home() {
 						Find Password
 					</button>
 				</Link>
-				<Link href="/review/write/2324">
+				<Link href="/review/write/1">
 					<button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
 						Review
 					</button>

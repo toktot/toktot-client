@@ -7,7 +7,8 @@ export type KeywordCategory =
 	| 'price'
 	| 'service'
 	| 'atmosphere'
-	| 'accessibility';
+	| 'accessibility'
+	| 'environment';
 
 // 각 카테고리별 키워드 데이터
 export const FOOD_KEYWORDS: Keyword[] = [
@@ -57,6 +58,18 @@ export const ACCESSIBILITY_KEYWORDS: Keyword[] = [
 	{ id: 603 as KeywordId, label: '대중교통 편리' },
 ];
 
+export const ENVIRONMENT_KEYWORDS: Keyword[] = [
+	{ id: 701 as KeywordId, label: '오션뷰' },
+	{ id: 702 as KeywordId, label: '도시가 보이는' },
+	{ id: 703 as KeywordId, label: '산이 보이는' },
+	{ id: 704 as KeywordId, label: '로컬' },
+	{ id: 705 as KeywordId, label: '한적한' },
+	{ id: 706 as KeywordId, label: '붐비는' },
+	{ id: 707 as KeywordId, label: '현지인이 많은' },
+	{ id: 708 as KeywordId, label: '아늑한' },
+	{ id: 709 as KeywordId, label: '트렌디한' },
+];
+
 // 모든 키워드 데이터를 카테고리별로 묶어서 export
 export const KEYWORDS_BY_CATEGORY: Record<KeywordCategory, Keyword[]> = {
 	food: FOOD_KEYWORDS,
@@ -65,12 +78,61 @@ export const KEYWORDS_BY_CATEGORY: Record<KeywordCategory, Keyword[]> = {
 	service: SERVICE_KEYWORDS,
 	atmosphere: ATMOSPHERE_KEYWORDS,
 	accessibility: ACCESSIBILITY_KEYWORDS,
+	environment: ENVIRONMENT_KEYWORDS,
 };
 
 // API 제출 시, ID를 서버가 요구하는 ENUM 문자열로 변환하기 위한 전체 맵
-// export const KEYWORD_ID_TO_ENUM_MAP: Record<KeywordId, string> = {
-// 	101: 'FRESH',
-// 	102: 'GENEROUS_PORTIONS',
-// 	201: 'CLEAN_STORE',
-// 	// ... 모든 키워드에 대한 매핑 정보
-// };
+export const KEYWORD_ID_TO_ENUM_MAP: Record<KeywordId, string> = {
+	// FOOD_KEYWORDS
+	101: 'FRESH',
+	102: 'GENEROUS_PORTIONS',
+	103: 'GOOD_VALUE',
+	104: 'UNIQUE',
+	105: 'NEAT',
+	106: 'DELICIOUS',
+
+	// CLEANLINESS_KEYWORDS
+	201: 'CLEAN_STORE',
+	202: 'CLEAN_BATHROOM',
+	203: 'CLEAN_TABLE',
+
+	// PRICE_KEYWORDS
+	301: 'NO_PRICE_INFO',
+	302: 'NO_OVERCHARGING',
+	303: 'REASONABLE',
+	304: 'GOOD_VALUE',
+	305: 'REASONABLE_CONSUMPTION',
+
+	// SERVICE_KEYWORDS
+	401: 'FAST_SERVICE',
+	402: 'LONG_WAIT',
+	403: 'RESERVATION_REQUIRED',
+	404: 'FRIENDLY',
+	405: 'WAITING_AREA',
+	406: 'PET_FRIENDLY',
+
+	// ATMOSPHERE_KEYWORDS
+	501: 'DATE_RECOMMENDED',
+	502: 'QUIET_ATMOSPHERE',
+	503: 'FAMILY_DINING',
+	504: 'LIVELY',
+	505: 'PHOTO_SPOT',
+	506: 'SOLO_DINING',
+
+	// ACCESSIBILITY_KEYWORDS
+	601: 'PARKING_AVAILABLE',
+	602: 'EASY_TO_FIND',
+	603: 'PUBLIC_TRANSPORT',
+
+	//FIXME: 레거시 데이터, 삭제 요망
+	// ENVIRONMENT_KEYWORDS
+	701: 'OCEAN_VIEW',
+	702: 'CITY_VIEW',
+	703: 'MOUNTAIN_VIEW',
+	704: 'LOCAL',
+	705: 'QUIET',
+	706: 'CROWDED',
+	707: 'LOCAL_POPULAR',
+	708: 'COZY',
+	709: 'TRENDY',
+} as Record<KeywordId, string>;
