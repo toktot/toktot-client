@@ -1,5 +1,5 @@
 import {
-	KEYWORDS_BY_CATEGORY,
+	KEYWORD_ID_TO_ENUM_MAP,
 	KeywordCategory,
 } from '@/entities/keyword/config/data';
 import { create } from 'zustand';
@@ -26,6 +26,7 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			service: new Set(),
 			atmosphere: new Set(),
 			accessibility: new Set(),
+			environment: new Set(),
 		},
 
 		// 키워드 토글 액션
@@ -41,24 +42,23 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 				}
 
 				newSelectedKeywords[category] = categorySet;
+
 				return { selectedKeywords: newSelectedKeywords };
 			});
 		},
 
-		// 최종 키워드 목록 반환 (라벨 문자열로)
+		// 최종 키워드 목록 반환 (ENUM 문자열로)
 		getFinalKeywords: () => {
 			const { selectedKeywords } = get();
 			const finalKeywords: string[] = [];
 
 			for (const category in selectedKeywords) {
 				const ids = selectedKeywords[category as KeywordCategory];
-				const categoryKeywords =
-					KEYWORDS_BY_CATEGORY[category as KeywordCategory];
 
 				ids.forEach((id) => {
-					const keyword = categoryKeywords.find((k) => k.id === id);
-					if (keyword) {
-						finalKeywords.push(keyword.label);
+					const enumValue = KEYWORD_ID_TO_ENUM_MAP[id];
+					if (enumValue) {
+						finalKeywords.push(enumValue);
 					}
 				});
 			}
@@ -75,6 +75,7 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 					service: new Set(),
 					atmosphere: new Set(),
 					accessibility: new Set(),
+					environment: new Set(),
 				},
 			});
 		},

@@ -26,12 +26,11 @@ export const ImageUploadResponseSchema = z.object({
 export const ReviewSubmitResponseSchema = z.object({
 	review_id: z.number(),
 	restaurant_id: z.number(),
-	created_at: z.string(),
 });
 
 // --- 서버 요청 스키마 ---
 const TooltipPayloadSchema = z.object({
-	type: z.enum(['FOOD', 'SERVICE', 'CLEANLINESS']),
+	type: z.enum(['FOOD', 'SERVICE', 'CLEAN']),
 	x: z.number(),
 	y: z.number(),
 	rating: z.number(),
