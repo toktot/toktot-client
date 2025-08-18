@@ -28,12 +28,13 @@ export const mockReview1: ReviewView = {
 	id: '1' as ReviewId,
 	author: {
 		id: 1 as UserId,
-		username: 'food91',
-		password: 'securepassword',
-		nickname: '정현',
+		nickname: 'food91',
+		profileImageUrl: null,
+		reviewCount: 0,
+		averageRating: 0,
 	},
 	store: {
-		id: 'store-001' as StoreId,
+		id: '1' as StoreId,
 		storeName: '맛있는김밥천국',
 		mainMenu: '참치김밥',
 		address: '서울특별시 강남구 테헤란로 123',
@@ -66,6 +67,7 @@ export const mockReview1: ReviewView = {
 			rating: 4,
 			menuName: '참치김밥',
 			price: 3500,
+			servings: 1,
 			description: '참치가 많이 들어가서 맛있었어요.',
 		},
 		['t2' as TooltipId]: {
@@ -94,12 +96,13 @@ export const mockReview2: ReviewView = {
 	id: '2' as ReviewId,
 	author: {
 		id: 2 as UserId,
-		username: 'cleane22',
-		password: 'anotherpassword',
-		nickname: '지우',
+		nickname: 'cleane22',
+		profileImageUrl: null,
+		reviewCount: 0,
+		averageRating: 0,
 	},
 	store: {
-		id: 'store-002' as StoreId,
+		id: '2' as StoreId,
 		storeName: '청결한국밥집',
 		mainMenu: '순대국밥',
 		address: '부산광역시 수영구 광안해변로 456',
@@ -198,7 +201,7 @@ export function ReviewStoryFeed() {
 						}
 					}}
 				>
-					<div className="relative flex flex-col h-full bg-red-200">
+					<div className="relative flex flex-col h-full">
 						<div className="flex-1 relative">
 							<InteractiveReview reviewId={currentPost.id}>
 								<AnimatePresence>

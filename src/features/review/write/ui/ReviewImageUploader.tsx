@@ -1,30 +1,33 @@
 import { ChangeEvent } from 'react';
 
-import { MAX_IMAGES_SIZE } from '@/entities/review';
-
 import { validateFiles } from '@/shared/lib/validateFiles';
 import Icon from '@/shared/ui/Icon';
 
 export const ReviewImageUploader = ({
 	onUpload,
 	maxCount,
+	maxFileSize,
 }: {
 	onUpload: (files: File[]) => void;
 	maxCount: number;
+	maxFileSize: number;
 }) => {
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
 
 		const fileArray = Array.from(files);
-		const { validFiles, errorMessage } = validateFiles(fileArray, maxCount);
+		const { validFiles, errorMessage } = validateFiles(
+			fileArray,
+			maxCount,
+			maxFileSize,
+		);
 
 		if (errorMessage) {
 			alert(errorMessage);
 		}
 
 		onUpload(validFiles);
-
 		e.target.value = '';
 	};
 
@@ -37,7 +40,6 @@ export const ReviewImageUploader = ({
 					onChange={handleChange}
 					multiple
 					accept=".jpeg, .jpg, .png"
-					max={MAX_IMAGES_SIZE}
 				/>
 				<Icon className="text-grey-50" name={'Plus'} size="s" />
 			</label>

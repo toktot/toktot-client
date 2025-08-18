@@ -33,7 +33,7 @@ export const ReviewImageBox = ({
 					<Icon name="Cancel" size="s" className="text-white" />
 				</button>
 			)}
-			<Image src={image.url} alt="리뷰 이미지" fill className="object-cover" />
+			<Image src={image.url} alt="리뷰 이미지" fill priority sizes="100px" />
 			<div className="absolute bottom-1 right-1 text-primary-50 text-xs px-1 rounded-full bg-grey-10">
 				{tooltipCount}
 			</div>
