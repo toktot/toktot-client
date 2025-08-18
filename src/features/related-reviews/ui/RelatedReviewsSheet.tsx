@@ -16,16 +16,15 @@ interface RelatedReviewsSheetProps {
 	storeId: StoreId;
 }
 
+//TODO: 카테고리 별 리뷰 조회
 export const RelatedReviewsSheet = ({
-	clickedReview,
+	// clickedReview,
 	storeId,
 }: RelatedReviewsSheetProps) => {
 	const [selectedCategory, setSelectedCategory] =
 		useState<TooltipCategory>('food');
-	const { data: otherReviews, isLoading } = useInfiniteStoreReviews(
-		storeId,
-		selectedCategory,
-	);
+
+	const { data: otherReviews, isLoading } = useInfiniteStoreReviews(storeId);
 
 	const handleCategoryChange = (category: TooltipCategory) => {
 		setSelectedCategory(category);
@@ -44,7 +43,7 @@ export const RelatedReviewsSheet = ({
 			</>
 			{/* 리뷰 리스트 */}
 			<div className="px-4 bg-slate-50 max-h-[30vh] overflow-y-auto">
-				<ReviewDetailItem review={clickedReview} isSelected />
+				{/* <ReviewDetailItem review={clickedReview} isSelected /> */}
 				<hr className="border-grey-20 -mx-4" />
 				{isLoading && <div className="p-4 text-center">로딩 중...</div>}
 				{!isLoading &&

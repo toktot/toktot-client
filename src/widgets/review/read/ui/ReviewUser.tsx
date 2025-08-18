@@ -1,11 +1,11 @@
+import { Author } from '@/entities/review/model/author';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { User } from '@/features/auth/types/auth';
 import { UserExtraInfo } from '@/features/review/read/model/types';
 
 interface ReviewUserProps {
-	author: User;
+	author: Author;
 	extra?: UserExtraInfo;
 }
 
@@ -13,7 +13,7 @@ const ReviewUser = ({ author, extra }: ReviewUserProps) => {
 	return (
 		<Link
 			href={`/User/${author.id}`}
-			aria-label={`${author.username} 상세 보기`}
+			aria-label={`${author.nickname} 상세 보기`}
 		>
 			<div className="flex items-start gap-3">
 				<div className="flex-shrink-0">
@@ -22,12 +22,12 @@ const ReviewUser = ({ author, extra }: ReviewUserProps) => {
 						width={100}
 						height={100}
 						src={'/images/mockReview.jpg'}
-						alt={author.username}
+						alt={author.nickname}
 					/>
 				</div>
 
 				<div className="flex flex-col min-w-0 flex-1">
-					<div className="text-sm font-semibold">{author.username}</div>
+					<div className="text-sm font-semibold">{author.nickname}</div>
 
 					{extra && (
 						<div className="mt-1 flex text-xs">
