@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 
 import { AppShell, Header } from '@/widgets/layout';
-import { ReportFormWidget } from '@/widgets/report/ReportFormWidget';
+import { ReportFormWidget } from '@/widgets/report/ui/ReportFormWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { useReportFormStore } from '@/features/report/model/useReportFormStore';

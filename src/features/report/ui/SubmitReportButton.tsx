@@ -75,7 +75,7 @@ export const SubmitReportButton = () => {
 			<button
 				onClick={() => setIsModalOpen(true)}
 				disabled={!isEnabled || isSubmitting}
-				className="w-full py-3 text-lg font-semibold text-white bg-grey-90 rounded-[20px] disabled:bg-grey-50"
+				className="w-full py-3 text-lg font-semibold bg-grey-90 text-primary-40 rounded-[20px] disabled:bg-grey-50 disabled:text-white"
 			>
 				{isSubmitting ? '처리 중...' : '신고하기'}
 			</button>
