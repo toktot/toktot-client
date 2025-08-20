@@ -190,7 +190,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			/>
 
 			<div>
-				<label className="text-grey-60 text-sm mb-1 block">인증번호</label>
+				<label className="text-grey-60 text-sm mt-4 block">인증번호</label>
 				<div className="flex gap-2 items-center">
 					<TextInputWithLabel
 						value={code}
@@ -214,7 +214,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 						onClick={handleCheckCode}
 						disabled={code.length !== 6 || codeStatus === 'valid'}
 						className="w-[110px] mr-4"
-						bgColorWhenEnabled="bg-grey-90"
+						bgColorWhenEnabled="bg-grey-80"
 						textColorWhenEnabled="text-grey-10"
 					/>
 				</div>
@@ -231,7 +231,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 					}
 				}}
 				disabled={!canGoNext}
-				className="w-[343px]"
+				className="w-[343px] mt-40"
 				bgColorWhenEnabled="bg-grey-90"
 				textColorWhenEnabled="text-primary-40"
 			/>
