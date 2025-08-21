@@ -2,19 +2,19 @@
 
 import clsx from 'clsx';
 
-import { useReport } from '../model/useReport';
+import { useReport } from '../../model/useReport';
 
-interface ReportButtonProps {
+interface ReportUserButtonProps {
 	userId: number;
 	nickname: string;
 	className?: string;
 }
 
-export const ReportButton = ({
+export const ReportUserButton = ({
 	userId,
 	nickname,
 	className,
-}: ReportButtonProps) => {
+}: ReportUserButtonProps) => {
 	const { handleReportClick, isLoading } = useReport('user', userId, nickname);
 
 	return (
