@@ -10,11 +10,11 @@ import { KeywordId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 import MultiCategorySelect from '@/shared/ui/MultiCategorySelect';
 
-import { useReportFormStore } from '../model/useReportFormStore';
+import { useUserReportStore } from '../../model/useUserReportStore';
 
-export const ReportReasonSelector = () => {
-	const selectedIdsSet = useReportFormStore((state) => state.selectedReasonIds);
-	const toggleReason = useReportFormStore((state) => state.toggleReason);
+export const UserReportReasonSelector = () => {
+	const selectedIdsSet = useUserReportStore((state) => state.selectedReasonIds);
+	const toggleReason = useUserReportStore((state) => state.toggleReason);
 
 	const selectedIdsArray = useMemo(
 		() => Array.from(selectedIdsSet),
