@@ -5,16 +5,22 @@ import { ApiResponseSchema } from '@/shared/api/schema';
 
 import {
 	CanReportDataSchema,
-	SubmitUserReportDataSchema,
+	CanReportReviewDataSchema,
+	ReviewReportPayload,
+	ReviewReportPayloadSchema,
+	SubmitReportDataSchema,
+	SubmitReviewReportDataSchema,
 	type UserReportPayload,
 	UserReportPayloadSchema,
 } from './schema';
+
+export type ReportApi = ReturnType<typeof createReportApi>;
 
 export const createReportApi = (kyInstance: KyInstance) => ({
 	/**
 	 * 특정 사용자를 신고할 수 있는지 확인합니다.
 	 */
-	async checkCanReport(userId: number): Promise<void> {
+	async checkCanReportUser(userId: number): Promise<void> {
 		const raw = await kyInstance
 			.get(`v1/report/users/${userId}/can-report`)
 			.json();
@@ -42,7 +48,59 @@ export const createReportApi = (kyInstance: KyInstance) => ({
 		const raw = await kyInstance
 			.post('v1/report/users', { json: validated })
 			.json();
-		const parsed = ApiResponseSchema(SubmitUserReportDataSchema).safeParse(raw);
+		const parsed = ApiResponseSchema(SubmitReportDataSchema).safeParse(raw);
+
+		if (!parsed.success) {
+			throw new ApiError(
+				'신고 제출 API 응답 형식이 올바르지 않습니다.',
+				'CLIENT_SCHEMA_ERROR',
+			);
+		}
+		if (!parsed.data.success) {
+			throw new ApiError(
+				parsed.data.message ?? '신고 접수에 실패했습니다.',
+				parsed.data.errorCode,
+			);
+		}
+	},
+
+	/**
+	 * 특정 리뷰를 신고할 수 있는지 확인합니다.
+	 */
+	async checkCanReportReview(reviewId: number): Promise<void> {
+		const raw = await kyInstance
+			.get(`v1/report/reviews/${reviewId}/can-report`)
+			.json();
+
+		const parsed = ApiResponseSchema(CanReportReviewDataSchema).safeParse(raw);
+
+		if (!parsed.success) {
+			throw new ApiError(
+				'신고 가능 여부 확인 API 응답 형식이 올바르지 않습니다.',
+				'CLIENT_SCHEMA_ERROR',
+			);
+		}
+		if (!parsed.data.success) {
+			throw new ApiError(
+				parsed.data.message ?? '신고 대상을 확인할 수 없습니다.',
+				parsed.data.errorCode,
+			);
+		}
+	},
+
+	/**
+	 * 리뷰 신고를 제출합니다.
+	 */
+	async submitReviewReport(payload: ReviewReportPayload): Promise<void> {
+		const validated = ReviewReportPayloadSchema.parse(payload);
+
+		const raw = await kyInstance
+			.post('v1/report/reviews', { json: validated })
+			.json();
+
+		const parsed = ApiResponseSchema(SubmitReviewReportDataSchema).safeParse(
+			raw,
+		);
 
 		if (!parsed.success) {
 			throw new ApiError(
