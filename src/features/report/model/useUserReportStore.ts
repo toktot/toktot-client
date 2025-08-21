@@ -6,7 +6,7 @@ import {
 	BaseReportActions,
 	BaseReportState,
 	createBaseReportSlice,
-} from '@/features/report/model/baseReportSlice';
+} from '@/features/report/model/createBaseReportSlice';
 
 import { createAuthApi } from '@/shared/api';
 import { UserId } from '@/shared/model/types';
