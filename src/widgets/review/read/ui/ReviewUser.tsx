@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Author } from '@/entities/review/model/author';
 import Image from 'next/image';
 
-import { ReportUserButton } from '@/features/report/ui/ReportUserButton';
+import { ReportButton } from '@/features/report/ui/ReportButton';
 import { UserExtraInfo } from '@/features/review/read/model/types';
 
 import {
@@ -58,7 +58,7 @@ const ReviewUser = ({ author, extra }: ReviewUserProps) => {
 				<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
 				<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[460px] min-h-40 rounded-t-2xl bg-white shadow-lg px-4">
 					<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
-					<ReportUserButton
+					<ReportButton
 						userId={author.id}
 						nickname={author.nickname}
 						className="w-full px-5 py-4 rounded-3xl border border-grey-20 text-left font-semibold"
