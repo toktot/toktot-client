@@ -5,23 +5,28 @@ import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 
 import { AppShell, Header } from '@/widgets/layout';
-import { ReportFormWidget } from '@/widgets/report/ui/ReportFormWidget';
+import { ReportFormWidget } from '@/widgets/report/user/ui/ReportUserWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
-import { useReportFormStore } from '@/features/report/model/useReportFormStore';
-import { SubmitReportButton } from '@/features/report/ui/SubmitReportButton';
+import { useUserReportStore } from '@/features/report/model/useUserReportStore';
+import { SubmitUserReportButton } from '@/features/report/ui/SubmitUserReportButton';
+
+import { UserId } from '@/shared/model/types';
 
 export default function ReportPage() {
 	const params = useParams();
 	const searchParams = useSearchParams();
-
-	const userId = Number(params.userId);
+	const userIdParam = Array.isArray(params.userId)
+		? params.userId[0]
+		: params.userId;
+	const userIdAsNumber = Number(userIdParam);
+	const userId = userIdAsNumber as UserId;
 	const nickname = searchParams.get('nickname') || '알 수 없는 사용자';
 
-	const initializeForm = useReportFormStore((state) => state.initialize);
+	const initializeForm = useUserReportStore((state) => state.initialize);
 
 	useEffect(() => {
-		initializeForm('user', userId, nickname);
+		initializeForm(userId, nickname);
 	}, [initializeForm, userId, nickname]);
 
 	return (
@@ -34,7 +39,7 @@ export default function ReportPage() {
 			</Header>
 			<ReportFormWidget />
 			<div className="mt-auto sticky p-4 bottom-0">
-				<SubmitReportButton />
+				<SubmitUserReportButton />
 			</div>
 		</AppShell>
 	);
