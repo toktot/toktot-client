@@ -34,6 +34,7 @@ export default function LoginForm() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError('');
+		console.log({ username, password });
 
 		if (!username.trim()) {
 			setError('아이디를 입력해 주세요.');
@@ -51,6 +52,7 @@ export default function LoginForm() {
 		}
 
 		const success = await login(username, password); // 여기만 호출
+		console.log(success);
 
 		if (success) {
 			router.push('/'); // 로그인 성공 시 이동
@@ -65,7 +67,7 @@ export default function LoginForm() {
 			className="flex flex-col items-center gap-4 w-full px-6 pt-[100px]"
 		>
 			<Icon name="Logo" size="xxl" className="w-[100px] h-auto mb-4" />
-			<div className="w-full max-w-[343px]">
+			<div className="w-full max-w-[343px] mt-7">
 				<TextInputWithLabel
 					label="이메일"
 					value={username}
@@ -97,7 +99,7 @@ export default function LoginForm() {
 					className="w-[343px]"
 					disabled={username.trim() === '' || password.trim() === ''}
 					bgColorWhenEnabled="bg-grey-90"
-					textColorWhenEnabled="text-primary-60"
+					textColorWhenEnabled="text-primary-40"
 				/>
 			</div>
 			<Link href="/PasswordFind">
@@ -111,7 +113,7 @@ export default function LoginForm() {
 			<button
 				type="button"
 				onClick={handleKakaoLogin}
-				className="bg-[#FEE500] text-black w-[343px] h-[48px] rounded-[30px] font-medium"
+				className="bg-[#FEE500] text-black w-[343px] h-[48px] rounded-[30px] font-medium mt-20"
 			>
 				카카오로 쉬운 시작
 			</button>

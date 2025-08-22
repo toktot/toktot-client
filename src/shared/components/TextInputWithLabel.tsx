@@ -11,6 +11,7 @@ export type TextInputWithLabelProps = {
 	inputClassName?: string;
 	labelClassName?: string;
 	maxLength?: number;
+	className?: string;
 };
 
 const TextInputWithLabel = forwardRef<
@@ -27,6 +28,7 @@ const TextInputWithLabel = forwardRef<
 			inputClassName = '',
 			labelClassName = '',
 			maxLength,
+			className,
 		},
 		ref,
 	) => {
@@ -40,7 +42,7 @@ const TextInputWithLabel = forwardRef<
 					ref={ref}
 					type={type}
 					maxLength={maxLength}
-					className={`
+					className={`${className}
            
             h-[38px]
             rounded-[10px] 
