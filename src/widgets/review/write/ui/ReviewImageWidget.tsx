@@ -23,9 +23,9 @@ import { ReviewImageWithTooltip } from '@/features/review/write/ui/ReviewImageWi
 
 import {
 	BottomSheet,
-	BottomSheetContent,
 	BottomSheetOverlay,
 } from '@/shared/components/BottomSheet';
+import { PeekableBottomSheetContent } from '@/shared/components/PeekableBottomSheetContent';
 import { ReviewImageId, TooltipId } from '@/shared/model/types';
 import Typography from '@/shared/ui/Typography';
 
@@ -165,8 +165,11 @@ export const ReviewImageWidget = () => {
 
 				<BottomSheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
 					<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
-					<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white shadow-lg">
-						<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
+					{/* <BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white shadow-lg"> */}
+					<PeekableBottomSheetContent
+						peekHeight={105}
+						fullHeight={window.innerHeight * 0.57}
+					>
 						<CreateReviewSheet
 							onComplete={handleTooltipFormComplete}
 							initialCategory={'food'}
@@ -176,7 +179,8 @@ export const ReviewImageWidget = () => {
 								}
 							}}
 						/>
-					</BottomSheetContent>
+					</PeekableBottomSheetContent>
+					{/* </BottomSheetContent> */}
 				</BottomSheet>
 			</div>
 		);
