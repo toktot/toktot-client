@@ -30,7 +30,7 @@ interface BottomSheetContextProps {
 
 const BottomSheetContext = createContext<BottomSheetContextProps | null>(null);
 
-const useBottomSheet = () => {
+export const useBottomSheet = () => {
 	const context = useContext(BottomSheetContext);
 	if (!context) {
 		throw new Error('useBottomSheet must be used within a BottomSheet');
