@@ -8,8 +8,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
 	isUserReportSubmitEnabled,
 	useUserReportStore,
-} from '../model/useUserReportStore';
-import { ConfirmModal } from './ConfirmModal';
+} from '../../model/useUserReportStore';
+import { ConfirmModal } from '../../ui/ConfirmModal';
 
 export const SubmitUserReportButton = () => {
 	const router = useRouter();
