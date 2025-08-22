@@ -2,10 +2,10 @@
 
 import Typography from '@/shared/ui/Typography';
 
-import { useReportFormStore } from '../model/useReportFormStore';
+import { useUserReportStore } from '../../model/useUserReportStore';
 
 export const ReportTargetDisplay = () => {
-	const targetNickname = useReportFormStore((state) => state.targetNickname);
+	const targetNickname = useUserReportStore((state) => state.targetNickname);
 
 	return (
 		<section className="w-full space-y-3">

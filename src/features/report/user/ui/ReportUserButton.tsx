@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 
-import { useReportUser } from '../model/useReportUser';
+import { useReport } from '../../model/useReport';
 
 interface ReportUserButtonProps {
 	userId: number;
@@ -15,7 +15,7 @@ export const ReportUserButton = ({
 	nickname,
 	className,
 }: ReportUserButtonProps) => {
-	const { handleReportClick, isLoading } = useReportUser(userId, nickname);
+	const { handleReportClick, isLoading } = useReport('user', userId, nickname);
 
 	return (
 		<button

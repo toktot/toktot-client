@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Author } from '@/entities/review/model/author';
 import Image from 'next/image';
 
-import { ReportUserButton } from '@/features/report/ui/ReportUserButton';
+import { ReportUserButton } from '@/features/report/user/ui/ReportUserButton';
 import { UserExtraInfo } from '@/features/review/read/model/types';
 
 import {

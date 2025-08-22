@@ -5,14 +5,15 @@ import clsx from 'clsx';
 import { Label } from '@/shared/components/Label';
 import Icon from '@/shared/ui/Icon';
 
-import { useReportFormStore } from '../model/useReportFormStore';
+interface ReportDetailInputProps {
+	checked: boolean;
+	onChange: (agreed: boolean) => void;
+}
 
-export const PrivacyAgreementCheckbox = () => {
-	const isPrivacyAgreed = useReportFormStore((state) => state.isPrivacyAgreed);
-	const setPrivacyAgreed = useReportFormStore(
-		(state) => state.setPrivacyAgreed,
-	);
-
+export const PrivacyAgreementCheckbox = ({
+	checked,
+	onChange,
+}: ReportDetailInputProps) => {
 	return (
 		<section className="w-full flex flex-col gap-3">
 			<Label>
@@ -34,8 +35,8 @@ export const PrivacyAgreementCheckbox = () => {
 			<label className="flex items-center cursor-pointer">
 				<input
 					type="checkbox"
-					checked={isPrivacyAgreed}
-					onChange={(e) => setPrivacyAgreed(e.target.checked)}
+					checked={checked}
+					onChange={(e) => onChange(e.target.checked)}
 					className="hidden text-sm"
 				/>
 				<div className="flex gap-3 items-center ">
@@ -43,7 +44,7 @@ export const PrivacyAgreementCheckbox = () => {
 						name={'Checkmark'}
 						size="xs"
 						className={clsx(
-							isPrivacyAgreed
+							checked
 								? 'fill-primary-20 text-primary-40'
 								: 'fill-grey-30 text-white',
 						)}

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { REPORT_REASONS } from '@/entities/report/config/reasons';
+import { REVIEW_REPORT_REASONS } from '@/entities/report/config/reasons';
 import clsx from 'clsx';
 
 import { Label } from '@/shared/components/Label';
@@ -10,12 +10,13 @@ import { KeywordId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 import MultiCategorySelect from '@/shared/ui/MultiCategorySelect';
 
-import { useReportFormStore } from '../model/useReportFormStore';
+import { useReviewReportStore } from '../../model/useReviewReportStore';
 
-export const ReportReasonSelector = () => {
-	const selectedIdsSet = useReportFormStore((state) => state.selectedReasonIds);
-	const toggleReason = useReportFormStore((state) => state.toggleReason);
-
+export const ReviewReportReasonSelector = () => {
+	const selectedIdsSet = useReviewReportStore(
+		(state) => state.selectedReasonIds,
+	);
+	const toggleReason = useReviewReportStore((state) => state.toggleReason);
 	const selectedIdsArray = useMemo(
 		() => Array.from(selectedIdsSet),
 		[selectedIdsSet],
@@ -40,7 +41,7 @@ export const ReportReasonSelector = () => {
 				onChange={handleChange}
 				className="flex-nowrap flex-col items-start gap-x-[0px]"
 			>
-				{REPORT_REASONS.map((reason) => (
+				{REVIEW_REPORT_REASONS.map((reason) => (
 					<MultiCategorySelect.Item
 						key={reason.id}
 						value={reason.id}
