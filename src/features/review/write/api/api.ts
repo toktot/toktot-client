@@ -55,7 +55,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	): Promise<SessionData> {
 		const raw = await kyInstance
 			.delete(`v1/reviews/images/${imageId}`, {
-				searchParams: { restaurant_id: restaurantId },
+				searchParams: { external_kakao_id: restaurantId },
 			})
 			.json();
 		const parsed = ApiResponseSchema(ImageDeleteResponseSchema).safeParse(raw);
@@ -82,7 +82,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	async getImageSession(restaurantId: number): Promise<SessionData> {
 		const raw = await kyInstance
 			.get('v1/reviews/images', {
-				searchParams: { restaurant_id: restaurantId },
+				searchParams: { external_kakao_id: restaurantId },
 			})
 			.json();
 		const parsed = ApiResponseSchema(ImageSessionResponseSchema).safeParse(raw);
@@ -109,7 +109,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	async clearImageSession(restaurantId: number): Promise<void> {
 		const raw = await kyInstance
 			.delete('v1/reviews/images', {
-				searchParams: { restaurant_id: restaurantId },
+				searchParams: { external_kakao_id: restaurantId },
 			})
 			.json();
 

@@ -121,7 +121,7 @@ export const useReviewImageStore = create<
 
 			const formData = new FormData();
 			validFiles.forEach((file) => formData.append('files', file));
-			formData.append('restaurant_id', String(restaurantId));
+			formData.append('external_kakao_id', String(restaurantId));
 
 			try {
 				const response = await api.uploadImages(formData);
