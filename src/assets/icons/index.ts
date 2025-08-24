@@ -63,9 +63,13 @@ export { default as evening } from './evening.svg';
 export { default as morning } from './morning.svg';
 export { default as call } from './call.svg';
 export { default as Kebab } from './kebab.svg';
+
 export { default as Gasimbi } from './gasimbi.svg';
 export { default as Reset } from './Reset.svg';
 export { default as OrangeGasimbi } from './OrangeGasimbi.svg';
 export { default as GreenGasimbi } from './GreenGasimbi.svg';
 export { default as Menu } from './Menu.svg';
 export { default as Newhome } from './Newhome.svg';
+
+export { default as lunch } from './evening.svg';
+export { default as breakfast } from './morning.svg';

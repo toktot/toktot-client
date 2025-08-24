@@ -8,7 +8,7 @@ export type KeywordCategory =
 	| 'service'
 	| 'atmosphere'
 	| 'accessibility'
-	| 'environment';
+	| 'mealtime';
 
 // 각 카테고리별 키워드 데이터
 export const FOOD_KEYWORDS: Keyword[] = [
@@ -58,19 +58,12 @@ export const ACCESSIBILITY_KEYWORDS: Keyword[] = [
 	{ id: 603 as KeywordId, label: '대중교통 편리' },
 ];
 
-export const ENVIRONMENT_KEYWORDS: Keyword[] = [
-	{ id: 701 as KeywordId, label: '오션뷰' },
-	{ id: 702 as KeywordId, label: '도시가 보이는' },
-	{ id: 703 as KeywordId, label: '산이 보이는' },
-	{ id: 704 as KeywordId, label: '로컬' },
-	{ id: 705 as KeywordId, label: '한적한' },
-	{ id: 706 as KeywordId, label: '붐비는' },
-	{ id: 707 as KeywordId, label: '현지인이 많은' },
-	{ id: 708 as KeywordId, label: '아늑한' },
-	{ id: 709 as KeywordId, label: '트렌디한' },
+export const MEALTIME_KEYWORDS: Keyword[] = [
+	{ id: 701 as KeywordId, label: '아침' },
+	{ id: 702 as KeywordId, label: '점심' },
+	{ id: 703 as KeywordId, label: '저녁' },
 ];
 
-// 모든 키워드 데이터를 카테고리별로 묶어서 export
 export const KEYWORDS_BY_CATEGORY: Record<KeywordCategory, Keyword[]> = {
 	food: FOOD_KEYWORDS,
 	cleanliness: CLEANLINESS_KEYWORDS,
@@ -78,7 +71,7 @@ export const KEYWORDS_BY_CATEGORY: Record<KeywordCategory, Keyword[]> = {
 	service: SERVICE_KEYWORDS,
 	atmosphere: ATMOSPHERE_KEYWORDS,
 	accessibility: ACCESSIBILITY_KEYWORDS,
-	environment: ENVIRONMENT_KEYWORDS,
+	mealtime: MEALTIME_KEYWORDS,
 };
 
 // API 제출 시, ID를 서버가 요구하는 ENUM 문자열로 변환하기 위한 전체 맵
@@ -124,15 +117,8 @@ export const KEYWORD_ID_TO_ENUM_MAP: Record<KeywordId, string> = {
 	602: 'EASY_TO_FIND',
 	603: 'PUBLIC_TRANSPORT',
 
-	//FIXME: 레거시 데이터, 삭제 요망
-	// ENVIRONMENT_KEYWORDS
-	701: 'OCEAN_VIEW',
-	702: 'CITY_VIEW',
-	703: 'MOUNTAIN_VIEW',
-	704: 'LOCAL',
-	705: 'QUIET',
-	706: 'CROWDED',
-	707: 'LOCAL_POPULAR',
-	708: 'COZY',
-	709: 'TRENDY',
+	// MEALTIME_KEYWORDS
+	701: 'BREAKFASE',
+	702: 'LUNCH',
+	703: 'DINNER',
 } as Record<KeywordId, string>;
