@@ -28,7 +28,7 @@ const buildSubmitPayload = (
 	const finalKeywords = useKeywordStore.getState().getFinalKeywords();
 
 	return {
-		restaurant_id: restaurantId,
+		external_kakao_id: restaurantId,
 		keywords: finalKeywords,
 		images: images.map((image) => ({
 			image_id: image.id,
