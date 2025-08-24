@@ -6,6 +6,8 @@ import { create } from 'zustand';
 
 import { KeywordId } from '@/shared/model/types';
 
+// export type SingleSelectKeywordCategory = 'priceRange';
+
 interface KeywordState {
 	selectedKeywords: Record<KeywordCategory, Set<KeywordId>>;
 }
@@ -14,6 +16,10 @@ interface KeywordActions {
 	toggleKeyword: (category: KeywordCategory, keywordId: KeywordId) => void;
 	getFinalKeywords: () => string[];
 	clearAllKeywords: () => void;
+	selectSingleKeyword: (
+		category: KeywordCategory,
+		keywordId: KeywordId,
+	) => void;
 }
 
 export const useKeywordStore = create<KeywordState & KeywordActions>()(
@@ -26,7 +32,7 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			service: new Set(),
 			atmosphere: new Set(),
 			accessibility: new Set(),
-			environment: new Set(),
+			mealtime: new Set(),
 		},
 
 		// 키워드 토글 액션
@@ -65,6 +71,17 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			return finalKeywords;
 		},
 
+		selectSingleKeyword: (category, keywordId) => {
+			set((state) => {
+				const newSelectedKeywords = { ...state.selectedKeywords };
+				const categorySet = new Set<KeywordId>();
+				categorySet.add(keywordId);
+				newSelectedKeywords[category] = categorySet;
+
+				return { selectedKeywords: newSelectedKeywords };
+			});
+		},
+
 		// 모든 키워드 초기화
 		clearAllKeywords: () => {
 			set({
@@ -75,7 +92,7 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 					service: new Set(),
 					atmosphere: new Set(),
 					accessibility: new Set(),
-					environment: new Set(),
+					mealtime: new Set(),
 				},
 			});
 		},
