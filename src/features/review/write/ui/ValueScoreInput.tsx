@@ -79,9 +79,6 @@ export const ValueScoreInput = () => {
 					작성한 가게의
 					<br /> 가심비를 알려주세요
 				</Typography>
-				<p className="text-xs text-gray-500 mt-2">
-					(0점부터 100점까지 입력 가능해요.)
-				</p>
 			</div>
 			<div className="flex justify-center items-center gap-2">
 				<input
@@ -130,9 +127,10 @@ export const ValueScoreInput = () => {
       focus:outline-none"
 				/>
 			</div>
-			{errors.d1 && (
-				<p className="text-red-500 text-sm mt-2">{errors.d1.message}</p>
-			)}
+			{errors.d1 && <p className="text-red-500 text-sm">{errors.d1.message}</p>}
+			<p className="text-xs text-gray-500 mt-2">
+				0점부터 100점까지 입력 가능해요.
+			</p>
 		</section>
 	);
 };
