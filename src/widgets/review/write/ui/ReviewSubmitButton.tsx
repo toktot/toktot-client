@@ -26,11 +26,13 @@ const buildSubmitPayload = (
 ): ReviewSubmitPayload => {
 	const { tooltips, tooltipsByImageId } = useReviewWriteStore.getState();
 	const { mealTime, keywords } = useKeywordStore.getState().getSubmitData();
+	const { valueForMoneyScore } = useReviewWriteStore.getState();
 
 	return {
 		external_kakao_id: restaurantId,
 		keywords: keywords,
 		meal_time: mealTime,
+		value_for_money_score: valueForMoneyScore ?? 0, // 혹은 null 대신 기본값 결정
 		images: images.map((image) => ({
 			image_id: image.id,
 			order: image.order,
@@ -73,35 +75,17 @@ export const ReviewSubmitButton = ({
 }: ReviewSubmitButtonProps) => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-
 	const imageManager = useReviewImageManager(restaurantId);
 
-	const hasImages = imageManager.images.length > 0;
-
-	const keywordStore = useKeywordStore();
-
-	const { mealTime, keywords } = keywordStore.getSubmitData();
-	const hasKeywords = keywords.length > 0;
-	console.log('🚀 ~ ReviewSubmitButton ~ hasKeywords:', hasKeywords);
-
-	const hasMealTime = Boolean(mealTime);
-
-	const isDisabled = isLoading || !hasImages || !hasKeywords || !hasMealTime;
+	const isDisabled = isLoading;
 
 	const getButtonText = () => {
 		if (isLoading) return '리뷰 제출 중...';
-		if (!hasImages) return '이미지를 등록해주세요';
-		if (!hasKeywords) return '키워드를 선택해주세요';
-		if (!hasMealTime) return '식사시간을 선택해주세요';
+
 		return '다음';
 	};
 
 	const handleSubmit = async () => {
-		if (imageManager.images.length === 0) {
-			alert('이미지를 1장 이상 등록해주세요.');
-			return;
-		}
-
 		setIsLoading(true);
 		try {
 			const payload = buildSubmitPayload(restaurantId, imageManager.images);

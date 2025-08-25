@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
@@ -16,7 +16,6 @@ import { mapServerImagesToUploadReviewImages } from '../api/mappers';
 import { MAX_FILE_SIZE, MAX_IMAGE_COUNT } from '../model/constants';
 import { UploadReviewImage } from '../model/image';
 
-// --- 타입 정의 ---
 interface ReviewImageState {
 	images: UploadReviewImage[];
 	mainImageId: ReviewImageId | null;
@@ -43,7 +42,6 @@ const initialState: ReviewImageState = {
 	restaurantId: null,
 };
 
-// --- 스토어 구현 ---
 export const useReviewImageStore = create<
 	ReviewImageState & ReviewImageActions
 >()(
@@ -200,7 +198,6 @@ export const useReviewImageStore = create<
 	})),
 );
 
-// ────────── 기존 훅과의 호환성을 위한 래퍼 ──────────
 export const useReviewImageManager = (restaurantId: number) => {
 	const {
 		images,
@@ -216,8 +213,7 @@ export const useReviewImageManager = (restaurantId: number) => {
 		mainImageId,
 	} = useReviewImageStore();
 
-	// restaurantId가 변경되면 스토어에 설정
-	useMemo(() => {
+	useEffect(() => {
 		setRestaurantId(restaurantId);
 	}, [restaurantId, setRestaurantId]);
 
