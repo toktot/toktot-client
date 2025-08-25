@@ -77,7 +77,10 @@ export const ReviewSubmitButton = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const imageManager = useReviewImageManager(restaurantId);
 
-	const isDisabled = isLoading;
+	const valueForMoneyScore = useReviewWriteStore(
+		(state) => state.valueForMoneyScore,
+	);
+	const isDisabled = isLoading || valueForMoneyScore === null;
 
 	const getButtonText = () => {
 		if (isLoading) return '리뷰 제출 중...';
@@ -116,7 +119,7 @@ export const ReviewSubmitButton = ({
 			onClick={handleSubmit}
 			disabled={isDisabled}
 			className="w-full p-2 text-primary-40  text-lg font-semibold bg-grey-90 rounded-3xl disabled:bg-grey-50 disabled:text-white disabled:cursor-not-allowed"
-			aria-label="리뷰 저장하기"
+			aria-label="리뷰 제출하기"
 		>
 			{getButtonText()}
 		</button>
