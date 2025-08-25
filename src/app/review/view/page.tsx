@@ -1,13 +1,10 @@
-'use client';
-
-import React from 'react';
-
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { ReviewOptionsMenu } from '@/features/review/read/ui/ReviewOptionsMenu';
 
-import Icon from '@/shared/ui/Icon';
+import { ReviewId } from '@/shared/model/types';
 
 const page = () => {
 	return (
@@ -20,12 +17,13 @@ const page = () => {
 					<span className="text-white">위치 표시</span>
 				</Header.Center>
 				<Header.Right>
-					<span className="text-white">
-						<Icon name={'Kebab'} className="text-white" />
-					</span>
+					<ReviewOptionsMenu reveiwId={'1' as ReviewId} />
 				</Header.Right>
 			</Header>
-			<ReviewStoryFeed />
+
+			<main className="flex-1">
+				<ReviewStoryFeed />
+			</main>
 		</AppShell>
 	);
 };

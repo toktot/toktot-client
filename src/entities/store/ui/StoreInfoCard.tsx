@@ -19,12 +19,10 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 			/>
 			<div className="w-60 self-stretch inline-flex flex-col justify-between">
 				<div className="inline-flex justify-start items-center gap-1.5">
-					<div className="justify-center text-grey-80 text-sm font-semibold">
+					<div className="justify-center text-sm font-semibold">
 						{store.storeName}
 					</div>
-					<div className="justify-center text-grey-80 text-xs">
-						{store.mainMenu}
-					</div>
+					<div className="justify-center text-xs">{store.mainMenu}</div>
 				</div>
 				<div className="inline-flex justify-start items-center gap-1">
 					<div className="justify-center text-xs">{store.address}</div>

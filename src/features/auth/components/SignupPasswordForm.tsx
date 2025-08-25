@@ -37,6 +37,7 @@ export default function SignupPasswordForm({ onSuccess }: SignupNicknameProps) {
 				onChange={setPassword}
 				placeholder="비밀번호를 입력하세요."
 				type="password"
+				className="w-full min-w-[343px]"
 			/>
 
 			<div className="text-sm ml-2 flex gap-6">
@@ -53,6 +54,7 @@ export default function SignupPasswordForm({ onSuccess }: SignupNicknameProps) {
 				onChange={setConfirm}
 				placeholder="비밀번호를 다시 입력하세요."
 				type="password"
+				className="w-full min-w-[343px]"
 				inputClassName={`${
 					isConfirmValid
 						? 'text-grey-90 border border-grey-10'
@@ -76,7 +78,7 @@ export default function SignupPasswordForm({ onSuccess }: SignupNicknameProps) {
 				onClick={() => onSuccess(password)}
 				text="다음"
 				disabled={!canSubmit}
-				className={`w-full h-[48px] rounded-md font-semibold ${
+				className={`min-w-[343px] rounded-2xl font-semibold mt-55 ${
 					canSubmit
 						? 'bg-grey-90 text-primary-40'
 						: 'bg-grey-20 text-grey-50 cursor-not-allowed'

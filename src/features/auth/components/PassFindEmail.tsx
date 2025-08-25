@@ -23,34 +23,10 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const isEmailValidFormat = (email: string) =>
 		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
 	useEffect(() => {
 		if (!email) return setEmailStatus('idle');
 		if (!isEmailValidFormat(email)) return setEmailStatus('invalid');
-
-		const checkEmail = async () => {
-			try {
-				const res = await fetch(
-					'https://api.toktot.site/v1/auth/password/reset/send',
-					{
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ email }),
-					},
-				);
-				const data = await res.json();
-				console.log(data.errorCode);
-				if (data.errorCode === 'USER_NOT_FOUND') {
-					setEmailStatus('not_found');
-				} else {
-					setEmailStatus('valid');
-				}
-			} catch (err) {
-				console.error(err);
-				setEmailStatus('not_found');
-			}
-		};
-		checkEmail();
+		setEmailStatus('valid');
 	}, [email]);
 
 	useEffect(() => {
@@ -67,7 +43,6 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 		const s = String(sec % 60).padStart(2, '0');
 		return `${m}분 ${s}초`;
 	};
-
 	const handleSendCode = async () => {
 		try {
 			const res = await fetch(
@@ -81,6 +56,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 				},
 			);
 			const data = await res.json();
+			console.log(data);
 			if (res.ok) {
 				setVerificationSent(true);
 				setTimer(300);
@@ -97,14 +73,16 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 	const handleCheckCode = async () => {
 		try {
 			const res = await fetch(
-				'https://api.toktot.site/v1/auth/password/reset/send',
+				'https://api.toktot.site/v1/auth/password/reset/verify',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, verfication_code: code }),
+					body: JSON.stringify({ email, verification_code: code }),
 				},
 			);
 			const data = await res.json();
+			console.log(data);
+			console.log(data);
 			if (data.success) {
 				setCodeStatus('valid');
 			} else {
@@ -117,7 +95,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 	return (
 		<div className="p-6 space-y-4 max-w-md">
 			<TextInputWithLabel
-				label="에메일"
+				label="이메일"
 				value={email}
 				onChange={(value) => setEmail(value)}
 				placeholder="이메일을 입력해주세요."
@@ -187,7 +165,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 			<PrimaryButton
 				text="다음"
 				onClick={() => onSuccess(email)}
-				disabled={code.length !== 6 || codeStatus === 'valid'}
+				disabled={codeStatus !== 'valid'}
 				className="w-[343px]"
 				bgColorWhenEnabled="bg-grey-90"
 				textColorWhenEnabled="text-primary-40"

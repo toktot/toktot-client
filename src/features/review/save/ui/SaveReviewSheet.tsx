@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { MAX_REVIEWS_PER_FOLDER } from '@/entities/review-folder/model/constants';
 import { useReviewFolderStore } from '@/entities/review-folder/model/store';
@@ -20,8 +20,8 @@ export const SaveReviewSheet = ({
 	reviewId,
 	onClose,
 }: SaveReviewSheetProps) => {
-	const { folders, addFolder, saveReviewsToFolders } = useReviewFolderStore();
-
+	const { folders, fetchFolders, addFolder, saveReviewsToFolders } =
+		useReviewFolderStore();
 	const [selectedFolderIds, setSelectedFolderIds] = useState<ReviewFolderId[]>(
 		() => {
 			const alreadySavedIds = folders
@@ -36,6 +36,10 @@ export const SaveReviewSheet = ({
 			return defaultFolder ? [defaultFolder.id] : [];
 		},
 	);
+
+	useEffect(() => {
+		fetchFolders();
+	}, [fetchFolders]);
 
 	const handleToggleFolder = (folderId: ReviewFolderId) => {
 		setSelectedFolderIds((prev) =>

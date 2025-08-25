@@ -39,7 +39,7 @@ export default function SignupPasswordForm({
 		setLoading(true);
 		try {
 			const res = await fetch(
-				'https://api.toktot.site/v1/auth/password/reset/complete',
+				'https://api.toktot.site/v1/auth/password/reset/update',
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -73,6 +73,7 @@ export default function SignupPasswordForm({
 				onChange={setPassword}
 				placeholder="비밀번호를 입력하세요."
 				type="password"
+				className="w-full min-w-[343px]"
 			/>
 
 			<div className="text-sm ml-2 flex gap-6">
@@ -88,11 +89,12 @@ export default function SignupPasswordForm({
 				value={confirm}
 				onChange={setConfirm}
 				placeholder="비밀번호를 다시 입력하세요."
+				className="w-full min-w-[343px]"
 				type="password"
 				inputClassName={`${
 					confirm.length > 0 ? 'border-primary-40 focus:border-primary-40' : ''
 				}`}
-				labelClassName={`${confirm.length > 0 ? 'text-primary-40' : ''}`}
+				labelClassName="text-grey-60"
 			/>
 			{isConfirmValid && (
 				<p className="text-green-500 text-sm ml-2">비밀번호가 동일합니다.</p>
@@ -108,7 +110,7 @@ export default function SignupPasswordForm({
 				onClick={handleResetPassword}
 				text="가입하기"
 				disabled={!canSubmit}
-				className={`w-full h-[48px] rounded-md font-semibold ${
+				className={`min-w-[343px] rounded-2xl mt-80 h-[48px] font-semibold ${
 					canSubmit
 						? 'bg-grey-90 text-primary-40'
 						: 'bg-grey-20 text-grey-50 cursor-not-allowed'

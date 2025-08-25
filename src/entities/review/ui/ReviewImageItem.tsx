@@ -1,46 +1,24 @@
+import clsx from 'clsx';
 import Image from 'next/image';
 
-import Icon from '@/shared/ui/Icon';
-
-import { ReviewImage } from '../model/image';
+import { UploadReviewImage } from '../model/image';
 
 interface Props {
-	image: ReviewImage;
-	showTooltipCount?: boolean;
-	onSelectImage: (image: ReviewImage) => void;
-	onDeleteImage?: () => void;
+	image: UploadReviewImage;
+	onSelect: (image: UploadReviewImage) => void;
+	isSelected?: boolean;
 }
 
-export const ReviewImageItem = ({
-	image,
-	showTooltipCount = true,
-	onSelectImage,
-	onDeleteImage,
-}: Props) => {
-	const tooltipCount = image.tooltipIds.length;
-
+export const ReviewImageItem = ({ image, onSelect, isSelected }: Props) => {
 	return (
 		<div
-			className="relative w-9 rounded-xl"
-			onClick={() => onSelectImage(image)}
+			className={clsx(
+				'relative w-9 h-9 rounded-xl overflow-hidden border-2',
+				isSelected ? 'border-primary-40' : 'border-transparent',
+			)}
+			onClick={() => onSelect(image)}
 		>
-			<Image src={image.url} alt="리뷰 이미지" fill />
-			{onDeleteImage && (
-				<button
-					className="absolute top-1 right-1 z-10"
-					onClick={(e) => {
-						e.stopPropagation();
-						onDeleteImage();
-					}}
-				>
-					<Icon name="Cancel" size="s" />
-				</button>
-			)}
-			{showTooltipCount && tooltipCount > 0 && (
-				<div className="absolute bottom-1 right-1 bg-primary text-primary-50 text-xs px-1 py-0.5 rounded-full bg-grey-10">
-					{tooltipCount}
-				</div>
-			)}
+			<Image src={image.url} alt="리뷰 이미지" fill sizes="36px" />
 		</div>
 	);
 };

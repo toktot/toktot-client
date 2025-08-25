@@ -19,16 +19,26 @@ export default function SignupPage() {
 	const [password, setPassword] = useState('');
 
 	const renderTitle = () => {
+		let title = '';
 		switch (step) {
 			case 'email':
-				return '이메일을 입력해주세요';
+				title = '이메일을 입력해주세요';
+				break;
 			case 'password':
-				return '비밀번호를 입력해주세요';
+				title = '비밀번호를 입력해주세요';
+				break;
 			case 'nickname':
-				return '닉네임을 입력해주세요';
+				title = '닉네임을 입력해주세요';
+				break;
 			case 'complete':
-				return '';
+				return null;
 		}
+		return title.split(' ').map((word, idx, arr) => (
+			<span key={idx}>
+				{word}
+				{idx < arr.length - 1 && <br />}
+			</span>
+		));
 	};
 	const handleRegister = async () => {
 		try {
@@ -45,11 +55,14 @@ export default function SignupPage() {
 				}),
 			});
 			const data = await res.json();
+			console.log({ email, password, nickname });
+			console.log(res.status);
+			console.log(data);
 
 			if (data.success) {
 				alert('회원가입이 완료됐습니다.');
 			} else {
-				alert(data.message || '회원가입에 실패했습니다.');
+				console.log(data.message || '회원가입에 실패했습니다.');
 			}
 		} catch (err) {
 			alert('서버와 연결할 수 없습니다.');
@@ -57,21 +70,29 @@ export default function SignupPage() {
 		}
 	};
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-start pt-6">
+		<div
+			className={`min-h-screen flex flex-col items-center justify-start pt-6 ${
+				step === 'agreement' ? 'bg-grey-40' : 'bg-white'
+			}`}
+		>
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'Back'} size="m" className="ml-10"></Icon>
+				<Icon name={'Back'} size="m" className="text-grey-70"></Icon>
 				<h1 className="text-base font-semibold">회원가입</h1>
-				<Icon name={'None'} size="m" className="mr-15"></Icon>
+				<Icon name={'None'} size="m" className="text-grey-70"></Icon>
 			</div>
 			{step !== 'complete' && step !== 'agreement' && (
-				<p className="text-lg font-semibold text-center mt-8">
+				<p className="text-[28px] font-semibold mt-15 ml-5 self-start">
 					{renderTitle()}
 				</p>
 			)}
 			<div className="flex flex-1 justify-center items-start">
 				<div className="w-full max-w-md mt-10 px-6">
 					{step === 'agreement' && (
-						<AgreementModal onAgree={() => setStep('email')} />
+						<div className="fixed insert-0 flex items-end justify-center z-50">
+							<div className="absolute insert-0 bg-black/80 backdrop-blur-sm"></div>
+
+							<AgreementModal onAgree={() => setStep('email')} />
+						</div>
 					)}
 					{step === 'email' && (
 						<SignupEmailForm
@@ -98,15 +119,17 @@ export default function SignupPage() {
 						/>
 					)}
 					{step === 'complete' && (
-						<p className="text-center text-[#000000] text-[28px] font-bold h-[34px] mt-12">
-							환영해요, {nickname}님!
-							<button
-								className="w-[335px] h-[48px] mt-6 rounded-md font-semibold bg-grey-90 text-primary-40"
-								onClick={handleRegister}
-							>
-								다음
-							</button>
-						</p>
+						<div className="flex flex-col items-center justify-center mt-50">
+							<div className="text-center text-[#000000] text-[28px] font-bold h-[34px] mt-12">
+								환영해요, {nickname}님!
+								<button
+									className="min-w-[343px] h-[48px] mt-80 rounded-2xl font-semibold bg-grey-90 text-primary-40"
+									onClick={handleRegister}
+								>
+									다음
+								</button>
+							</div>
+						</div>
 					)}
 				</div>
 			</div>

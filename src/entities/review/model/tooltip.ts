@@ -32,17 +32,18 @@ interface BaseTooltip {
 	description?: string;
 }
 
-interface FoodTooltip extends BaseTooltip {
+export interface FoodTooltip extends BaseTooltip {
 	category: 'food';
 	menuName: string;
 	price: number;
+	servings: number;
 }
 
-interface ServiceTooltip extends BaseTooltip {
+export interface ServiceTooltip extends BaseTooltip {
 	category: 'service';
 }
 
-interface CleanTooltip extends BaseTooltip {
+export interface CleanTooltip extends BaseTooltip {
 	category: 'clean';
 }
 
