@@ -39,8 +39,9 @@ export const ReviewImageWidget = () => {
 		deleteImage,
 		initializeImages,
 		remainingSlots,
+		setMainImage,
+		mainImageId,
 	} = useReviewImageManager(1);
-
 	const {
 		buildInteractiveImages,
 		beginTooltipForImage,
@@ -208,6 +209,8 @@ export const ReviewImageWidget = () => {
 									setIsEditing(true);
 								}}
 								onDelete={() => handleDeleteImage(image.id)}
+								isMain={image.id === mainImageId}
+								onSetMain={() => setMainImage(image.id)}
 							/>
 						))}
 					</div>
