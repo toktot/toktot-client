@@ -133,8 +133,23 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 	const handleFilterChange = (newFilter: number | null) => {
 		onChange(newFilter);
 		const params = new URLSearchParams(searchParams.toString());
-		if (newFilter !== null) params.set('filter', newFilter.toString());
-		else params.delete('filter');
+
+		if (newFilter !== null) {
+			params.set('filter', newFilter.toString());
+			params.set('focus', newFilter.toString());
+			detailCategories.forEach((category) => {
+				const raw = searchParams.get(category.id);
+				if (raw) {
+					params.set(category.id, raw); // food=1,2 이런식
+				}
+			});
+
+			router.push(
+				`/searchDetection?focus=${newFilter}&rating=${rating}&distance=${distance ?? ''}&meal=${mealTime ?? ''}&maxPrice=${maxPrice}&minPrice=${minPrice}&menu=${menu}${params.toString()}`,
+			);
+		} else {
+			params.delete('filter');
+		}
 	};
 	useEffect(() => {
 		const tags: string[] = [];

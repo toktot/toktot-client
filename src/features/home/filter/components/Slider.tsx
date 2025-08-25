@@ -5,6 +5,8 @@ interface PriceRangeProps {
 	avg: number;
 	max: number;
 	onChange?: (minSelected: number, maxSelected: number) => void;
+	initialMin?: number;
+	initialMax?: number;
 }
 
 export default function PriceRangeSlider({
@@ -12,13 +14,19 @@ export default function PriceRangeSlider({
 	avg,
 	max,
 	onChange,
+	initialMin,
+	initialMax,
 }: PriceRangeProps) {
-	const [minValue, setMinValue] = useState(min);
-	const [maxValue, setMaxValue] = useState(max);
-
+	const [minValue, setMinValue] = useState(initialMin ?? min);
+	const [maxValue, setMaxValue] = useState(initialMax ?? max);
+	useEffect(() => {
+		if (initialMin !== undefined) setMinValue(initialMin);
+		if (initialMax !== undefined) setMaxValue(initialMax);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 	useEffect(() => {
 		onChange?.(minValue, maxValue);
-	}, [minValue, maxValue, onChange]);
+	});
 
 	const trackRef = useRef<HTMLDivElement | null>(null);
 
@@ -37,10 +45,8 @@ export default function PriceRangeSlider({
 					? moveEvent.touches[0].clientX
 					: moveEvent.clientX;
 
-			const percent = Math.min(
-				Math.max((clientX - trackRect.left) / trackRect.width, 0),
-				1,
-			);
+			let percent = (clientX - trackRect.left) / trackRect.width;
+			percent = Math.min(Math.max(percent, 0), 1);
 			const newValue = Math.round(min + percent * (max - min));
 
 			if (type === 'min' && newValue < maxValue) setMinValue(newValue);
@@ -71,10 +77,11 @@ export default function PriceRangeSlider({
 				ref={trackRef}
 			>
 				<div
-					className="absolute h-2 rounded-full bg-gradient-to-r from-[#EDD067] via-[#EF9874] to-[#F17A7A] p-[3px]"
+					className="absolute h-2 rounded-full "
 					style={{
 						left: `${minPercent}%`,
 						width: `${maxPercent - minPercent}%`,
+						background: `linear-gradient(to right, #C2CCD7, #38DEFF, #1A73E9, #67E6FF)`,
 					}}
 				/>
 				{/* Min handle */}
@@ -109,7 +116,7 @@ export default function PriceRangeSlider({
 					<span className="text-xs text-grey-60">{avg.toLocaleString()}원</span>
 				</div>
 				<div className="flex flex-col items-center">
-					<span className="text-[11px] text-grey-85">값이 있는</span>
+					<span className="text-[11px] text-grey-85">최고가</span>
 					<span className="text-xs text-grey-60">{max.toLocaleString()}원</span>
 				</div>
 			</div>

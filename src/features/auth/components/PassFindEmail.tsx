@@ -6,7 +6,7 @@ import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 
 type PassFindEmailProps = {
-	onSuccess: () => void;
+	onSuccess: (email: string) => void;
 };
 
 export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
@@ -30,11 +30,14 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 		const checkEmail = async () => {
 			try {
-				const res = await fetch('http://13.209.53.44/api/v1/auth/login', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email }),
-				});
+				const res = await fetch(
+					'https://api.toktot.site/v1/auth/password/reset/send',
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email }),
+					},
+				);
 				const data = await res.json();
 				console.log(data.errorCode);
 				if (data.errorCode === 'USER_NOT_FOUND') {
@@ -67,22 +70,23 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleSendCode = async () => {
 		try {
-			const res = await fetch('http://13.209.53.44/api/v1/auth/email/send', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
+			const res = await fetch(
+				'https://api.toktot.site/v1/auth/password/reset/send',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ email }),
 				},
-				body: JSON.stringify({ email }),
-			});
+			);
 			const data = await res.json();
-			console.log(data.message);
-			if (data.message === '이미 사용중인 이메일입니다.') {
+			if (res.ok) {
 				setVerificationSent(true);
 				setTimer(300);
 				alert('인증번호가 전송됐습니다.');
 			} else {
-				console.warn('인증 이메일 전송 실패', data);
-				alert(data.message || '인증번호 전송에 실패했습니다.');
+				alert(data.message || '인증번호 전송 실패');
 			}
 		} catch (err) {
 			console.error(err);
@@ -92,42 +96,19 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 	const handleCheckCode = async () => {
 		try {
-			const res = await fetch('http://13.209.53.44/api/v1/auth/email/verify', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-
-				body: JSON.stringify({ email, verification_code: code }),
-			});
+			const res = await fetch(
+				'https://api.toktot.site/v1/auth/password/reset/send',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email, verfication_code: code }),
+				},
+			);
 			const data = await res.json();
-			console.log('verify 응답', data);
 			if (data.success) {
 				setCodeStatus('valid');
 			} else {
 				setCodeStatus('invalid');
-			}
-		} catch (err) {
-			console.error('서버 연결 실패', err);
-			alert('서버에 연결할 수 없습니다.');
-		}
-	};
-	const canGoNext = emailStatus === 'valid' && codeStatus === 'valid';
-
-	const handleResetPassword = async () => {
-		try {
-			const res = await fetch(
-				'http://13.209.53.44/api/v1/auth/password/reset/send',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email }),
-				},
-			);
-			const data = await res.json();
-
-			if (data.success) {
-				onSuccess();
-			} else {
-				alert(data.message);
 			}
 		} catch (err) {
 			console.error(err);
@@ -205,8 +186,8 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 
 			<PrimaryButton
 				text="다음"
-				onClick={handleResetPassword}
-				disabled={!canGoNext}
+				onClick={() => onSuccess(email)}
+				disabled={code.length !== 6 || codeStatus === 'valid'}
 				className="w-[343px]"
 				bgColorWhenEnabled="bg-grey-90"
 				textColorWhenEnabled="text-primary-40"

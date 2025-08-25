@@ -9,7 +9,7 @@ import PassSet from '../../features/auth/components/PassSet';
 
 export default function SignupPage() {
 	const [step, setStep] = useState<'email' | 'password' | 'complete'>('email');
-
+	const [email, setEmail] = useState(''); // ✅ email state 추가
 	const renderTitle = () => {
 		switch (step) {
 			case 'email':
@@ -35,10 +35,15 @@ export default function SignupPage() {
 			<div className="flex flex-1 justify-center items-start">
 				<div className="w-full max-w-md mt-10 px-6">
 					{step === 'email' && (
-						<PassFindEmail onSuccess={() => setStep('password')} />
+						<PassFindEmail
+							onSuccess={(emailFromChild) => {
+								setEmail(emailFromChild);
+								setStep('password');
+							}}
+						/>
 					)}
 					{step === 'password' && (
-						<PassSet onSuccess={() => setStep('complete')} />
+						<PassSet email={email} onSuccess={() => setStep('complete')} />
 					)}
 
 					{step === 'complete' && (

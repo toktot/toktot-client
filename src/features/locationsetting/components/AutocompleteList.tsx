@@ -7,7 +7,7 @@ import Icon from '@/shared/ui/Icon';
 
 interface Props {
 	query: string;
-	onSelect: (address: string, dixsplayName: string) => void;
+	onSelect: (address: string, displayName: string) => void;
 	onCurrentLocationClick?: () => void;
 	onGoNextStep?: () => void;
 }
@@ -19,6 +19,34 @@ interface Place {
 	road_address_name: string;
 	x: string;
 	y: string;
+}
+
+interface KakaoResponse {
+	documents: Place[];
+	meta: {
+		total_count: number;
+		pageable_count: number;
+		is_end: boolean;
+	};
+}
+
+const JEJU_POLYGON: [number, number][] = [
+	[126.1453, 33.1908], // SW
+	[126.9722, 33.1908], // SE
+	[126.9722, 33.5639], // NE
+	[126.1453, 33.5639], // NW
+];
+
+function isInsidePolygon(x: number, y: number, polygon: [number, number][]) {
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const [xi, yi] = polygon[i];
+		const [xj, yj] = polygon[j];
+		const intersect =
+			yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+		if (intersect) inside = !inside;
+	}
+	return inside;
 }
 
 export default function AutocompleteList({
@@ -35,28 +63,37 @@ export default function AutocompleteList({
 			setPlaces([]);
 			return;
 		}
+
 		const fetchPlaces = async () => {
 			try {
-				const JEJU_POLYGON =
-					'126.1453,33.1908,126.9722,33.1908,126.9722,33.5639,126.1453,33.5639';
-				const res = await fetch(
-					`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
-						query,
-					)}&polygon=${JEJU_POLYGON}&size=10`,
-					{
-						method: 'GET',
-						headers: {
-							Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
-						},
+				const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
+					query,
+				)}&size=10`;
+
+				const res = await fetch(url, {
+					headers: {
+						Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}`,
 					},
+				});
+
+				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+				const data: KakaoResponse = await res.json();
+
+				const jejuPlaces = data.documents.filter((place) =>
+					isInsidePolygon(
+						parseFloat(place.x),
+						parseFloat(place.y),
+						JEJU_POLYGON,
+					),
 				);
-				const data = await res.json();
-				console.log(data);
-				setPlaces(data.documents || []);
+
+				setPlaces(jejuPlaces);
 			} catch (error) {
 				console.error(error);
 			}
 		};
+
 		fetchPlaces();
 	}, [query]);
 

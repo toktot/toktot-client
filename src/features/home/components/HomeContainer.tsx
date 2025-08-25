@@ -10,7 +10,9 @@ import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
-import StoreInfoCard from '@/shared/components/StoreCard';
+import StoreInfoCard, {
+	StoreInfoCardProps,
+} from '@/shared/components/StoreCard';
 import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
@@ -118,9 +120,23 @@ export default function HomeContainer() {
 					</div>
 				) : (
 					<div className="flex flex-col gap-4">
-						{filteredStores.map((store) => (
-							<StoreInfoCard key={store.id} review={store} />
-						))}
+						{filteredStores.map((store) => {
+							const mappedReview: StoreInfoCardProps['review'] = {
+								id: String(store.id), // number → string
+								storeImageUrl: store.storeImageUrl,
+								storeName: store.storeName,
+								isKindStore: store.isKindStore,
+								mainMenus:
+									store.mainMenus ?? (store.mainMenu ? [store.mainMenu] : []), // 배열 보장
+								reviewCount: store.reviewCount ?? 0,
+								valueScore: store.valueScore ?? 0,
+								topPercent: store.topPercent ?? 0,
+								address: store.address,
+								rating: store.rating ?? store.ratingNumber ?? 0, // number 보장
+								distance: store.distance,
+							};
+							return <StoreInfoCard key={store.id} review={mappedReview} />;
+						})}
 						{filteredStores.length === 0 && (
 							<p className="text-sm text-gray-400 w-full py-10 text-center">
 								해당 검색어와 일치하는 가게가 없어요.

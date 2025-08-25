@@ -6,12 +6,19 @@ import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 
 type PassSetProps = {
+	email: string;
+
 	onSuccess: () => void;
 };
 
-export default function SignupPasswordForm({ onSuccess }: PassSetProps) {
+export default function SignupPasswordForm({
+	email,
+
+	onSuccess,
+}: PassSetProps) {
 	const [password, setPassword] = useState('');
 	const [confirm, setConfirm] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	const isPasswordLengthValid = password.length >= 8 && password.length <= 20;
 	const isPasswordPatternValid =
@@ -21,34 +28,42 @@ export default function SignupPasswordForm({ onSuccess }: PassSetProps) {
 	const isPasswordValid = isPasswordLengthValid && isPasswordPatternValid;
 	const isConfirmValid = password === confirm && confirm.length > 0;
 
-	const canSubmit = isPasswordValid && isConfirmValid;
+	const canSubmit = isPasswordValid && isConfirmValid && !loading;
 
 	const getTextColor = (isValid: boolean) => {
 		if (password.length === 0) return 'text-grey-50';
 		return isValid ? 'text-green-500' : 'text-red-500';
 	};
-	/*
-  const handleResetPassword = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("http://13.209.53.44:8080/api/v1/auth/password/reset/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({new_password: password }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      onSuccess();
-    } else {
-      alert(data.message || "비밀번호 변경에 실패했습니다.")
-    }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-*/
+
+	const handleResetPassword = async () => {
+		setLoading(true);
+		try {
+			const res = await fetch(
+				'https://api.toktot.site/v1/auth/password/reset/complete',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+
+					body: JSON.stringify({
+						email,
+
+						new_password: password,
+					}),
+				},
+			);
+			const data = await res.json();
+			if (res.ok) {
+				onSuccess();
+			} else {
+				console.log(data.message || '비밀번호 변경에 실패했습니다.');
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<div className="p-6 space-y-4 max-w-md">
 			{/* 비밀번호 */}
@@ -90,7 +105,7 @@ export default function SignupPasswordForm({ onSuccess }: PassSetProps) {
 
 			{/* 가입하기 버튼 */}
 			<PrimaryButton
-				onClick={onSuccess}
+				onClick={handleResetPassword}
 				text="가입하기"
 				disabled={!canSubmit}
 				className={`w-full h-[48px] rounded-md font-semibold ${

@@ -6,13 +6,16 @@ import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 
-interface StoreInfoCardProps {
+export interface StoreInfoCardProps {
 	review: {
 		id: string;
 		storeImageUrl: string;
 		storeName: string;
 		isKindStore?: boolean;
-		mainMenu: string;
+		mainMenus: string[];
+		reviewCount: number;
+		valueScore: number;
+		topPercent: number;
 		address: string;
 
 		rating: number;
@@ -27,30 +30,46 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 			className="flex gap-3 p-3 b-border-1 bg-white  w-full"
 			onClick={() => router.push(`/storemenu/${review.id}`)}
 		>
-			<Image
-				src={review.storeImageUrl}
-				alt={`${review.storeName} 이미지`}
-				width={85}
-				height={85}
-				className="rounded-md object-cover"
-			/>
-			<div className="flex flex-col justify-between">
-				<div className="flex items-center gap-2">
-					<span className="text-[16px] font-semibold">{review.storeName}</span>
-					{review.isKindStore && (
+			<div className="relative w-[89px] h-[100px]">
+				<Image
+					src={review.storeImageUrl}
+					alt={`${review.storeName} 이미지`}
+					fill
+					className="block rounded-md object-cover"
+				/>
+
+				{review.isKindStore && (
+					<div className="absolute top-1 left-1">
 						<StoreCategoryTag
-							className="text-[9px] text-green-700 bg-green-100"
+							className="text-[9px] px-1 py-0.3"
 							type="착한가게"
 						/>
-					)}
-				</div>
+					</div>
+				)}
+			</div>
 
-				<div className="flex items-center mb-3">
-					<span className="text-grey-70 text-[13px] mr-2">
-						{review.mainMenu}
+			<div className="flex flex-col justify-between flex-1">
+				<span className="text-[16px] font-semibold">{review.storeName}</span>
+				<div className="flex items-center text-sm text-grey-80">
+					<Icon name="Star" size="xs" className="text-yellow-500 mr-1" />
+					<span className="mr-1">{review.rating.toFixed(1)}</span>
+					<span className="text-grey-90 mr-2">({review.reviewCount})</span>
+
+					<span className="truncate">
+						{review.mainMenus.slice(0, 2).join(',')}
 					</span>
-					<Icon name={'Star'} size="xxs" className="text-yellow-500 mr-1" />
-					{review.rating.toFixed(1)}
+				</div>
+				<div className="flex items-center gap-1 text-xs mt-1">
+					<span className="text-grey-90 text-[9px] flex flex-wrap bg-primary-20 rounded-full px-1 py-1">
+						<Icon name="Gasimbi" size="xxs" />
+						상위 {review.topPercent}%
+					</span>
+					<div className="px-2 py-0.5 rounded-full bg-primary-10">
+						<span className=" text-grey-80 text-[9px]">가심비</span>
+						<span className="text-orange-500 text-[9px] ml-1">
+							{review.valueScore}점
+						</span>
+					</div>
 				</div>
 				<div className="text-xs text-grey-70 flex items-center">
 					<Icon name={'Location'} size="xxs" /> {review.address} ·{' '}
