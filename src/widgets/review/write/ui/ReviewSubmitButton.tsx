@@ -25,11 +25,12 @@ const buildSubmitPayload = (
 	images: MinimalImage[],
 ): ReviewSubmitPayload => {
 	const { tooltips, tooltipsByImageId } = useReviewWriteStore.getState();
-	const finalKeywords = useKeywordStore.getState().getFinalKeywords();
+	const { mealTime, keywords } = useKeywordStore.getState().getSubmitData();
 
 	return {
 		external_kakao_id: restaurantId,
-		keywords: finalKeywords,
+		keywords: keywords,
+		meal_time: mealTime,
 		images: images.map((image) => ({
 			image_id: image.id,
 			order: image.order,
@@ -79,24 +80,25 @@ export const ReviewSubmitButton = ({
 
 	const keywordStore = useKeywordStore();
 
-	const hasKeywords = keywordStore.getFinalKeywords().length > 0;
-	const isDisabled = isLoading || !hasImages || !hasKeywords;
+	const { mealTime, keywords } = keywordStore.getSubmitData();
+	const hasKeywords = keywords.length > 0;
+	console.log('🚀 ~ ReviewSubmitButton ~ hasKeywords:', hasKeywords);
+
+	const hasMealTime = Boolean(mealTime);
+
+	const isDisabled = isLoading || !hasImages || !hasKeywords || !hasMealTime;
 
 	const getButtonText = () => {
 		if (isLoading) return '리뷰 제출 중...';
 		if (!hasImages) return '이미지를 등록해주세요';
 		if (!hasKeywords) return '키워드를 선택해주세요';
+		if (!hasMealTime) return '식사시간을 선택해주세요';
 		return '다음';
 	};
 
 	const handleSubmit = async () => {
-		const selectedKeywords = useKeywordStore.getState().getFinalKeywords();
 		if (imageManager.images.length === 0) {
 			alert('이미지를 1장 이상 등록해주세요.');
-			return;
-		}
-		if (selectedKeywords.length === 0) {
-			alert('키워드를 1개 이상 선택해주세요.');
 			return;
 		}
 
