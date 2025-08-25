@@ -49,6 +49,7 @@ const ImagePayloadSchema = z.object({
 export const ReviewSubmitPayloadSchema = z.object({
 	external_kakao_id: z.number(),
 	keywords: z.array(z.string()),
+	meal_time: z.string(),
 	images: z.array(ImagePayloadSchema),
 });
 
