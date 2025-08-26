@@ -1,5 +1,14 @@
 import type { NextConfig } from 'next';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withPWA = require('next-pwa')({
+	dest: 'public',
+	register: true,
+	skipWaiting: true,
+	disable: process.env.NODE_ENV === 'development',
+	// manifest 설정을 제거하고 public/manifest.json 파일을 사용
+});
+
 const nextConfig: NextConfig = {
 	reactStrictMode: true,
 	webpack(config) {
@@ -32,7 +41,6 @@ const nextConfig: NextConfig = {
 	compiler: {
 		styledComponents: true,
 	},
-
 	experimental: {
 		turbo: {
 			rules: {
@@ -55,6 +63,20 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
+	// 헤더 설정 추가로 manifest.json 접근 보장
+	async headers() {
+		return [
+			{
+				source: '/manifest.json',
+				headers: [
+					{
+						key: 'Content-Type',
+						value: 'application/json',
+					},
+				],
+			},
+		];
+	},
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
