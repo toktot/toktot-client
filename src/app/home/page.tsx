@@ -8,7 +8,9 @@ export default function Home() {
 	return (
 		<>
 			<AppShell showBottomNav={true}>
-				<HomeContainer />
+				<main className="flex-1">
+					<HomeContainer />
+				</main>
 			</AppShell>
 		</>
 	);
