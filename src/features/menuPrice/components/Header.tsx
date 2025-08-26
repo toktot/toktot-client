@@ -32,7 +32,7 @@ export default function SearchResultSection() {
 		<>
 			<header className="w-full px-4 py-3 flex items-center justify-between bg-white">
 				<button onClick={() => router.back()}>
-					<Icon name={'ArrowLeft'} className="ml-1" />
+					<Icon name={'ArrowLefttBar'} className="ml-1" />
 				</button>
 				<div className="text-base font-semibold">{query}</div>
 				<Icon name="Bell" />

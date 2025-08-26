@@ -4,4 +4,6 @@ export interface User {
 	password: string;
 	nickname: string;
 	profileImageUrl?: string;
+	reviewCount?: number;
+	averageRating?: number;
 }

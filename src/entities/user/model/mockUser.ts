@@ -7,6 +7,8 @@ export const mockUser: User[] = [
 		password: '1234',
 		nickname: '테스트 유저',
 		profileImageUrl: '/images/user1',
+		reviewCount: 2,
+		averageRating: 3,
 	},
 	{
 		id: 2,
@@ -14,6 +16,8 @@ export const mockUser: User[] = [
 		password: '1234',
 		nickname: '독똣',
 		profileImageUrl: '/images/user1',
+		reviewCount: 2,
+		averageRating: 3,
 	},
 	{
 		id: 3,
@@ -21,5 +25,7 @@ export const mockUser: User[] = [
 		password: '1234',
 		nickname: '입니당',
 		profileImageUrl: '/images/user1',
+		reviewCount: 2,
+		averageRating: 3,
 	},
 ];

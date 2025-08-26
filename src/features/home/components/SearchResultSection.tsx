@@ -19,9 +19,39 @@ import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
 import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
+import { getDecryptedToken } from '@/shared/utils/storage';
 
 import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
+
+interface Stores {
+	id: string;
+	external_kakao_id: string;
+	name: string;
+	address: string;
+	distance: string;
+	main_menus: string[];
+	average_rating: number;
+	is_good_price_store: boolean;
+	image: string;
+	point: number;
+	percent: number;
+	reviewCount?: number;
+}
+interface BackendPlace {
+	id?: string | null;
+	external_kakao_id: string | number;
+	name: string | null;
+	address: string | null;
+	distance?: string | null;
+	main_menus?: string[] | null;
+	average_rating?: number | null;
+	is_good_price_store?: boolean | null;
+	image?: string | null;
+	point?: number | null;
+	percent?: number | null;
+	reviewCount?: number | null;
+}
 
 export default function SearchResultSection() {
 	const searchParams = useSearchParams();
@@ -31,14 +61,25 @@ export default function SearchResultSection() {
 	const [tab, setTab] = useState<'review' | 'store'>('review');
 	const [filter, setFilter] = useState<number | null>(null);
 	const [filterSummary, setFilterSummary] = useState('');
+	const [stores, setStores] = useState<Stores[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	console.log(loading, error);
+
+	const [page, setPage] = useState(1);
+
 	console.log(filterSummary);
 	const handleReset = () => {
 		setQuery('');
 	};
+	const [hasMore, setHasMore] = useState(true);
 
 	useEffect(() => {
 		setQuery(q);
-		setTab('review');
+		setStores([]);
+		setPage(1);
+		setHasMore(true);
+		setError(null);
 	}, [q]);
 
 	// 가격 정보 가져오기
@@ -130,6 +171,68 @@ export default function SearchResultSection() {
 			return r.placeName.includes(query);
 		});
 	}, [query, rating, mealTime, distance, menu, detailFilters, categoryKeyMap]);
+
+	useEffect(() => {
+		if (!q || !hasMore) return;
+		const fetchStores = async () => {
+			setLoading(true);
+			console.log('로딩중');
+			try {
+				const token = getDecryptedToken();
+				const res = await fetch(
+					'https://api.toktot.site/v1/restaurants/search',
+					{
+						method: 'POST',
+						headers: {
+							Authorization: `Bearer ${token}`,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ query: q, page }),
+					},
+				);
+
+				const json = await res.json();
+				console.log('json', json);
+				if (!json.success || !json.data) {
+					console.error('API Error Response', json);
+					throw new Error(
+						json.message || 'Failed to fetch data from the server.',
+					);
+				}
+				const { places, is_end } = json.data;
+				if (!places || places.length == 0) {
+					setHasMore(false);
+					return;
+				}
+
+				const newStores: Stores[] = places.map((place: BackendPlace) => ({
+					id: String(place.external_kakao_id),
+					external_kakao_id: String(place.external_kakao_id),
+					name: place.name ?? 'Unknown Store',
+					address: place.address ?? '',
+					distance: place.distance ?? '0',
+					main_menus: place.main_menus ?? [],
+					average_rating: place.average_rating ?? 0,
+					is_good_price_store: place.is_good_price_store ?? false,
+					image: place.image ?? '/default.png',
+					point: place.point ?? 0,
+					percent: place.percent ?? 0,
+					reviewCount: place.reviewCount ?? 0,
+				}));
+
+				setStores((prev) => [...prev, ...newStores]);
+				setHasMore(!is_end);
+			} catch (err) {
+				console.error(err);
+				setHasMore(false);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchStores();
+	}, [q, page, hasMore]); // fetchStores 제거
+
 	const filteredStores = useMemo(() => {
 		return mockStores.filter((s) => {
 			if (distance && Number(s.distance) > Number(distance)) return false;
@@ -190,7 +293,11 @@ export default function SearchResultSection() {
 				<SearchBox
 					query={query}
 					onChange={setQuery}
-					onSearchClick={() => console.log('search', query)}
+					onSearchClick={() => {
+						const params = new URLSearchParams();
+						params.set('q', query);
+						router.push(`/search?${params.toString()}`);
+					}}
 					leftIcon={<Icon name="Search" size="s" className="text-grey-50" />}
 					rightIcon={<Icon name="Cancel" size="s" className="text-grey-50" />}
 					className="max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
@@ -260,7 +367,7 @@ export default function SearchResultSection() {
 						/>
 					</div>
 					<div className="mt-4 w-full flex flex-col">
-						{filteredStores.map((store, index) => (
+						{stores.map((store, index) => (
 							<div
 								key={store.id}
 								className={`w-full ${
@@ -269,7 +376,21 @@ export default function SearchResultSection() {
 										: ''
 								}`}
 							>
-								<StoreInfoCard review={store} />
+								<StoreInfoCard
+									review={{
+										id: store.id,
+										storeImageUrl: store.image ?? '/default.png',
+										storeName: store.name,
+										isKindStore: store.is_good_price_store ?? false,
+										mainMenus: store.main_menus?.slice(0, 2) ?? [],
+										reviewCount: store.reviewCount ?? 0,
+										valueScore: store.point ?? 0,
+										topPercent: store.percent ?? 0,
+										address: store.address,
+										rating: Number(store.average_rating ?? 0),
+										distance: store.distance,
+									}}
+								/>
 							</div>
 						))}
 					</div>

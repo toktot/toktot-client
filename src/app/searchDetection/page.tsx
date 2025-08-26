@@ -1,9 +1,8 @@
 'use client';
 
-import { Suspense, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
-import { trendData } from '@/entities/menuPrice/comparePrice';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -17,6 +16,11 @@ import {
 	RadiusProvider,
 	useRadius,
 } from '@/features/region-detection/model/RadiusContext';
+import {
+	DEFAULT_RANGE,
+	RANGE_STEPS,
+} from '@/features/region-detection/model/constants';
+import { RangeStep } from '@/features/region-detection/model/types';
 import { RangeSelector } from '@/features/region-detection/ui/RangeSelector';
 
 import {
@@ -55,6 +59,7 @@ export default function LocationSearchPage() {
 				<LocationSearchContent
 					rating={rating}
 					setRating={setRating}
+					setMealTime={setMealTime}
 					selectedCategories={selectedCategories}
 					handleCategoryChange={handleCategoryChange}
 					mealTime={mealTime}
@@ -69,7 +74,7 @@ function LocationSearchContent({
 	rating,
 	setRating,
 	selectedCategories,
-
+	setMealTime,
 	mealTime,
 	handleMealTimeChange,
 }: {
@@ -79,6 +84,7 @@ function LocationSearchContent({
 	handleCategoryChange: (v: number) => void;
 	mealTime: number | null;
 	handleMealTimeChange: (v: number) => void;
+	setMealTime: (v: number | null) => void;
 }) {
 	const [tab, setTab] = useState<
 		| 'distance'
@@ -114,6 +120,7 @@ function LocationSearchContent({
 	const avgPrice = priceSummary?.avgPrice ?? 0;
 	const icon = priceSummary?.icon ?? null;
 	const searchParams = useSearchParams();
+	const focus = searchParams.get('focus');
 	const q = searchParams.get('q') ?? '';
 	const [minPrice, setMinPrice] = useState<number | null>(null);
 	const [maxPrice, setMaxPrice] = useState<number | null>(null);
@@ -122,7 +129,7 @@ function LocationSearchContent({
 	console.log(setQuery);
 
 	const router = useRouter();
-	const { radius } = useRadius();
+	const { radius, setRadius } = useRadius();
 	const contentToRef = useRef<HTMLDivElement>(null);
 
 	const distanceRef = useRef<HTMLDivElement>(null);
@@ -155,6 +162,90 @@ function LocationSearchContent({
 			target.ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 	};
+	useEffect(() => {
+		if (!focus) return;
+
+		const mapping: Record<string, React.RefObject<HTMLDivElement | null>> = {
+			'0': distanceRef,
+			'1': ratingRef,
+			'2': localFoodRef,
+			'3': priceRef,
+			'4': foodRef,
+			'5': serviceRef,
+			'6': cleanRef,
+			'7': moodRef,
+			'8': parkingRef,
+			'9': mealRef,
+		};
+
+		const targetRef = mapping[focus];
+
+		if (targetRef) {
+			requestAnimationFrame(() => {
+				if (targetRef.current) {
+					targetRef.current.scrollIntoView({
+						behavior: 'smooth',
+						block: 'start',
+					});
+					setTab(focus as typeof tab);
+				}
+			});
+		}
+	}, [focus]);
+	useEffect(() => {
+		const ratingParam = searchParams.get('rating');
+		if (ratingParam) setRating(Number(ratingParam));
+		const radiusParam = searchParams.get('distance');
+		if (radiusParam) {
+			const num = Number(radiusParam);
+			const validRadius =
+				RANGE_STEPS.find((step) => step === num) ?? DEFAULT_RANGE;
+			setRadius(validRadius as RangeStep);
+		}
+		// 거리
+		const menuParam = searchParams.get('menu');
+		if (menuParam) {
+			console.log(categories);
+			const decodedMenu = menuParam.split('q=')[0];
+			console.log('URL menuParam:', decodedMenu); // URL에서 들어오는 값 확인
+			const matchedCategory = categories?.find(
+				(c) => c.name.split(' ').pop() === decodedMenu,
+			);
+			console.log(matchedCategory);
+			if (matchedCategory) setSelectCategory(matchedCategory.id ?? null);
+		}
+
+		const minPriceParam = searchParams.get('minPrice');
+		console.log(minPriceParam);
+		if (minPriceParam) setMinPrice(Number(minPriceParam));
+
+		const maxPriceParam = searchParams.get('maxPrice');
+		if (maxPriceParam) setMaxPrice(Number(maxPriceParam));
+		// 식사시간
+		const mealParam = searchParams.get('mealTime');
+		if (mealParam) setMealTime(Number(mealParam));
+
+		const selections: Record<string, number[]> = {};
+
+		['food', 'service', 'clean', 'mood', 'parking', 'price'].forEach(
+			(category) => {
+				const param = searchParams.get(category);
+				if (param) {
+					selections[category] = param.split(',').map(Number);
+				}
+			},
+		);
+
+		setDetailSelections(selections);
+	}, [
+		searchParams,
+		categories?.length,
+		setMealTime,
+		setRadius,
+		setRating,
+		categories,
+	]);
+
 	const handleConfirm = () => {
 		const params = new URLSearchParams();
 		if (rating) params.set('rating', rating.toString());
@@ -168,6 +259,7 @@ function LocationSearchContent({
 		if (selectedCategoryName) {
 			params.set('menu', selectedCategoryName);
 		}
+
 		if (minPrice !== null) params.set('minPrice', minPrice.toString());
 		if (maxPrice !== null) params.set('maxPrice', maxPrice.toString());
 		Object.entries(detailSelections).forEach(([category, selectedIds]) => {
@@ -195,10 +287,26 @@ function LocationSearchContent({
 			}
 		});
 	};
+	const handleReset = () => {
+		setRadius(0);
+		setRating(0);
+		setMealTime(null);
+		setSelectCategory(null);
+		setDetailSelections({});
+		setMinPrice(null);
+		setMaxPrice(null);
+		setQuery('');
+	};
 
 	return (
 		<BottomSheet open>
-			<BottomSheetContent className="fixed bottom-0 left-0 right-0 z-50 bg-white max-h-[70vh] min-h-[60vh] w-[375px] p-4 overflow-y-auto">
+			<BottomSheetContent
+				className="
+    fixed bottom-0 left-1/2 transform -translate-x-1/2
+    z-50 bg-white max-h-[50vh] p-4 overflow-y-auto
+    w-full max-w-[375px] md:max-w-[510px] rounded-t-2xl
+  "
+			>
 				{/* 검색 범위 */}
 				<div ref={contentToRef} />
 				<div className="w-10 h-1 bg-grey-30 rounded-full mx-auto" />
@@ -291,37 +399,21 @@ function LocationSearchContent({
 											의 가격
 										</span>
 									</div>
-									<div className="flex items-center gap-1 rounded-2xl bg-primary-10 h-9">
-										{icon && <Icon name={icon} className="ml-2" />}
-										{selectedCategoryName}
-										<span className="text-grey-70 text-sm"> 1인 평균</span>
-										<span className="text-grey-90 text-[18px]">
-											{avgPrice !== null && avgPrice > 0
-												? avgPrice
-												: '정보 없음'}
-										</span>
-										<span className="text-grey-70 text-sm">원</span>
-										{trendData
-											.filter((item) => item.menuName === selectedCategoryName)
-											.map((item, index) => (
-												<span
-													key={index}
-													className="ml-4 text-sm flex items-center gap-1"
-												>
-													<span className="text-grey-70 ml-10 text-[9px]">
-														{item.text}
-													</span>
-													<span
-														className={
-															item.isIncrease
-																? 'text-green-500 text-[9px]'
-																: 'text-red-500 text-[9px]'
-														}
-													>
-														{item.priceChange}
-													</span>
-												</span>
-											))}
+									<div className="flex items-center rounded-2xl justify-between bg-primary-10 h-9">
+										<div className="flex items-center gap-1">
+											{icon && <Icon name={icon} className="ml-2" />}
+											{selectedCategoryName}
+											<span className="text-grey-70 text-sm"> 1인 평균</span>
+											<span className="text-grey-90 text-[18px]">
+												{avgPrice !== null && avgPrice > 0
+													? avgPrice
+													: '정보 없음'}
+											</span>
+											<span className="text-grey-70 text-sm">원</span>
+										</div>
+										<button className="text-[12px] text-grey-60 mr-4">
+											더보기
+										</button>
 									</div>
 
 									{avgPrice !== null && avgPrice > 0 && (
@@ -329,6 +421,8 @@ function LocationSearchContent({
 											min={priceSummary.minPrice}
 											avg={priceSummary.avgPrice}
 											max={priceSummary.maxPrice}
+											initialMin={minPrice ?? priceSummary.minPrice}
+											initialMax={maxPrice ?? priceSummary.maxPrice}
 											onChange={(min, max) => {
 												setMinPrice(min);
 												setMaxPrice(max);
@@ -416,16 +510,26 @@ function LocationSearchContent({
 								})}
 							</div>
 						</div>
-						<div className="fixed bottom-0 left-0 right-0 flex flex-col items-center mr-17">
-							<PrimaryButton
-								text="완료"
-								className="w-[343px]"
-								bgColorWhenEnabled="bg-grey-90"
-								textColorWhenEnabled="text-primary-40"
-								onClick={handleConfirm}
-							/>
-
-							<div className="w-16 h-[0.9px] bg-[#000000] rounded-full mx-auto mt-3 bottom-3 z-50" />
+						<div className="fixed overflow-x-auto bottom-10 items-center left-0 right-0 flex flex-col">
+							<div className="flex flex-row items-center mr-15 gap-2">
+								<PrimaryButton
+									text="초기화"
+									className="w-[100px] bg-grey-50 text-white flex items-center justify-center gap-2"
+									bgColorWhenEnabled="bg-grey-50"
+									onClick={handleReset}
+								>
+									<Icon name="Reset" size="s" />
+									초기화
+								</PrimaryButton>
+								<PrimaryButton
+									text="완료"
+									className="w-[239px]"
+									bgColorWhenEnabled="bg-grey-90"
+									textColorWhenEnabled="text-primary-40"
+									onClick={handleConfirm}
+								/>
+							</div>
+							<div className="w-16 h-[2px] bg-[#000000] ml-35 rounded-full mx-auto mt-3 bottom-3 z-50" />
 						</div>
 					</section>
 				</div>

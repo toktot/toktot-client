@@ -2,6 +2,8 @@
 
 import clsx from 'clsx';
 
+import Icon from '@/shared/ui/Icon';
+
 interface StoreCategoryTagProps {
 	type: '착한가게' | '로컬';
 	className?: string;
@@ -10,14 +12,21 @@ interface StoreCategoryTagProps {
 export default function StoreCategoryTag({ type }: StoreCategoryTagProps) {
 	const color =
 		type === '착한가게'
-			? 'bg-green-100 text-green-800'
+			? 'bg-green-500 text-white'
 			: 'bg-priamary-10 text-primary-50';
 
 	return (
-		<span
-			className={clsx('px-1.5 py-0.5 rounded-full text-xs font-medium', color)}
-		>
-			{type}
-		</span>
+		<div className="flex flex-wrap">
+			<span
+				className={clsx(
+					'inline-flex items-center rounded-md font-medium',
+					'px-1 py-[3px] text-[9px]',
+					color,
+				)}
+			>
+				{type === '착한가게' && <Icon name="GoodPrice" className="w-3 h-3" />}
+				{type}
+			</span>
+		</div>
 	);
 }
