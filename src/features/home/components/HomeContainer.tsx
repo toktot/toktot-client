@@ -5,9 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useRouter } from 'next/navigation';
 
-import { BottomNav, BottomNavItem } from '@/widgets/layout';
-import { CenterButton } from '@/widgets/layout/ui/BottomNav';
-
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard, {
@@ -151,16 +148,6 @@ export default function HomeContainer() {
 						onClose={handleToastClose}
 					/>
 				)}
-			</section>
-
-			<section>
-				<BottomNav>
-					<BottomNavItem href="/home" iconName="Home" label="home" />
-					<BottomNavItem href="/review" iconName="Review" label="review" />
-					<CenterButton href="/write" iconName="Plus" aria-label="plus" />
-					<BottomNavItem href="/bookmark" iconName="Route" label="route" />
-					<BottomNavItem href="/mypage" iconName="My" label="my" />
-				</BottomNav>
 			</section>
 		</main>
 	);

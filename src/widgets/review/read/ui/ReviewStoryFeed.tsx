@@ -167,7 +167,7 @@ export function ReviewStoryFeed() {
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
 		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
-		setSelectedReview(currentPost);
+		// setSelectedReview(currentPost);
 	};
 
 	const currentPost = data[currentIndex];
