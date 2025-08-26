@@ -9,7 +9,7 @@ import { ReportFormWidget } from '@/widgets/report/user/ui/ReportUserWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { useUserReportStore } from '@/features/report/model/useUserReportStore';
-import { SubmitUserReportButton } from '@/features/report/ui/SubmitUserReportButton';
+import { SubmitUserReportButton } from '@/features/report/user/ui/SubmitUserReportButton';
 
 import { UserId } from '@/shared/model/types';
 

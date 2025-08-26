@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
 interface ServingSelectorProps {
@@ -5,7 +7,7 @@ interface ServingSelectorProps {
 	onChange: (val: number) => void;
 }
 
-const SERVING_OPTIONS = [1, 2, 3, 4, '5+'];
+const SERVING_OPTIONS = [1, 2, 3, 4, '기타'];
 
 export const ServingSelector = ({ value, onChange }: ServingSelectorProps) => {
 	return (
@@ -17,10 +19,21 @@ export const ServingSelector = ({ value, onChange }: ServingSelectorProps) => {
 			{SERVING_OPTIONS.map((label, idx) => (
 				<SingleCategorySelect.Item
 					key={idx}
-					value={idx}
-					className="w-12 h-12 bg-grey-10 rounded-lg flex flex-col justify-center items-center text-grey-50 text-xl font-bold border-none"
+					value={typeof label === 'number' ? label : 0}
+					className="w-12 h-12 rounded-lg border-none p-0"
 				>
-					{label}
+					{(isActive) => (
+						<div
+							className={clsx(
+								'w-full h-full flex items-center justify-center rounded-lg font-bold text-xl',
+								isActive
+									? 'bg-grey-90 text-grey-10'
+									: 'bg-grey-10 text-grey-50',
+							)}
+						>
+							{label}
+						</div>
+					)}
 				</SingleCategorySelect.Item>
 			))}
 			<label

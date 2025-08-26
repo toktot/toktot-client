@@ -16,7 +16,7 @@ const foodFormSchema = z.object({
 		.number()
 		.min(1, '가격을 입력해주세요.')
 		.max(999999, '6자리 이하의 숫자만 입력해주세요.'),
-	serving: z.number().int().min(1, '몇 인분인지 입력해주세요.'),
+	serving: z.number().int().min(0, '몇 인분인지 입력해주세요.'),
 });
 
 export type FoodFormState = z.infer<typeof foodFormSchema>;
@@ -39,7 +39,7 @@ const FoodReviewForm = ({ onSubmit }: FoodReviewFormProps) => {
 		resolver: zodResolver(foodFormSchema),
 		defaultValues: {
 			menuName: '',
-			serving: 0,
+			serving: 1,
 			// zod의 coerce.number()는 빈 문자열을 0으로 변환하므로, 기본값을 undefined로 설정하여 placeholder가 보이도록 함
 			price: undefined,
 		},
@@ -71,13 +71,13 @@ const FoodReviewForm = ({ onSubmit }: FoodReviewFormProps) => {
 				)}
 			</div>
 			<Controller
-				name="serving"
 				control={control}
-				defaultValue={0}
+				name="serving"
 				render={({ field }) => (
 					<ServingSelector value={field.value} onChange={field.onChange} />
 				)}
 			/>
+
 			<div className="flex flex-col gap-3">
 				<div className="flex items-center whitespace-pre gap-3">
 					<input

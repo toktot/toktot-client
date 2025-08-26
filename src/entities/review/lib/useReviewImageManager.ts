@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
@@ -16,12 +16,11 @@ import { mapServerImagesToUploadReviewImages } from '../api/mappers';
 import { MAX_FILE_SIZE, MAX_IMAGE_COUNT } from '../model/constants';
 import { UploadReviewImage } from '../model/image';
 
-// ────────── 타입 정의 ──────────
 interface ReviewImageState {
 	images: UploadReviewImage[];
+	mainImageId: ReviewImageId | null;
 	isLoading: boolean;
 	remainingSlots: number | null;
-	totalCount: number | null;
 	restaurantId: number | null;
 }
 
@@ -31,29 +30,26 @@ interface ReviewImageActions {
 	uploadImages: (files: File[]) => Promise<void>;
 	deleteImage: (imageId: ReviewImageId) => Promise<void>;
 	clearImages: () => Promise<void>;
+	setMainImage: (id: ReviewImageId) => void;
 	clearAllState: () => void;
 }
 
-interface ReviewImageSelectors {
-	canUploadMore: boolean;
-	uploadCount: number;
-}
+const initialState: ReviewImageState = {
+	images: [],
+	mainImageId: null,
+	isLoading: false,
+	remainingSlots: null,
+	restaurantId: null,
+};
 
-// ────────── 구현 ──────────
 export const useReviewImageStore = create<
-	ReviewImageState & ReviewImageActions & ReviewImageSelectors
+	ReviewImageState & ReviewImageActions
 >()(
 	immer((set, get) => ({
-		images: [],
-		isLoading: false,
-		remainingSlots: null,
-		totalCount: null,
-		restaurantId: null,
+		...initialState,
 
 		setRestaurantId: (id) => {
-			set((state) => {
-				state.restaurantId = id;
-			});
+			set({ restaurantId: id });
 		},
 
 		initializeImages: async () => {
@@ -65,29 +61,28 @@ export const useReviewImageStore = create<
 					getToken: () => getDecryptedToken() ?? undefined,
 				}),
 			);
-
-			set((state) => {
-				state.isLoading = true;
-			});
+			set({ isLoading: true });
 
 			try {
 				const sessionData = await api.getImageSession(restaurantId);
-
 				if (sessionData.has_session) {
 					const clientImages = mapServerImagesToUploadReviewImages(
 						sessionData.images,
 					);
-
 					set((state) => {
 						state.images = clientImages;
+						if (clientImages.length > 0) {
+							state.mainImageId = clientImages[0].id;
+						} else {
+							state.mainImageId = null;
+						}
+						state.remainingSlots = sessionData.remaining_slots;
 					});
 				}
 			} catch (error) {
 				console.error('이미지 세션 조회 실패:', error);
 			} finally {
-				set((state) => {
-					state.isLoading = false;
-				});
+				set({ isLoading: false });
 			}
 		},
 
@@ -104,20 +99,14 @@ export const useReviewImageStore = create<
 			if (errorMessage) {
 				alert(errorMessage);
 			}
-
-			if (validFiles.length === 0) {
-				return;
-			}
+			if (validFiles.length === 0) return;
 
 			const api = createWriteReviewApi(
 				createAuthApi({
 					getToken: () => getDecryptedToken() ?? undefined,
 				}),
 			);
-
-			set((state) => {
-				state.isLoading = true;
-			});
+			set({ isLoading: true });
 
 			const formData = new FormData();
 			validFiles.forEach((file) => formData.append('files', file));
@@ -125,24 +114,22 @@ export const useReviewImageStore = create<
 
 			try {
 				const response = await api.uploadImages(formData);
-				const { total_image_count, remaining_slots } = response;
-
 				const clientImages = mapServerImagesToUploadReviewImages(
 					response.all_images,
 				);
-
 				set((state) => {
 					state.images = clientImages;
-					state.remainingSlots = remaining_slots;
-					state.totalCount = total_image_count;
+					state.remainingSlots = response.remaining_slots;
+					// 이미지가 새로 추가되었을 때, 대표 이미지가 없다면 첫번째를 대표로 지정
+					if (!state.mainImageId && clientImages.length > 0) {
+						state.mainImageId = clientImages[0].id;
+					}
 				});
 			} catch (error) {
 				console.error('이미지 업로드 실패:', error);
 				alert(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
-				set((state) => {
-					state.isLoading = false;
-				});
+				set({ isLoading: false });
 			}
 		},
 
@@ -155,27 +142,27 @@ export const useReviewImageStore = create<
 					getToken: () => getDecryptedToken() ?? undefined,
 				}),
 			);
-
-			set((state) => {
-				state.isLoading = true;
-			});
+			set({ isLoading: true });
 
 			try {
 				const response = await api.deleteImage(imageId, restaurantId);
 				const clientImages = mapServerImagesToUploadReviewImages(
 					response.images,
 				);
-
 				set((state) => {
 					state.images = clientImages;
+					state.remainingSlots = response.remaining_slots;
+					// 삭제된 이미지가 대표 이미지였다면, 다음 이미지를 새 대표로 설정
+					if (state.mainImageId === imageId) {
+						state.mainImageId =
+							clientImages.length > 0 ? clientImages[0].id : null;
+					}
 				});
 			} catch (error) {
 				console.error('이미지 삭제 실패:', error);
 				alert(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
-				set((state) => {
-					state.isLoading = false;
-				});
+				set({ isLoading: false });
 			}
 		},
 
@@ -188,69 +175,45 @@ export const useReviewImageStore = create<
 					getToken: () => getDecryptedToken() ?? undefined,
 				}),
 			);
-
-			set((state) => {
-				state.isLoading = true;
-			});
+			set({ isLoading: true });
 
 			try {
 				await api.clearImageSession(restaurantId);
-				set((state) => {
-					state.images = [];
-					state.remainingSlots = null;
-					state.totalCount = null;
-				});
+				set(initialState); // 모든 상태를 초기값으로 리셋
 			} catch (error) {
 				console.error('이미지 세션 초기화 실패:', error);
 				alert(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
-				set((state) => {
-					state.isLoading = false;
-				});
+				set({ isLoading: false });
 			}
 		},
 
+		setMainImage: (id) => {
+			set({ mainImageId: id });
+		},
+
 		clearAllState: () => {
-			set(() => ({
-				images: [],
-				isLoading: false,
-				remainingSlots: null,
-				totalCount: null,
-				restaurantId: null,
-			}));
-		},
-
-		// Selectors
-		get canUploadMore() {
-			const { remainingSlots, images } = get();
-			return remainingSlots !== null
-				? remainingSlots > 0
-				: images.length < MAX_IMAGE_COUNT;
-		},
-
-		get uploadCount() {
-			const { images } = get();
-			return images.length;
+			set(initialState);
 		},
 	})),
 );
 
-// ────────── 기존 훅과의 호환성을 위한 래퍼 ──────────
 export const useReviewImageManager = (restaurantId: number) => {
 	const {
 		images,
 		isLoading,
 		remainingSlots,
-		totalCount,
+		// totalCount,
 		initializeImages,
 		uploadImages,
 		deleteImage,
 		clearImages,
 		setRestaurantId,
+		setMainImage,
+		mainImageId,
 	} = useReviewImageStore();
 
-	// restaurantId가 변경되면 스토어에 설정
-	useMemo(() => {
+	useEffect(() => {
 		setRestaurantId(restaurantId);
 	}, [restaurantId, setRestaurantId]);
 
@@ -258,10 +221,12 @@ export const useReviewImageManager = (restaurantId: number) => {
 		images,
 		isLoading,
 		remainingSlots,
-		totalCount,
+		// totalCount,
 		initializeImages,
 		uploadImages,
 		deleteImage,
 		clearImages,
+		setMainImage,
+		mainImageId,
 	};
 };

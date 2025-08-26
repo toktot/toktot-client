@@ -9,7 +9,7 @@ const ReviewWriteServerImageSchema = z.object({
 });
 
 const SessionDataSchema = z.object({
-	restaurant_id: z.number().nullable(),
+	external_kakao_id: z.string().nullable(),
 	images: z.array(ReviewWriteServerImageSchema),
 	total_image_count: z.number(),
 	remaining_slots: z.number(),
@@ -25,7 +25,7 @@ export const ImageUploadResponseSchema = z.object({
 
 export const ReviewSubmitResponseSchema = z.object({
 	review_id: z.number(),
-	restaurant_id: z.number(),
+	external_kakao_id: z.number(),
 });
 
 // --- 서버 요청 스키마 ---
@@ -47,8 +47,10 @@ const ImagePayloadSchema = z.object({
 });
 
 export const ReviewSubmitPayloadSchema = z.object({
-	restaurant_id: z.number(),
+	external_kakao_id: z.number(),
+	value_for_money_score: z.number(),
 	keywords: z.array(z.string()),
+	meal_time: z.string(),
 	images: z.array(ImagePayloadSchema),
 });
 
