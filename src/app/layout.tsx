@@ -6,8 +6,8 @@ import { manrope, pretendard } from './font/font';
 import './globals.css';
 
 export const metadata: Metadata = {
-	title: 'toktot',
-	description: '제주 여행을 즐겁게',
+	title: '똑똣',
+	description: '제주 맛집, 가격과 리뷰로 똑똑하게 고르다',
 };
 
 export default function RootLayout({
