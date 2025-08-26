@@ -14,10 +14,11 @@ interface DongOverlayProps {
 
 const DongOverlay = ({ map }: DongOverlayProps) => {
 	const { location } = useCurrentLocation();
+	console.log(location);
 	const { data } = useTm128Data({
 		center: {
-			lat: location?.coords.latitude || DEFAULT_CENTER.lat,
-			lng: location?.coords.longitude || DEFAULT_CENTER.lng,
+			lat: DEFAULT_CENTER.lat,
+			lng: DEFAULT_CENTER.lng,
 		},
 	});
 	const polygonsRef = useRef<kakao.maps.Polygon[]>([]);

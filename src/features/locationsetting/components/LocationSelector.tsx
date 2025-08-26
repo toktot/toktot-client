@@ -51,12 +51,13 @@ export default function LocationSelector({
 		onLocationSaved?.();
 		onClose?.();
 	};
-
+	const [isSelected, setIsSelected] = useState(false);
 	const handleSelect = (selectedAddress: string, displayText: string) => {
 		setAddress(displayText); // 검색창에는 보기 좋은 이름 (ex: 제주사랑 카페)
 		setSearchAddress(selectedAddress); // 실제 지도 검색은 주소로 해야 하므로 address
 		setDisplayName(displayText); // 필요 시 표시용으로 따로 저장
 		setIsMarkerClicked(false);
+		setIsSelected(true);
 	};
 
 	const handleCurrentLocationClick = async () => {
@@ -107,12 +108,12 @@ export default function LocationSelector({
 		// ...생략
 		<>
 			<BottomSheetContent
-				className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl p-4 overflow-y-auto
+				className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl flex flex-col p-4 overflow-y-auto
           ${address.trim() ? 'translate-y-50' : 'translate-y-70'} transition-transform duration-300 ease-in-out'}`}
-				style={{ paddingLeft: 0, paddingRight: 10 }}
+				style={{ paddingLeft: 0, paddingRight: 10, maxHeight: '150vh' }}
 			>
 				<div className="w-6 h-[0.8px] bg-[#000000] rounded-full mx-auto" />
-				<main className="min-h-screen p-6 bg-white">
+				<main className="flex-1 overflow-y-auto min-h-screen p-6 bg-white">
 					{/* 검색창 */}
 					{step === 'confirm' && (
 						<>
@@ -157,7 +158,7 @@ export default function LocationSelector({
 								onMarkerClick={() => setIsMarkerClicked(true)}
 							/>
 
-							<div className="flex justify-center mt-11">
+							<div className="flex justify-center mt-6">
 								<button
 									disabled={!isMarkerClicked}
 									onClick={handleSaveLocation}
@@ -177,6 +178,7 @@ export default function LocationSelector({
 									onChange={(val) => {
 										setAddress(val);
 										setStep('search');
+										setIsSelected(false);
 									}}
 									onSearchClick={handleSearchClick}
 									placeholder="주소를 입력하세요"
@@ -199,11 +201,11 @@ export default function LocationSelector({
 									onCurrentLocationClick={handleCurrentLocationClick}
 								/>
 							</div>
-							<div className="flex justify-start mt-6">
+							<div className="flex justify-start">
 								<button
-									disabled={!address.trim()}
+									disabled={!isSelected}
 									className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold
-						${!address.trim() ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
+						${!isSelected ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
 									onClick={goToNextStep}
 								>
 									다음

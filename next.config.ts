@@ -47,6 +47,14 @@ const nextConfig: NextConfig = {
 	 *
 	 * https://nextjs.org/docs/messages/next-image-unconfigured-host
 	 */
+	images: {
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: process.env.NEXT_PUBLIC_IMAGE_HOST!,
+			},
+		],
+	},
 };
 
 export default nextConfig;

@@ -1,4 +1,6 @@
-export const mockGraph = [
+import { GraphPoint } from '@/features/menuPrice/components/Graph';
+
+export const mockGraph: GraphPoint[] = [
 	{ price: 34000, store: 6 },
 	{ price: 40000, store: 1 },
 	{ price: 45000, store: 12 },
