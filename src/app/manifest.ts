@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
 		name: '똑똣',
 		short_name: '똑똣',
 		description: '제주 맛집, 가격과 리뷰로 똑똑하게 고르다',
-		start_url: '/',
+		start_url: '/home',
 		display: 'standalone',
 		background_color: '#F2FAFE',
 		theme_color: '#000000',
