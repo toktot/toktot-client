@@ -11,8 +11,8 @@ interface AppShellProps {
 
 export const AppShell = ({ children, showBottomNav = true }: AppShellProps) => {
 	return (
-		<div className="relative h-dvh min-w-[375px] flex flex-col">
-			<div className="flex-1 overflow-y-auto scrollbar-hide">{children}</div>
+		<div className="h-dvh min-w-[375px] flex flex-col lg:w-[480px] lg:mx-auto">
+			{children}
 			{showBottomNav && (
 				<div className="fixed bottom-0 left-0 right-0 min-w-[375px] ">
 					<BottomNav>
