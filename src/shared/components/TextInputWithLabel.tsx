@@ -12,6 +12,7 @@ export type TextInputWithLabelProps = {
 	labelClassName?: string;
 	maxLength?: number;
 	className?: string;
+	placeholderClassName?: string;
 };
 
 const TextInputWithLabel = forwardRef<
@@ -29,15 +30,14 @@ const TextInputWithLabel = forwardRef<
 			labelClassName = '',
 			maxLength,
 			className,
+			placeholderClassName = '',
 		},
 		ref,
 	) => {
 		const textColor = value.trim() !== '' ? 'text-grey-90' : 'text-grey-60';
 		return (
 			<div className="flex flex-col gap-[10px] w-[296px] h-[62px]">
-				<label className={`text-sm font-medium text-grey-60 ${labelClassName}`}>
-					{label}
-				</label>
+				<label className={` ${labelClassName}`}>{label}</label>
 				<input
 					ref={ref}
 					type={type}
@@ -48,12 +48,12 @@ const TextInputWithLabel = forwardRef<
             rounded-[10px] 
             pt-[17px] pr-[20px] pb-[17px] pl-[20px] 
           
-            text-grey-60
+            
             bg-grey-10
            
             outline-none
-            placeholder:text-grey-80
-            placeholder:h-[28px]
+           ${placeholderClassName}
+        
             ${textColor}
             ${inputClassName}
           `}
