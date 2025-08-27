@@ -73,3 +73,7 @@ app/build/
 
 # Local properties
 local.properties
+
+# pwa worker
+public/sw.js
+public/workbox-*.js
