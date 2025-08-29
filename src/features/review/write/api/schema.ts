@@ -43,6 +43,7 @@ const TooltipPayloadSchema = z.object({
 const ImagePayloadSchema = z.object({
 	image_id: z.string(),
 	order: z.number(),
+	is_main: z.boolean(),
 	tooltips: z.array(TooltipPayloadSchema).optional(),
 });
 

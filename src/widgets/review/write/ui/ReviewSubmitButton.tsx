@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { FoodTooltip, useReviewImageManager } from '@/entities/review';
+import { useReviewImageStore } from '@/entities/review/lib/useReviewImageManager';
 import { useRouter } from 'next/navigation';
 
 import { createWriteReviewApi } from '@/features/review/write/api/api';
@@ -20,6 +21,7 @@ interface ReviewSubmitButtonProps {
 
 type MinimalImage = { id: string; order: number };
 
+// TODO: 리뷰보기 이미지 비율 처리
 const buildSubmitPayload = (
 	restaurantId: number,
 	images: MinimalImage[],
@@ -27,6 +29,7 @@ const buildSubmitPayload = (
 	const { tooltips, tooltipsByImageId } = useReviewWriteStore.getState();
 	const { mealTime, keywords } = useKeywordStore.getState().getSubmitData();
 	const { valueForMoneyScore } = useReviewWriteStore.getState();
+	const { mainImageId } = useReviewImageStore.getState();
 
 	return {
 		id: restaurantId,
@@ -36,6 +39,7 @@ const buildSubmitPayload = (
 		images: images.map((image) => ({
 			image_id: image.id,
 			order: image.order,
+			is_main: image.id === mainImageId,
 			tooltips: (tooltipsByImageId[image.id as ReviewImageId] || [])
 				.map((tooltipId) => {
 					const tooltip = tooltips[tooltipId];

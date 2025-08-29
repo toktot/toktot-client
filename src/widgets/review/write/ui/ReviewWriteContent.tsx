@@ -17,7 +17,6 @@ interface ReviewWriteContentProps {
 	visitedStoreData: StoreData & { distance: number };
 }
 
-// FIXME: 해당 페이지 리뷰쓰기 높이 다른이유?
 export function ReviewWriteContent({
 	storeId,
 	visitedStoreData,
