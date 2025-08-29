@@ -18,8 +18,11 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 	>('default');
 
 	const isNickNameLengthValid = nickname.length >= 6 && nickname.length <= 20;
-
-	const canSubmit = isNickNameLengthValid && checkResult === 'available';
+	const isNickNameFormatValid = /^[가-힣a-zA-Z0-9]+$/.test(nickname);
+	const canSubmit =
+		isNickNameLengthValid &&
+		isNickNameFormatValid &&
+		checkResult === 'available';
 
 	useEffect(() => {
 		const handleCheckNickname = async () => {
@@ -39,7 +42,9 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 					return;
 				}
 				const result = await res.json();
-				if (result.success === false) {
+				if (result.success && result.data?.available === true) {
+					setCheckResult('available');
+				} else if (result.success && result.data?.available === false) {
 					setCheckResult('duplicate');
 				} else {
 					setCheckResult('available');
@@ -58,20 +63,21 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 			}
 		}, 500);
 		return () => clearTimeout(delayDebounce);
-	}, [nickname, isNickNameLengthValid]);
+	}, [nickname, isNickNameLengthValid, isNickNameFormatValid]);
 
 	const getTextColor = () => {
 		if (nickname.length == 0) {
 			return 'text-grey-80';
 		}
-		if (!isNickNameLengthValid) return 'text-red-500';
+		if (!isNickNameLengthValid || !isNickNameFormatValid) return 'text-red-500';
 		if (checkResult === 'duplicate') return 'text-red-500';
 		if (checkResult === 'available') return 'text-green-500';
 		return 'text-grey-50';
 	};
 	const showBorderColor = () => {
 		if (nickname.length === 0) return 'border-none';
-		if (!isNickNameLengthValid) return 'border-red-500';
+		if (!isNickNameLengthValid || !isNickNameFormatValid)
+			return 'border-red-500';
 		if (checkResult === 'available') return 'border-green-500';
 		if (checkResult === 'duplicate') return 'border-red-500';
 		return 'border-grey-40';
@@ -107,7 +113,7 @@ export default function NicknameInput({ onSuccess }: NicknameInputProps) {
 			</div>
 
 			{/* 메시지 영역 */}
-			{checkResult === 'available' && (
+			{checkResult === 'available' && isNickNameFormatValid && (
 				<p className="text-green-500 text-sm mt-15 mr-6">
 					'{nickname}'은 사용 가능한 닉네임이에요.
 				</p>
