@@ -25,6 +25,8 @@ type SignupEmailFormProps = {
 export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const [email, setEmail] = useState('');
 	const debouncedEmail = useDebounce(email, 500);
+	const [toastMessage, setToastMessage] = useState<string | null>(null);
+	console.log(toastMessage);
 	const [emailStatus, setEmailStatus] = useState<
 		'idle' | 'valid' | 'invalid' | 'duplicate'
 	>('idle');
@@ -99,7 +101,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			return;
 		}
 		if (verificationSent && timer > 240) {
-			console.warn('너무 자주 요청했어요. 1분 뒤에 다시 시도해주세요.');
+			setToastMessage('너무 자주 요청했어요. 1분 뒤에 다시 시도해주세요.');
 			return;
 		}
 		try {
@@ -240,7 +242,17 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 					<p className="text-green-500 text-sm mt-1">인증번호가 일치합니다.</p>
 				)}
 			</div>
+
 			<div className="absolute bottom-0 w-full flex flex-col items-center pb-6">
+				{/* 
+				{toastMessage && (
+					<Toast
+						message={toastMessage}
+						duration={700}
+						onClose={() => setToastMessage(null)}
+					/>
+				)}
+					*/}
 				<PrimaryButton
 					text="다음"
 					onClick={() => {

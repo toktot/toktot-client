@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import AgreementModal from '@/features/auth/components/Agree';
 import NicknameInput from '@/features/auth/components/SignupNickname';
 
@@ -17,7 +19,7 @@ export default function SignupPage() {
 	const [nickname, setNickname] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-
+	const router = useRouter();
 	const renderTitle = () => {
 		let title = '';
 		switch (step) {
@@ -60,7 +62,7 @@ export default function SignupPage() {
 			console.log(data);
 
 			if (data.success) {
-				alert('회원가입이 완료됐습니다.');
+				router.push('/login');
 			} else {
 				console.log(data.message || '회원가입에 실패했습니다.');
 			}
