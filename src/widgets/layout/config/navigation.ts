@@ -23,6 +23,11 @@ export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 		iconName: 'ReviewPlus',
 		'aria-label': '리뷰 작성하기',
 	},
-	{ type: 'link', href: '/route', iconName: 'Route', label: 'route' },
-	{ type: 'link', href: '/my-page', iconName: 'My', label: 'my' },
+	{
+		type: 'link',
+		href: '/menu-upload',
+		iconName: 'Route',
+		label: 'menu',
+	},
+	{ type: 'link', href: '/my', iconName: 'My', label: 'my' },
 ];

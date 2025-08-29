@@ -6,9 +6,11 @@ import { StoreData } from '@/entities/store';
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
 import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelectionWidget';
-import { ReviewSubmitButton } from '@/widgets/review/write/ui/ReviewSubmitButton';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
+
+import { MealTimeSelectionWidget } from './MealTimeSelectionWidget';
+import { NextButton } from './NextButton';
 
 interface ReviewWriteContentProps {
 	storeId: string;
@@ -60,13 +62,13 @@ export function ReviewWriteContent({
 					category="accessibility"
 					keywords={KEYWORDS_BY_CATEGORY.accessibility}
 				/>
-				<KeywordSelectionWidget
-					title="현재 해당 키워드만 가능"
-					category="environment"
-					keywords={KEYWORDS_BY_CATEGORY.environment}
+				<MealTimeSelectionWidget
+					title="식사 시간"
+					category="mealtime"
+					keywords={KEYWORDS_BY_CATEGORY.mealtime}
 				/>
 				<div className="mt-auto w-full pt-4 sticky bottom-2">
-					<ReviewSubmitButton restaurantId={parseInt(storeId)} />
+					<NextButton restaurantId={parseInt(storeId)} />
 				</div>
 			</div>
 		</AppShell>

@@ -9,6 +9,7 @@ type PrimaryButtonProps = {
 	textColorWhenEnabled?: string;
 	bgColorWhenEnabled?: string;
 	disabledColor?: string;
+	children?: React.ReactNode;
 };
 
 const PrimaryButton = ({
@@ -19,7 +20,11 @@ const PrimaryButton = ({
 	className = '',
 	textColorWhenEnabled = 'text-primary-40',
 	bgColorWhenEnabled = 'bg-grey-90',
+
 	disabledColor = '',
+
+	children,
+
 }: PrimaryButtonProps) => {
 	const baseClass = `h-[48px] rounded-[20px] font-semibold `;
 	const enabledClass = `${bgColorWhenEnabled} ${textColorWhenEnabled}`;
@@ -31,7 +36,7 @@ const PrimaryButton = ({
 			type={type}
 			className={`${baseClass} ${disabled ? disabledClass : enabledClass} ${className}`}
 		>
-			{text}
+			{children || text}
 		</button>
 	);
 };

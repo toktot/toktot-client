@@ -11,7 +11,7 @@ import PassSet from '../../features/auth/components/PassSet';
 
 export default function SignupPage() {
 	const [step, setStep] = useState<'email' | 'password' | 'complete'>('email');
-	const [email, setEmail] = useState('');
+	const [email, setEmail] = useState(''); // ✅ email state 추가
 
 	const renderTitle = () => {
 		switch (step) {

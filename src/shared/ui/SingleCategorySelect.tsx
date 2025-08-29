@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react';
 
 import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface SingleCategorySelectContextType {
 	selectedValue: number | null;
@@ -36,7 +37,7 @@ function SingleCategorySelect({
 
 interface SingleCategorySelectItemProps {
 	value: number;
-	children: React.ReactNode;
+	children: React.ReactNode | ((isActive: boolean) => React.ReactNode);
 	className?: string;
 }
 
@@ -64,13 +65,15 @@ function SingleCategorySelectItem({
 		<button
 			type="button"
 			onClick={handleClick}
-			className={clsx(
-				'px-3 py-1 text-base rounded-full border transition-all border-grey-30',
-				isActive ? 'bg-grey-90 text-grey-10 ' : 'text-grey-60',
-				className,
+			className={twMerge(
+				clsx(
+					'px-3 py-1 text-base rounded-full border transition-all border-grey-30',
+					isActive ? 'bg-grey-90 text-grey-10 ' : 'text-grey-60',
+					className,
+				),
 			)}
 		>
-			{children}
+			{typeof children === 'function' ? children(isActive) : children}
 		</button>
 	);
 }

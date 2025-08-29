@@ -56,15 +56,15 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 					style={{
 						width: `100%`,
 						background:
-							'linear-gradient(to right, #EDD067, #F1AC7A, #F17A7A, #E7B897, #F4EE2c)',
+							'linear-gradient(to right, #D4DEE5, #38DEFF, #1A73E9, #38DEFF, #D4DEE5)',
 					}}
 				/>
 			</div>
 
 			<div className="mt-2 flex justify-between text-xs text-gray-400">
-				<span className="text-grey-90">저렴한</span>
+				<span className="text-grey-90">최저</span>
 				<span className="text-grey-90">평균</span>
-				<span className="text-grey-90">같이 있는</span>
+				<span className="text-grey-90">최고</span>
 			</div>
 
 			<div className="mt-1 flex justify-between text-xs text-gray-500">

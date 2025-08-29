@@ -51,3 +51,29 @@ dependency-graph*
 
 # cursor
 .cursor
+
+
+# Keystore file
+*.keystore
+android.keystore
+
+# Build artifacts
+*.aab
+*.apk
+
+# Build directory
+build/
+app/build/
+
+# IDE files
+.idea/
+
+# Gradle cache
+.gradle/
+
+# Local properties
+local.properties
+
+# pwa worker
+public/sw.js
+public/workbox-*.js

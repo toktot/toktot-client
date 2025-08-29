@@ -12,13 +12,16 @@ interface KeywordState {
 
 interface KeywordActions {
 	toggleKeyword: (category: KeywordCategory, keywordId: KeywordId) => void;
-	getFinalKeywords: () => string[];
 	clearAllKeywords: () => void;
+	selectSingleKeyword: (
+		category: KeywordCategory,
+		keywordId: KeywordId,
+	) => void;
+	getSubmitData: () => { keywords: string[]; mealTime: string };
 }
 
 export const useKeywordStore = create<KeywordState & KeywordActions>()(
 	(set, get) => ({
-		// 모든 카테고리를 포함하도록 초기 상태 확장
 		selectedKeywords: {
 			food: new Set(),
 			cleanliness: new Set(),
@@ -26,7 +29,7 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			service: new Set(),
 			atmosphere: new Set(),
 			accessibility: new Set(),
-			environment: new Set(),
+			mealtime: new Set(),
 		},
 
 		// 키워드 토글 액션
@@ -47,22 +50,39 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			});
 		},
 
-		// 최종 키워드 목록 반환 (ENUM 문자열로)
-		getFinalKeywords: () => {
+		selectSingleKeyword: (category, keywordId) => {
+			set((state) => {
+				const newSelectedKeywords = { ...state.selectedKeywords };
+				const categorySet = new Set<KeywordId>();
+				categorySet.add(keywordId);
+				newSelectedKeywords[category] = categorySet;
+
+				return { selectedKeywords: newSelectedKeywords };
+			});
+		},
+
+		getSubmitData: () => {
 			const { selectedKeywords } = get();
-			const finalKeywords: string[] = [];
+			const keywords: string[] = [];
+			let mealTime: string = '';
 
 			for (const category in selectedKeywords) {
-				const ids = selectedKeywords[category as KeywordCategory];
+				const typedCategory = category as KeywordCategory;
+				const ids = selectedKeywords[typedCategory];
 
 				ids.forEach((id) => {
-					const enumValue = KEYWORD_ID_TO_ENUM_MAP[id];
-					if (enumValue) {
-						finalKeywords.push(enumValue);
+					if (typedCategory === 'mealtime') {
+						mealTime = KEYWORD_ID_TO_ENUM_MAP[id];
+					} else {
+						const enumValue = KEYWORD_ID_TO_ENUM_MAP[id];
+						if (enumValue) {
+							keywords.push(enumValue);
+						}
 					}
 				});
 			}
-			return finalKeywords;
+
+			return { keywords, mealTime };
 		},
 
 		// 모든 키워드 초기화
@@ -75,9 +95,19 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 					service: new Set(),
 					atmosphere: new Set(),
 					accessibility: new Set(),
-					environment: new Set(),
+					mealtime: new Set(),
 				},
 			});
 		},
 	}),
 );
+
+export const selectHasKeywords = (state: KeywordState): boolean => {
+	return Object.entries(state.selectedKeywords).some(
+		([category, set]) => category != 'mealtime' && set.size > 0,
+	);
+};
+
+export const selectHasMealTime = (state: KeywordState): boolean => {
+	return state.selectedKeywords.mealtime.size > 0;
+};

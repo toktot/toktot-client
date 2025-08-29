@@ -3,7 +3,6 @@
 import { useState } from 'react';
 
 import Map from '@/features/map/ui/Map';
-import { RadiusProvider } from '@/features/region-detection/model/RadiusContext';
 import DongOverlay from '@/features/region-detection/ui/DongOverlay';
 
 const MapScreen = () => {
@@ -15,10 +14,8 @@ const MapScreen = () => {
 
 	return (
 		<section className="flex flex-col items-center gap-10">
-			<RadiusProvider>
-				<Map onLoad={handleMapLoad} />
-				{map && <DongOverlay map={map} />}
-			</RadiusProvider>
+			<Map onLoad={handleMapLoad} />
+			{map && <DongOverlay map={map} />}
 		</section>
 	);
 };

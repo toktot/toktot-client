@@ -41,6 +41,8 @@ const InitialInfoStep = ({
 					onChange={onRatingChange}
 					icon={iconName}
 					fillColor={color}
+					className="w-full justify-around"
+					iconSize="xxl"
 				/>
 			</div>
 		</div>

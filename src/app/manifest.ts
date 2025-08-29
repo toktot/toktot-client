@@ -2,23 +2,23 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
-		name: 'toktot',
-		short_name: 'toktot',
-		description: '제주 여행을 즐겁게',
-		start_url: '/',
+		name: '똑똣',
+		short_name: '똑똣',
+		description: '제주 맛집, 가격과 리뷰로 똑똑하게 고르다',
+		start_url: '/home',
 		display: 'standalone',
-		background_color: '#ffffff',
+		background_color: '#F2FAFE',
 		theme_color: '#000000',
 		icons: [
 			{
-				src: '/next.svg',
+				src: '/icon/192.png',
 				sizes: '192x192',
-				type: 'image/svg',
+				type: 'image/png',
 			},
 			{
-				src: '/vercel.svg',
+				src: '/icon/512.png',
 				sizes: '512x512',
-				type: 'image/svg',
+				type: 'image/png',
 			},
 		],
 	};

@@ -1,23 +1,25 @@
 import { mockUser } from '@/entities/user/model/mockUser';
 
 export interface Reviews {
-	id: string;
+	id: number;
 	auth: {
 		nickname: string;
 		profileImageUrl?: string;
+		reviewCount?: number;
+		averageRating?: number;
 	};
 	image: string;
 	menu: string[]; // 수정됨
 	date: string; // YYYY-MM-DD
 	mealTime: string;
 	type?: string;
-	rating?: string;
-	text?: string;
+	rating: string;
+	text: string;
 }
 
 export const mockReviews: Reviews[] = [
 	{
-		id: '1',
+		id: 1,
 		auth: mockUser[0],
 		image: '/images/foodImage1.png',
 		menu: ['돔베고기'],
@@ -28,7 +30,7 @@ export const mockReviews: Reviews[] = [
 		text: '아 진짜 너무 더럽고요 이게 뭔지 모르겠어요',
 	},
 	{
-		id: '2',
+		id: 2,
 		auth: mockUser[1],
 		image: '/images/foodImage1.png',
 		menu: ['돔베고기'],
@@ -39,7 +41,7 @@ export const mockReviews: Reviews[] = [
 		text: '아 진짜 너무 더럽고요 이게 뭔지 모르겠어요',
 	},
 	{
-		id: '3',
+		id: 3,
 		auth: mockUser[2],
 		image: '/images/foodImage1.png',
 		menu: ['고기국수'],

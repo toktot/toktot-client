@@ -95,7 +95,7 @@ export const mockReview1: ReviewView = {
 export const mockReview2: ReviewView = {
 	id: '2' as ReviewId,
 	author: {
-		id: 2 as UserId,
+		id: 4 as UserId,
 		nickname: 'cleane22',
 		profileImageUrl: null,
 		reviewCount: 0,
@@ -167,7 +167,7 @@ export function ReviewStoryFeed() {
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
 		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
-		setSelectedReview(currentPost);
+		// setSelectedReview(currentPost);
 	};
 
 	const currentPost = data[currentIndex];

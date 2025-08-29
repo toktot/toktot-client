@@ -7,7 +7,6 @@ import { FinalReviewData } from '@/widgets/review/write/ui/CreateReviewSheet';
 
 import { ReviewImageId, TooltipId } from '@/shared/model/types';
 
-// ────────── 타입 정의 ──────────
 type BeginResult =
 	| { ok: true; tooltipId: TooltipId }
 	| { ok: false; reason: 'LIMIT_REACHED' | 'INVALID_IMAGE' };
@@ -16,6 +15,7 @@ interface ReviewWriteState {
 	tooltips: Record<TooltipId, Tooltip>;
 	tooltipsByImageId: Record<ReviewImageId, TooltipId[]>;
 	draftTooltipId: TooltipId | null;
+	valueForMoneyScore: number | null;
 }
 
 interface ReviewWriteActions {
@@ -36,6 +36,8 @@ interface ReviewWriteActions {
 	detachImage: (imageId: ReviewImageId) => void;
 
 	clearAllState: () => void;
+
+	setValueForMoneyScore: (score: number | null) => void;
 }
 
 interface ReviewWriteSelectors {
@@ -46,7 +48,6 @@ interface ReviewWriteSelectors {
 	tooltips: Record<TooltipId, Tooltip>;
 }
 
-// ────────── 구현 ──────────
 export const useReviewWriteStore = create<
 	ReviewWriteState & ReviewWriteActions & ReviewWriteSelectors
 >()(
@@ -54,6 +55,7 @@ export const useReviewWriteStore = create<
 		tooltips: {},
 		tooltipsByImageId: {},
 		draftTooltipId: null,
+		valueForMoneyScore: null,
 
 		beginTooltipForImage: (imageId, coord, maxPerImage) => {
 			const { tooltipsByImageId } = get();
@@ -220,6 +222,7 @@ export const useReviewWriteStore = create<
 				tooltips: {},
 				tooltipsByImageId: {},
 				draftTooltipId: null,
+				valueForMoneyScore: null,
 			}));
 		},
 
@@ -228,6 +231,10 @@ export const useReviewWriteStore = create<
 			const ids = tooltipsByImageId[imageId] || [];
 
 			return ids.map((id) => tooltips[id]).filter(Boolean);
+		},
+
+		setValueForMoneyScore: (score) => {
+			set({ valueForMoneyScore: score });
 		},
 
 		buildInteractiveImages: (images) => {

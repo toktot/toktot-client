@@ -1,0 +1,12 @@
+[
+	{
+		"relation": ["delegate_permission/common.handle_all_urls"],
+		"target": {
+			"namespace": "android_app",
+			"package_name": "app.toktot.client",
+			"sha256_cert_fingerprints": [
+				"F1:9A:9E:CF:02:47:D1:55:BD:DD:6B:71:12:60:08:FB:73:4D:2D:CC:02:A2:A0:E9:E4:47:8E:F8:C5:29:91:D0"
+			]
+		}
+	}
+]
