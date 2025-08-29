@@ -25,6 +25,8 @@ type SignupEmailFormProps = {
 export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const [email, setEmail] = useState('');
 	const debouncedEmail = useDebounce(email, 500);
+	const [toastMessage, setToastMessage] = useState<string | null>(null);
+	console.log(toastMessage);
 	const [emailStatus, setEmailStatus] = useState<
 		'idle' | 'valid' | 'invalid' | 'duplicate'
 	>('idle');
@@ -79,22 +81,29 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 		});
 	}, [checkDuplicateEmail, debouncedEmail]);
 
-	useEffect(() => {
-		if (verificationSent && timer > 0) {
-			const interval = setInterval(() => {
-				setTimer((t) => t - 1);
-			}, 1000);
-			return () => clearInterval(interval);
-		}
-	}, [verificationSent, timer]);
-
 	const formatTimer = (sec: number) => {
 		const m = String(Math.floor(sec / 60)).padStart(2, '0');
 		const s = String(sec % 60).padStart(2, '0');
 		return `${m}분 ${s}초`;
 	};
+	useEffect(() => {
+		if (!verificationSent) return;
+		if (timer <= 0) return;
+		const interval = setInterval(() => {
+			setTimer((t) => t - 1);
+		}, 1000);
+		return () => clearInterval(interval);
+	}, [verificationSent, timer]);
 
 	const handleSendCode = async () => {
+		if (!isEmailValidFormat(email)) {
+			setEmailStatus('invalid');
+			return;
+		}
+		if (verificationSent && timer > 240) {
+			setToastMessage('너무 자주 요청했어요. 1분 뒤에 다시 시도해주세요.');
+			return;
+		}
 		try {
 			const res = await fetch('https://api.toktot.site/v1/auth/email/send', {
 				method: 'POST',
@@ -106,11 +115,13 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			});
 			const data = await res.json();
 
-			if (data.success) {
+			if (res.ok) {
+				console.log('이메일 전송');
 				setVerificationSent(true);
 				setTimer(300);
 				setVerifiedCode(null);
 				setCodeStatus('idle');
+				setCode('');
 			} else {
 				console.warn('인증 이메일 전송 실패', data);
 			}
@@ -137,6 +148,7 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 			if (data.success) {
 				setCodeStatus('valid');
 				setVerifiedCode(code);
+				console.log('데이터 전송성공');
 			} else {
 				setCodeStatus('invalid');
 			}
@@ -149,18 +161,20 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 	const canGoNext = emailStatus === 'valid' && codeStatus === 'valid';
 
 	return (
-		<div className="p-6 space-y-4 max-w-md">
+		<div className="p-6 space-y-4 max-w-md ml-1">
 			<TextInputWithLabel
 				label="이메일"
 				value={email}
 				onChange={(value) => setEmail(value)}
 				placeholder="이메일을 입력해주세요."
-				inputClassName={`w-[343px] h-[48px] rounded-[18px] mb-2 border ${
+				labelClassName="text-[12px] text-grey-60 ml-1"
+				placeholderClassName="text-[16px] text-grey-70"
+				inputClassName={`w-[343px] h-[48px] rounded-[18px] mb-2 border bg-grey-10 ${
 					{
 						duplicate: 'border-red-500',
 						invalid: 'border-red-500',
 						valid: 'border-green-500',
-						idle: 'border-grey-30',
+						idle: 'border-none',
 					}[emailStatus]
 				}`}
 			/>
@@ -184,13 +198,14 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				}
 				onClick={handleSendCode}
 				disabled={emailStatus !== 'valid'}
-				className="w-[343px] mt-3"
+				disabledColor="bg-grey-50 text-white"
+				className="w-[343px] mt-3 border-grey-50"
 				bgColorWhenEnabled="bg-grey-80"
-				textColorWhenEnabled="text-[#FFFFFF]"
+				textColorWhenEnabled="text-primary-40"
 			/>
 
 			<div>
-				<label className="text-grey-60 text-sm mt-4 block">인증번호</label>
+				<label className="text-grey-60 text-sm mt-4 block ml-1">인증번호</label>
 				<div className="flex gap-2 items-center">
 					<TextInputWithLabel
 						value={code}
@@ -200,22 +215,27 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 								setCodeStatus('idle');
 							}
 						}}
-						placeholder="6자리를 입력해주세요."
+						placeholder="6자를 입력해주세요."
+						labelClassName="text-[12px] text-grey-60"
+						placeholderClassName="text-[16px] text-grey-70"
 						inputClassName={`w-[236px] h-[48px] rounded-[18px] border ${
 							codeStatus === 'valid'
 								? 'border-green-500'
 								: codeStatus === 'invalid'
 									? 'border-red-500'
-									: 'border-grey-30'
+									: 'border-none'
 						}`}
 					/>
 					<PrimaryButton
 						text="확인"
 						onClick={handleCheckCode}
 						disabled={code.length !== 6 || codeStatus === 'valid'}
-						className="w-[110px] mr-4"
-						bgColorWhenEnabled="bg-grey-80"
-						textColorWhenEnabled="text-grey-10"
+						className="w-[120px] h-[48px] mr-1 text-[14px]"
+						bgColorWhenEnabled={code.length === 6 ? 'bg-grey-90' : 'bg-grey-30'}
+						textColorWhenEnabled={
+							code.length === 6 ? 'text-white' : 'text-grey-80'
+						}
+						disabledColor="bg-grey-30 text-grey-80"
 					/>
 				</div>
 				{codeStatus === 'valid' && (
@@ -223,18 +243,33 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 				)}
 			</div>
 
-			<PrimaryButton
-				text="다음"
-				onClick={() => {
-					if (canGoNext) {
-						onSuccess(email);
-					}
-				}}
-				disabled={!canGoNext}
-				className="w-[343px] mt-40"
-				bgColorWhenEnabled="bg-grey-90"
-				textColorWhenEnabled="text-primary-40"
-			/>
+			<div className="absolute bottom-0 w-full flex flex-col items-center pb-6">
+				{/* 
+				{toastMessage && (
+					<Toast
+						message={toastMessage}
+						duration={700}
+						onClose={() => setToastMessage(null)}
+					/>
+				)}
+					*/}
+				<PrimaryButton
+					text="다음"
+					onClick={() => {
+						if (canGoNext) {
+							onSuccess(email);
+						}
+					}}
+					disabled={!canGoNext}
+					className="w-[343px] h-[48px] mr-7"
+					bgColorWhenEnabled="bg-grey-90"
+					textColorWhenEnabled="text-primary-40"
+					disabledColor="bg-grey-50 text-white"
+				/>
+				<div className="flex justify-center items-center mr-7">
+					<div className="border-1 border-grey-90 w-[72px] mt-2" />
+				</div>
+			</div>
 		</div>
 	);
 }

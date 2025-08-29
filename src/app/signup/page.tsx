@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import AgreementModal from '@/features/auth/components/Agree';
 import NicknameInput from '@/features/auth/components/SignupNickname';
 
@@ -17,7 +19,7 @@ export default function SignupPage() {
 	const [nickname, setNickname] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-
+	const router = useRouter();
 	const renderTitle = () => {
 		let title = '';
 		switch (step) {
@@ -60,7 +62,7 @@ export default function SignupPage() {
 			console.log(data);
 
 			if (data.success) {
-				alert('회원가입이 완료됐습니다.');
+				router.push('/login');
 			} else {
 				console.log(data.message || '회원가입에 실패했습니다.');
 			}
@@ -72,13 +74,13 @@ export default function SignupPage() {
 	return (
 		<div
 			className={`min-h-screen flex flex-col items-center justify-start pt-6 ${
-				step === 'agreement' ? 'bg-grey-40' : 'bg-white'
+				step === 'agreement' ? 'bg-grey-60' : 'bg-white'
 			}`}
 		>
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'Back'} size="m" className="text-grey-70"></Icon>
+				<Icon name={'Back'} size="m" className="border-[#74808E]" />
 				<h1 className="text-base font-semibold">회원가입</h1>
-				<Icon name={'None'} size="m" className="text-grey-70"></Icon>
+				<Icon name={'None'} size="m" className="border-[#74808E]" />
 			</div>
 			{step !== 'complete' && step !== 'agreement' && (
 				<p className="text-[28px] font-semibold mt-15 ml-5 self-start">
@@ -88,8 +90,8 @@ export default function SignupPage() {
 			<div className="flex flex-1 justify-center items-start">
 				<div className="w-full max-w-md mt-10 px-6">
 					{step === 'agreement' && (
-						<div className="fixed insert-0 flex items-end justify-center z-50">
-							<div className="absolute insert-0 bg-black/80 backdrop-blur-sm"></div>
+						<div className="fixed inset-0 flex items-end justify-center z-50">
+							<div className="absolute inset-0 bg-black/60 backdrop-blur-xxs"></div>
 
 							<AgreementModal onAgree={() => setStep('email')} />
 						</div>
@@ -122,12 +124,17 @@ export default function SignupPage() {
 						<div className="flex flex-col items-center justify-center mt-50">
 							<div className="text-center text-[#000000] text-[28px] font-bold h-[34px] mt-12">
 								환영해요, {nickname}님!
-								<button
-									className="min-w-[343px] h-[48px] mt-80 rounded-2xl font-semibold bg-grey-90 text-primary-40"
-									onClick={handleRegister}
-								>
-									다음
-								</button>
+								<div className="absolute bottom-0 left-0 w-full flex flex-col items-center pb-3">
+									<button
+										className="min-w-[343px] h-[48px] mt-80 rounded-2xl font-semibold bg-grey-90 text-primary-40"
+										onClick={handleRegister}
+									>
+										다음
+									</button>
+									<div className="flex justify-center items-center">
+										<div className="border-1 border-grey-90 w-[72px] mt-3" />
+									</div>
+								</div>
 							</div>
 						</div>
 					)}
