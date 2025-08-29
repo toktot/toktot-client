@@ -34,12 +34,12 @@ export default function Auto({ query, onSelect }: Props) {
 
 	if (!query.trim()) return null;
 	return (
-		<div className="bg-white w-[343px] mx-auto z-10 relative">
+		<div className="bg-white w-[343px] mx-auto flex-start z-10 relative mt-2">
 			{filteredCategories.map((item) => (
 				<div
 					key={item.id}
 					onClick={() => onSelect(item.name)}
-					className="flex justify-between items-center p-3"
+					className="flex justify-between items-center py-2 -ml-1"
 				>
 					<div className="flex items-center gap-3">
 						<div className="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
@@ -48,21 +48,21 @@ export default function Auto({ query, onSelect }: Props) {
 						<p className="text-sm">{highlightMatch(item.name, query)}</p>
 						<span className="text-[12px] text-grey-80 mt-0.5">향토음식</span>
 					</div>
-					<Icon name="ArrowRight" className="text-grey-50 text-[12px]" />
+					<Icon name="ArrowRight" className="text-grey-50 " size="xxs" />
 				</div>
 			))}
 			{filtered.map((item) => (
 				<div
 					key={item.id}
 					onClick={() => onSelect(item.name)}
-					className="flex justify-between items-center p-3 hover:bg-grey-30 cursor-pointer"
+					className="flex justify-between items-center py-2 hover:bg-grey-30 cursor-pointer"
 				>
 					<div className="flex items-center gap-1">
 						<Icon name={'Search'} className="text-grey-70" size="xs" />
 						<p className="text-sm ml-2">{highlightMatch(item.name, query)}</p>
 					</div>
 
-					<Icon name={'ArrowRight'} className="text-grey-50 text-[12px]" />
+					<Icon name={'ArrowRight'} className="text-grey-50 " size="xxs" />
 				</div>
 			))}
 		</div>

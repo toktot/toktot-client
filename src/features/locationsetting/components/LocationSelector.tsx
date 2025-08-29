@@ -201,18 +201,20 @@ export default function LocationSelector({
 									onCurrentLocationClick={handleCurrentLocationClick}
 								/>
 							</div>
-							<div className="flex justify-start">
-								<button
-									disabled={!isSelected}
-									className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold
-						${!isSelected ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
-									onClick={goToNextStep}
-								>
-									다음
-								</button>
-							</div>
+							<div className="relative bottom-3 w-[343px] left-0 -mx-2 z-50">
+								<div className="flex justify-start">
+									<button
+										disabled={!isSelected}
+										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold
+							${!isSelected ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
+										onClick={goToNextStep}
+									>
+										다음
+									</button>
+								</div>
 
-							<div className="w-16 h-[0.9px] bg-[#000000] rounded-full mx-auto mt-3 bottom-3 z-50" />
+								<div className="w-16 h-[0.9px] bg-[#000000] rounded-full mx-auto mt-3 bottom-3 z-50" />
+							</div>
 						</>
 					)}
 				</main>

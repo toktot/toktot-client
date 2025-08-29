@@ -6,8 +6,7 @@ import { Store, mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { BottomNav, BottomNavItem } from '@/widgets/layout';
-import { CenterButton } from '@/widgets/layout/ui/BottomNav';
+import { AppShell } from '@/widgets/layout';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { mockHome } from '@/features/home/model/mockHome';
@@ -25,32 +24,34 @@ import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
 
 interface Stores {
-	id: string;
-	external_kakao_id: string;
+	id: number;
+
 	name: string;
 	address: string;
 	distance: string;
 	main_menus: string[];
 	average_rating: number;
 	is_good_price_store: boolean;
+	is_local_store?: boolean;
 	image: string;
 	point: number;
-	percent: number;
+	percent: string;
 	reviewCount?: number;
 }
 interface BackendPlace {
-	id?: string | null;
-	external_kakao_id: string | number;
+	id: number | null;
+
 	name: string | null;
 	address: string | null;
 	distance?: string | null;
 	main_menus?: string[] | null;
 	average_rating?: number | null;
 	is_good_price_store?: boolean | null;
+	is_local_store?: boolean | null;
 	image?: string | null;
 	point?: number | null;
 	percent?: number | null;
-	reviewCount?: number | null;
+	review_count?: number | null;
 }
 
 export default function SearchResultSection() {
@@ -64,11 +65,10 @@ export default function SearchResultSection() {
 	const [stores, setStores] = useState<Stores[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	console.log(loading, error);
+	console.log(filterSummary, loading, error);
 
 	const [page, setPage] = useState(1);
 
-	console.log(filterSummary);
 	const handleReset = () => {
 		setQuery('');
 	};
@@ -176,7 +176,7 @@ export default function SearchResultSection() {
 		if (!q || !hasMore) return;
 		const fetchStores = async () => {
 			setLoading(true);
-			console.log('로딩중');
+
 			try {
 				const token = getDecryptedToken();
 				const res = await fetch(
@@ -190,6 +190,9 @@ export default function SearchResultSection() {
 						body: JSON.stringify({ query: q, page }),
 					},
 				);
+				if (!res.ok) {
+					console.error('HTTP error', res.status, res.statusText);
+				}
 
 				const json = await res.json();
 				console.log('json', json);
@@ -199,29 +202,40 @@ export default function SearchResultSection() {
 						json.message || 'Failed to fetch data from the server.',
 					);
 				}
-				const { places, is_end } = json.data;
+				const { places, is_end, current_page } = json.data;
 				if (!places || places.length == 0) {
 					setHasMore(false);
 					return;
 				}
 
 				const newStores: Stores[] = places.map((place: BackendPlace) => ({
-					id: String(place.external_kakao_id),
-					external_kakao_id: String(place.external_kakao_id),
+					id: place.id,
+
 					name: place.name ?? 'Unknown Store',
 					address: place.address ?? '',
 					distance: place.distance ?? '0',
 					main_menus: place.main_menus ?? [],
 					average_rating: place.average_rating ?? 0,
 					is_good_price_store: place.is_good_price_store ?? false,
-					image: place.image ?? '/default.png',
+					image: place.image ?? '/images/foodImage1.png',
 					point: place.point ?? 0,
 					percent: place.percent ?? 0,
-					reviewCount: place.reviewCount ?? 0,
+					reviewCount: place.review_count ?? 0,
 				}));
 
-				setStores((prev) => [...prev, ...newStores]);
-				setHasMore(!is_end);
+				setStores((prev) => {
+					const merged = [...prev, ...newStores];
+					return merged.filter(
+						(store, idx, self) =>
+							idx === self.findIndex((s) => s.id === store.id),
+					);
+				});
+				if (is_end) {
+					setHasMore(false);
+				} else {
+					setPage(current_page + 1);
+				}
+				// ✅ 무한스크롤 대비: 다음 요청용 page 업데이트
 			} catch (err) {
 				console.error(err);
 				setHasMore(false);
@@ -280,138 +294,153 @@ export default function SearchResultSection() {
 	}, [rating, searchParams]);
 
 	return (
-		<div className="px-4 py-6 bg-white">
-			<HeaderBox onLocationSaved={handleLocationSaved} />
-			<section className="mt-2 flex items-center gap-2">
-				<Icon
-					name={'ArrowLeft'}
-					className="w-5 h-5 text-gray-600"
-					onClick={() => router.back()}
-				/>
-				{/* 검색창 */}
+		<AppShell showBottomNav={true}>
+			<main className="flex flex-col h-screen">
+				<HeaderBox onLocationSaved={handleLocationSaved} />
+				<div className=" bg-white flex-1 overflow-y-auto scrollbar-hide">
+					<div className="px-4 py-6">
+						<section className="-mt-3 flex items-center gap-2">
+							<Icon
+								name={'ArrowLeft'}
+								className=" text-grey-70 -ml-1"
+								onClick={() => router.back()}
+							/>
+							{/* 검색창 */}
 
-				<SearchBox
-					query={query}
-					onChange={setQuery}
-					onSearchClick={() => {
-						const params = new URLSearchParams();
-						params.set('q', query);
-						router.push(`/search?${params.toString()}`);
-					}}
-					leftIcon={<Icon name="Search" size="s" className="text-grey-50" />}
-					rightIcon={<Icon name="Cancel" size="s" className="text-grey-50" />}
-					className="max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
-					rightIconOnClick={handleReset}
-				/>
-			</section>
-			{/* 탭 (리뷰 / 가게명) */}
-			<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40">
-				<button
-					className={`pb-2 text-base font-semibold ${
-						tab === 'review'
-							? 'text-gray-900 border-b-2 border-gray-900'
-							: 'text-gray-400'
-					}`}
-					onClick={() => setTab('review')}
-				>
-					리뷰
-				</button>
-				<button
-					className={`pb-2 text-base font-semibold ${
-						tab === 'store'
-							? 'text-gray-900 border-b-2 border-gray-900'
-							: 'text-gray-400'
-					}`}
-					onClick={() => setTab('store')}
-				>
-					가게명
-				</button>
-			</div>
-
-			{/* 리뷰 탭 콘텐츠 */}
-			{tab === 'review' && (
-				<>
-					{/* 필터 바 */}
-					<div className="mt-4">
-						<FilterBar
-							value={filter}
-							onChange={handleFilterChange}
-							onSummaryChange={setFilterSummary}
-						/>
-					</div>
-
-					{/* 가격 요약 */}
-					{priceSummary && (
-						<div className="mt-4">
-							<PriceSummary {...priceSummary} />
-						</div>
-					)}
-
-					{/* 리뷰 리스트 */}
-					<div className="mt-4 flex flex-wrap -mx-4 justify-between">
-						{filteredReviews.map((review) => (
-							<ReviewStoreCard key={review.id} review={review} />
-						))}
-					</div>
-				</>
-			)}
-
-			{/* 가게명 탭 콘텐츠 */}
-			{tab === 'store' && (
-				<>
-					<div className="mt-4">
-						<FilterBar
-							value={filter}
-							onChange={handleFilterChange}
-							onSummaryChange={setFilterSummary}
-						/>
-					</div>
-					<div className="mt-4 w-full flex flex-col">
-						{stores.map((store, index) => (
-							<div
-								key={store.id}
-								className={`w-full ${
-									index < filteredStores.length - 1
-										? 'border-b border-grey-10' // 얇은 회색 선
-										: ''
+							<SearchBox
+								query={query}
+								onChange={setQuery}
+								onSearchClick={() => {
+									const params = new URLSearchParams();
+									params.set('q', query);
+									router.push(`/search?${params.toString()}`);
+								}}
+								leftIcon={
+									<Icon name="Search" size="s" className="text-grey-50" />
+								}
+								rightIcon={
+									<Icon name="Cancel" size="s" className="text-grey-50" />
+								}
+								className="max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+								rightIconOnClick={handleReset}
+							/>
+						</section>
+						{/* 탭 (리뷰 / 가게명) */}
+						<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40">
+							<button
+								className={`pb-2 text-base font-semibold ${
+									tab === 'review'
+										? 'text-gray-900 border-b-2 border-gray-900'
+										: 'text-gray-400'
 								}`}
+								onClick={() => setTab('review')}
 							>
-								<StoreInfoCard
-									review={{
-										id: store.id,
-										storeImageUrl: store.image ?? '/default.png',
-										storeName: store.name,
-										isKindStore: store.is_good_price_store ?? false,
-										mainMenus: store.main_menus?.slice(0, 2) ?? [],
-										reviewCount: store.reviewCount ?? 0,
-										valueScore: store.point ?? 0,
-										topPercent: store.percent ?? 0,
-										address: store.address,
-										rating: Number(store.average_rating ?? 0),
-										distance: store.distance,
-									}}
+								리뷰
+							</button>
+							<button
+								className={`pb-2 text-base font-semibold ${
+									tab === 'store'
+										? 'text-gray-900 border-b-2 border-gray-900'
+										: 'text-gray-400'
+								}`}
+								onClick={() => setTab('store')}
+							>
+								가게명
+							</button>
+						</div>
+					</div>
+
+					{/* 리뷰 탭 콘텐츠 */}
+					{tab === 'review' && (
+						<>
+							{/* 필터 바 */}
+							<div className="px-4 -mt-2">
+								<FilterBar
+									value={filter}
+									onChange={handleFilterChange}
+									onSummaryChange={setFilterSummary}
+									onClick={() => router.push('/searchDetection?from=search')}
 								/>
 							</div>
-						))}
-					</div>
-					{showToast && (
-						<Toast
-							message="위치가 설정되었어요."
-							duration={2000}
-							onClose={handleToastClose}
-						/>
+
+							{priceSummary ? (
+								// PriceSummary 있을 때
+								<div className="bg-grey-10 mt-4 w-full h-[600px] pt-2 pb-6">
+									<div className="bg-white rounded-2xl w-[341px] h-[110px] mx-auto">
+										<PriceSummary {...priceSummary} />
+									</div>
+
+									{/* 리뷰 리스트 */}
+									<div className="flex flex-wrap justify-between mt-4">
+										{filteredReviews.map((review) => (
+											<ReviewStoreCard key={review.id} review={review} />
+										))}
+									</div>
+								</div>
+							) : (
+								// PriceSummary 없을 때
+								<div className="bg-white mt-4 w-full pt-0 pb-6">
+									{/* 리뷰 리스트 */}
+									<div className="flex flex-wrap justify-between">
+										{filteredReviews.map((review) => (
+											<ReviewStoreCard key={review.id} review={review} />
+										))}
+									</div>
+								</div>
+							)}
+						</>
 					)}
-				</>
-			)}
-			<section>
-				<BottomNav>
-					<BottomNavItem href="/home" iconName="Home" label="home" />
-					<BottomNavItem href="/review" iconName="Review" label="review" />
-					<CenterButton href="/write" iconName="Plus" aria-label="plus" />
-					<BottomNavItem href="/bookmark" iconName="Route" label="route" />
-					<BottomNavItem href="/mypage" iconName="My" label="my" />
-				</BottomNav>
-			</section>
-		</div>
+
+					{/* 가게명 탭 콘텐츠 */}
+					{tab === 'store' && (
+						<>
+							<div className="px-4 -mt-2">
+								<FilterBar
+									value={filter}
+									onChange={handleFilterChange}
+									onSummaryChange={setFilterSummary}
+									onClick={() => router.push('/searchDetection?from=search')}
+								/>
+							</div>
+							<div className="mt-4 w-full flex flex-col">
+								{stores.map((store, index) => (
+									<div
+										key={store.id}
+										className={`w-full ${
+											index < filteredStores.length - 1
+												? 'border-b border-grey-10' // 얇은 회색 선
+												: ''
+										}`}
+									>
+										<StoreInfoCard
+											review={{
+												id: store.id,
+												storeImageUrl: store.image ?? '/default.png',
+												storeName: store.name,
+												isKindStore: store.is_good_price_store ?? false,
+												mainMenus: store.main_menus?.slice(0, 2) ?? [],
+												reviewCount: store.reviewCount ?? 0,
+												valueScore: store.point ?? 0,
+												topPercent: store.percent ?? '',
+												address: store.address,
+												rating: Number(store.average_rating ?? 0),
+												distance: store.distance,
+											}}
+										/>
+									</div>
+								))}
+							</div>
+							{showToast && (
+								<Toast
+									message="위치가 설정되었어요."
+									duration={2000}
+									onClose={handleToastClose}
+								/>
+							)}
+						</>
+					)}
+				</div>
+			</main>
+		</AppShell>
 	);
 }

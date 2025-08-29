@@ -1,11 +1,11 @@
 // mockHome.ts (또는 mockStore.ts)
 export interface Store {
-	id: string;
+	id: number;
 	storeName: string;
-
+	mainMenu?: string;
 	reviewCount?: number;
 	valueScore?: number;
-	topPercent?: number;
+	topPercent?: string;
 	address: string;
 	storeImageUrl: string;
 	isKindStore: boolean;
@@ -40,17 +40,17 @@ export interface Store {
 }
 export const mockStores = [
 	{
-		id: '1',
+		id: 1,
 		storeName: '제주돔베고기집',
 		mainMenu: '돔베고기',
 		address: '서귀포시 노형동',
 		startTime: '12:00',
 		endTime: '19:00',
 		phoneNumber: '123-4567-4457',
-		ratingNumber: '4',
-		cleanrating: '5.2',
-		servicerating: '5.2',
-		foodrating: '4.2',
+		ratingNumber: 4,
+		cleanrating: 5.2,
+		servicerating: 5.2,
+		foodrating: 4.2,
 		storeImageUrl: '/images/foodImage1.png',
 		rating: 4.3,
 		isLocal: true,
@@ -71,22 +71,27 @@ export const mockStores = [
 		parkplace: '제주시 특별자치도, 원노현남길 16 지하 1층',
 		reviewCount: 40,
 		valueScore: 20,
-		topPercent: 80,
+		topPercent: '상위 20%',
 		mainMenus: ['돔베고기', '고기국수'],
 	},
 	{
-		id: '2',
+		id: 2,
 		storeName: '돔베고기 원조집',
 		mainMenu: '돔베고기',
 		address: '서귀포시 대정읍 88-1',
 		storeImageUrl: '/images/mockReview2.jpg',
 		rating: 3,
-		distance: '240',
+		distance: '240m',
 		mealTime: '아침',
 		moods: ['로컬'],
 		price: [1],
+		isKindStore: false,
+		isLocal: false,
 		service: [1],
 		food: [1, 3],
+		reviewCount: 40,
+		valueScore: 20,
+		topPercent: '하위 20%',
 		clean: [1, 3],
 		mood: [1, 3],
 		parking: [2],
@@ -95,5 +100,6 @@ export const mockStores = [
 			{ name: '돔베고기 대', price: 25000 },
 		],
 		position: { lat: 33.31, lng: 33.31 },
+		mainMenus: ['돔베고기', '고기국수', '옥돔'],
 	},
 ];

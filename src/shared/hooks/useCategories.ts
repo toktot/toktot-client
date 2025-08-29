@@ -23,6 +23,7 @@ export function useCategories() {
 			try {
 				if (typeof window === 'undefined') return;
 				const token = getDecryptedToken(); // 여기 변경
+
 				console.log('Decoded token', token);
 				const res = await fetch('https://api.toktot.site/v1/local-foods', {
 					headers: {

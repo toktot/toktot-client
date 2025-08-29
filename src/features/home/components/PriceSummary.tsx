@@ -67,7 +67,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 				<span className="text-grey-90">최고</span>
 			</div>
 
-			<div className="mt-1 flex justify-between text-xs text-gray-500">
+			<div className="flex justify-between text-grey-70 text-[9px]">
 				<span>{formatKRW(minPrice)}</span>
 				<span>{formatKRW(avgPrice)}</span>
 				<span>{formatKRW(maxPrice)}</span>
