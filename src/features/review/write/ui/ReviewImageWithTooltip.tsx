@@ -49,46 +49,54 @@ export const ReviewImageWithTooltip = ({
 	};
 
 	return (
-		<div className="absolute inset-0">
-			<Image
-				ref={imgRef}
-				src={image.url}
-				onClick={handleImageClick}
-				fill
-				alt="리뷰이미지"
-				className="object-fill rounded-t-lg"
-			/>
-			{image.tooltipIds.map((id) => {
-				const tip = tooltips[id];
-				if (!tip) return null;
+		<div className="absolute inset-0 flex items-center">
+			<div className="relative w-full">
+				<Image
+					ref={imgRef}
+					src={image.url}
+					onClick={handleImageClick}
+					alt="리뷰이미지"
+					className="rounded-t-lg"
+					width={0}
+					height={0}
+					sizes="100vw"
+					style={{
+						width: '100%',
+						height: 'auto',
+					}}
+				/>
+				{image.tooltipIds.map((id) => {
+					const tip = tooltips[id];
+					if (!tip) return null;
 
-				return (
-					<div
-						key={tip.id}
-						className="absolute"
-						style={{ left: `${tip.x}%`, top: `${tip.y}%` }}
-					>
-						<div className="relative">
-							<TooltipMarker tip={tip} onClick={handleMarkerClick} />
-							{tooltipDirection && selectedTooltip?.id === tip.id && (
-								<div
-									className="absolute z-10"
-									style={{
-										transform: getBubbleTransformFromMarker(tooltipDirection),
-									}}
-								>
-									<Bubble direction={tooltipDirection}>
-										<TooltipBox
-											tooltip={tip}
-											onDelete={(tooltipId) => onRemoveTooltip(tooltipId)}
-										/>
-									</Bubble>
-								</div>
-							)}
+					return (
+						<div
+							key={tip.id}
+							className="absolute"
+							style={{ left: `${tip.x}%`, top: `${tip.y}%` }}
+						>
+							<div className="relative">
+								<TooltipMarker tip={tip} onClick={handleMarkerClick} />
+								{tooltipDirection && selectedTooltip?.id === tip.id && (
+									<div
+										className="absolute z-10"
+										style={{
+											transform: getBubbleTransformFromMarker(tooltipDirection),
+										}}
+									>
+										<Bubble direction={tooltipDirection}>
+											<TooltipBox
+												tooltip={tip}
+												onDelete={(tooltipId) => onRemoveTooltip(tooltipId)}
+											/>
+										</Bubble>
+									</div>
+								)}
+							</div>
 						</div>
-					</div>
-				);
-			})}
+					);
+				})}
+			</div>
 		</div>
 	);
 };

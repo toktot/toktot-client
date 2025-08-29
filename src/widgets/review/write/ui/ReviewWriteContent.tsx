@@ -17,6 +17,7 @@ interface ReviewWriteContentProps {
 	visitedStoreData: StoreData & { distance: number };
 }
 
+// FIXME: 해당 페이지 리뷰쓰기 높이 다른이유?
 export function ReviewWriteContent({
 	storeId,
 	visitedStoreData,
@@ -29,7 +30,7 @@ export function ReviewWriteContent({
 				</Header.Left>
 				<Header.Center>리뷰 쓰기</Header.Center>
 			</Header>
-			<div className="flex flex-col items-center p-4 gap-9 relative">
+			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
 				<KeywordSelectionWidget
@@ -67,7 +68,7 @@ export function ReviewWriteContent({
 					category="mealtime"
 					keywords={KEYWORDS_BY_CATEGORY.mealtime}
 				/>
-				<div className="mt-auto w-full pt-4 sticky bottom-2">
+				<div className="w-full sticky bottom-2">
 					<NextButton restaurantId={parseInt(storeId)} />
 				</div>
 			</div>
