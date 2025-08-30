@@ -1,17 +1,17 @@
 'use client';
 
-import { AppShell } from '@/widgets/layout';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import HomeContainer from '../../features/home/components/HomeContainer';
 
 export default function Home() {
 	return (
 		<>
-			<AppShell showBottomNav={true}>
+			<HomeAppShell showBottomNav={true}>
 				<main className="flex-1">
 					<HomeContainer />
 				</main>
-			</AppShell>
+			</HomeAppShell>
 		</>
 	);
 }

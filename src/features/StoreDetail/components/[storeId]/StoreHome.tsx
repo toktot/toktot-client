@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { AppShell } from '@/widgets/layout';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import { useMap } from '@/features/map/model/useMap';
 
@@ -88,7 +88,7 @@ export default function StoreHome() {
 	)},${store.latitude},${store.longitude}`;
 
 	return (
-		<AppShell showBottomNav={true}>
+		<HomeAppShell showBottomNav={true}>
 			<div className="bg-grey-10 flex justify-center px-4 mx-auto">
 				<div className="bg-white rounded-3xl shadow w-full max-w-md flex flex-col">
 					<>
@@ -152,6 +152,6 @@ export default function StoreHome() {
 					)}
 				</div>
 			</div>
-		</AppShell>
+		</HomeAppShell>
 	);
 }

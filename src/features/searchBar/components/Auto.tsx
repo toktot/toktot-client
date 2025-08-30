@@ -34,7 +34,7 @@ export default function Auto({ query, onSelect }: Props) {
 
 	if (!query.trim()) return null;
 	return (
-		<div className="bg-white w-[343px] mx-auto flex-start z-10 relative mt-2">
+		<div className="bg-white min-w-[343px] max-w-[430px] w-full mx-auto flex-start z-10 relative mt-2">
 			{filteredCategories.map((item) => (
 				<div
 					key={item.id}

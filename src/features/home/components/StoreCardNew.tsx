@@ -16,9 +16,9 @@ interface Props {
 
 export default function StoreCardNew({ review }: Props) {
 	return (
-		<div className="w-[343px] h-[232px] bg-white rounded-xl shadow-md overflow-hidden">
+		<div className="min-w-[343px] max-w-[430px] w-full h-[232px] bg-white rounded-xl shadow-md overflow-hidden">
 			{/* 상단 이미지 */}
-			<div className="relative w-[343px] h-[122px]">
+			<div className="relative min-w-[343px] max-w-[430px] w-full h-[122px]">
 				<Image
 					src={review.storeImageUrl}
 					alt={`${review.storeName} 이미지`}

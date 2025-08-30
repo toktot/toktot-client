@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from 'react';
 
-import { AppShell } from '@/widgets/layout';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import PriceChart from '@/features/menuPrice/components/Graph';
 import Header from '@/features/menuPrice/components/Header';
@@ -10,7 +10,7 @@ import Header from '@/features/menuPrice/components/Header';
 export default function MenuPricePage() {
 	const [showGuide, setShowGuide] = useState(true);
 	return (
-		<AppShell showBottomNav={true}>
+		<HomeAppShell showBottomNav={true}>
 			<main className="relative">
 				<Suspense fallback={<div>로딩 중...</div>}>
 					<main className="flex flex-col h-screen">
@@ -49,6 +49,6 @@ export default function MenuPricePage() {
 					</div>
 				)}
 			</main>
-		</AppShell>
+		</HomeAppShell>
 	);
 }

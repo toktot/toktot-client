@@ -12,6 +12,7 @@ import { CopyButton } from '@/features/StoreDetail/components/Copy';
 import StoreHome from '@/features/StoreDetail/components/[storeId]/StoreHome';
 import StoreMenuSection from '@/features/StoreDetail/components/[storeId]/StoreMenu';
 import StoreReview from '@/features/StoreDetail/components/[storeId]/StoreReview';
+import api from '@/features/home/lib/api';
 import GasimbiCategoryTag from '@/features/home/model/GasimbiCategory';
 import TopPercentTag from '@/features/home/model/TopPercentTag';
 
@@ -44,24 +45,20 @@ export default function StoreDetailPage() {
 	const storeId = params.storeId as string;
 	const [store, setStore] = useState<StoreData | null>(null);
 	const [selected, setSelected] = useState(false);
-
+	useEffect(() => {
+		const token = getDecryptedToken();
+		if (!token) {
+			router.replace('login');
+		}
+	}, [router]);
 	// 단일 Review 객체 추출 // 여기 변경
 
 	useEffect(() => {
 		const fetchStore = async () => {
-			const token = getDecryptedToken();
 			try {
-				const res = await fetch(
-					`https://api.toktot.site/v1/restaurants/${storeId}`,
-					{
-						headers: {
-							Authorization: `Bearer ${token}`,
-							'Content-Type': 'applicatin/json',
-						},
-					},
-				);
+				const res = await api.get(`/v1/restaurants/${storeId}`, {});
 
-				const json = await res.json();
+				const json = await res.data();
 				if (json.success && json.data) {
 					setStore(json.data);
 				} else {

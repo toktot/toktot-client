@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { AppShell } from '@/widgets/layout';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import Auto from '@/features/searchBar/components/Auto';
@@ -35,7 +35,7 @@ export default function Search() {
 		setShowToast(false);
 	};
 	return (
-		<AppShell showBottomNav={true}>
+		<HomeAppShell showBottomNav={true}>
 			<HeaderBox onLocationSaved={handleLocationSaved} />
 			<main className="min-h-screen p-6 bg-white">
 				<Suspense fallback={<div>로딩 중...</div>}>
@@ -43,22 +43,23 @@ export default function Search() {
 						<button onClick={() => router.back()}>
 							<Icon name="ArrowLeft" className="text-grey-70 -ml-3" />
 						</button>
-
-						<SearchBox
-							query={text}
-							onChange={(val) => {
-								setText(val);
-							}}
-							onSearchClick={() => handleSelect}
-							leftIcon={
-								<Icon name="Search" size="s" className="text-grey-50" />
-							}
-							rightIcon={
-								<Icon name="Cancel" size="s" className="text-grey-50" />
-							}
-							className="w-full max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
-							rightIconOnClick={handleReset}
-						/>
+						<div className="flex justify-center items-center min-w-[315px] max-w-[400px] w-full">
+							<SearchBox
+								query={text}
+								onChange={(val) => {
+									setText(val);
+								}}
+								onSearchClick={() => handleSelect}
+								leftIcon={
+									<Icon name="Search" size="s" className="text-grey-50" />
+								}
+								rightIcon={
+									<Icon name="Cancel" size="s" className="text-grey-50" />
+								}
+								className="w-full min-w-[315px] max-w-[400px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+								rightIconOnClick={handleReset}
+							/>
+						</div>
 					</div>
 
 					<div className="mt-5">
@@ -79,6 +80,6 @@ export default function Search() {
 					/>
 				)}
 			</main>
-		</AppShell>
+		</HomeAppShell>
 	);
 }

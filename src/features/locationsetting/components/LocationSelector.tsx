@@ -108,28 +108,32 @@ export default function LocationSelector({
 		// ...생략
 		<>
 			<BottomSheetContent
-				className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl flex flex-col p-4 overflow-y-auto
-          ${address.trim() ? 'translate-y-50' : 'translate-y-70'} transition-transform duration-300 ease-in-out'}`}
-				style={{ paddingLeft: 0, paddingRight: 10, maxHeight: '150vh' }}
+				className={`fixed bottom-0 min-w-[375px] max-w-[480px] w-full left-1/2 z-50 bg-white rounded-t-2xl flex flex-col py-4 overflow-y-auto
+          ${address.trim() ? 'translate-y-50' : 'translate-y-70'} -translate-x-1/2 transition-transform duration-300 ease-in-out'}`}
+				style={{
+					paddingLeft: 0,
+					paddingRight: 0,
+					maxHeight: '150vh',
+				}}
 			>
 				<div className="w-6 h-[0.8px] bg-[#000000] rounded-full mx-auto" />
-				<main className="flex-1 overflow-y-auto min-h-screen p-6 bg-white">
+				<main className="flex-1 overflow-y-auto min-h-screen py-6 bg-white">
 					{/* 검색창 */}
 					{step === 'confirm' && (
 						<>
 							<div className="text-grey-90 ">
 								{isMarkerClicked ? (
-									<p className="text-[16px] -mt-2 mb-2 font-semibold text-grey-90">
+									<p className="text-[16px] px-4 mb-2 font-semibold text-grey-90">
 										선택된 위치예요.
 									</p>
 								) : (
-									<h2 className="text-[16px] -mt-3 mb-2 font-semibold text-grey-90">
+									<h2 className="text-[16px] px-4 mb-2 font-semibold text-grey-90">
 										현재 위치가 맞나요?
 									</h2>
 								)}
 							</div>
-							<div className="flex justify-start w-full">
-								<div className="flex justify-between bg-grey-10 px-4 py-3 mb-4 rounded-2xl h-[44px] min-w-[343px]">
+							<div className="flex justify-center">
+								<div className="flex justify-between bg-grey-10 px-4 py-3 mb-4 w-full rounded-2xl h-[44px] min-w-[343px] max-w-[440px]">
 									<div className="flex items-center gap-2">
 										<Icon
 											name="Location"
@@ -151,18 +155,20 @@ export default function LocationSelector({
 									</button>
 								</div>
 							</div>
-							<SearchLocationMap
-								address={searchAddress}
-								lat={latLng?.lat}
-								lng={latLng?.lng}
-								onMarkerClick={() => setIsMarkerClicked(true)}
-							/>
+							<div className="w-full">
+								<SearchLocationMap
+									address={searchAddress}
+									lat={latLng?.lat}
+									lng={latLng?.lng}
+									onMarkerClick={() => setIsMarkerClicked(true)}
+								/>
+							</div>
 
-							<div className="flex justify-center mt-6">
+							<div className="flex justify-center mt-6 ">
 								<button
 									disabled={!isMarkerClicked}
 									onClick={handleSaveLocation}
-									className="w-full py-3 rounded-2xl font-semibold transition-all bg-black text-primary-40"
+									className=" min-w-[343px] max-w-[450px] w-full py-3 rounded-2xl font-semibold transition-all bg-black text-primary-40"
 								>
 									위치 저장
 								</button>
@@ -172,7 +178,7 @@ export default function LocationSelector({
 					)}
 					{step === 'search' && (
 						<>
-							<div className="flex justify-start">
+							<div className="flex justify-center ml-2">
 								<SearchBox
 									query={address}
 									onChange={(val) => {
@@ -191,18 +197,18 @@ export default function LocationSelector({
 											<Icon name="Search" size="s" className="text-grey-50" />
 										) : undefined
 									}
-									className={` h-[43px] flex items-center bg-grey-10 text-[14px] ${address.trim() ? 'border border-primary-40 text-primary-40' : ''}`}
+									className={`w-full min-w-[343px] max-w-[450px] h-[43px] flex items-center bg-grey-10 text-[14px] ${address.trim() ? 'border border-primary-40 text-primary-40' : ''}`}
 								/>
 							</div>
-							<div className="flex-1 overflow-y-auto mt-4 max-h-[60vh]">
+							<div className="flex-1 overflow-y-auto mt-4 max-h-[60vh] min-w-[375px] max-w-[480px] w-full">
 								<AutocompleteList
 									query={address}
 									onSelect={handleSelect}
 									onCurrentLocationClick={handleCurrentLocationClick}
 								/>
 							</div>
-							<div className="relative bottom-3 w-[343px] left-0 -mx-2 z-50">
-								<div className="flex justify-start">
+							<div className=" relative bottom-3 mx-auto min-w-[343px] max-w-[450px] w-full z-50">
+								<div className="flex justify-center ml-2">
 									<button
 										disabled={!isSelected}
 										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold

@@ -6,7 +6,7 @@ import { Store, mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { AppShell } from '@/widgets/layout';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { mockHome } from '@/features/home/model/mockHome';
@@ -20,6 +20,7 @@ import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
+import api from '../lib/api';
 import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
 
@@ -73,7 +74,12 @@ export default function SearchResultSection() {
 		setQuery('');
 	};
 	const [hasMore, setHasMore] = useState(true);
-
+	useEffect(() => {
+		const token = getDecryptedToken();
+		if (!token) {
+			router.replace('/login');
+		}
+	});
 	useEffect(() => {
 		setQuery(q);
 		setStores([]);
@@ -178,23 +184,12 @@ export default function SearchResultSection() {
 			setLoading(true);
 
 			try {
-				const token = getDecryptedToken();
-				const res = await fetch(
-					'https://api.toktot.site/v1/restaurants/search',
-					{
-						method: 'POST',
-						headers: {
-							Authorization: `Bearer ${token}`,
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({ query: q, page }),
-					},
-				);
-				if (!res.ok) {
-					console.error('HTTP error', res.status, res.statusText);
-				}
+				const res = await api.post('/v1/restaurants/search', {
+					query: q,
+					page,
+				});
 
-				const json = await res.json();
+				const json = res.data;
 				console.log('json', json);
 				if (!json.success || !json.data) {
 					console.error('API Error Response', json);
@@ -208,20 +203,37 @@ export default function SearchResultSection() {
 					return;
 				}
 
-				const newStores: Stores[] = places.map((place: BackendPlace) => ({
-					id: place.id,
+				const newStores: Stores[] = places.map((place: BackendPlace) => {
+					let parsedMenus: string[] = [];
+					if (typeof place.main_menus === 'string') {
+						try {
+							const obj = JSON.parse(place.main_menus);
+							if (obj.firstMenu) {
+								parsedMenus = [obj.firstMenu];
+							}
+						} catch (e) {
+							console.error(e);
+							parsedMenus = [];
+						}
+					} else if (Array.isArray(place.main_menus)) {
+						parsedMenus = place.main_menus;
+					}
 
-					name: place.name ?? 'Unknown Store',
-					address: place.address ?? '',
-					distance: place.distance ?? '0',
-					main_menus: place.main_menus ?? [],
-					average_rating: place.average_rating ?? 0,
-					is_good_price_store: place.is_good_price_store ?? false,
-					image: place.image ?? '/images/foodImage1.png',
-					point: place.point ?? 0,
-					percent: place.percent ?? 0,
-					reviewCount: place.review_count ?? 0,
-				}));
+					return {
+						id: place.id,
+
+						name: place.name ?? 'Unknown Store',
+						address: place.address ?? '',
+						distance: place.distance ?? '0',
+						main_menus: parsedMenus,
+						average_rating: place.average_rating ?? 0,
+						is_good_price_store: place.is_good_price_store ?? false,
+						image: place.image ?? '/images/foodImage1.png',
+						point: place.point ?? 0,
+						percent: place.percent ?? 0,
+						reviewCount: place.review_count ?? 0,
+					};
+				});
 
 				setStores((prev) => {
 					const merged = [...prev, ...newStores];
@@ -294,7 +306,7 @@ export default function SearchResultSection() {
 	}, [rating, searchParams]);
 
 	return (
-		<AppShell showBottomNav={true}>
+		<HomeAppShell showBottomNav={true}>
 			<main className="flex flex-col h-screen">
 				<HeaderBox onLocationSaved={handleLocationSaved} />
 				<div className=" bg-white flex-1 overflow-y-auto scrollbar-hide">
@@ -306,24 +318,25 @@ export default function SearchResultSection() {
 								onClick={() => router.back()}
 							/>
 							{/* 검색창 */}
-
-							<SearchBox
-								query={query}
-								onChange={setQuery}
-								onSearchClick={() => {
-									const params = new URLSearchParams();
-									params.set('q', query);
-									router.push(`/search?${params.toString()}`);
-								}}
-								leftIcon={
-									<Icon name="Search" size="s" className="text-grey-50" />
-								}
-								rightIcon={
-									<Icon name="Cancel" size="s" className="text-grey-50" />
-								}
-								className="max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
-								rightIconOnClick={handleReset}
-							/>
+							<div className="min-w-[315px] max-w-[400px] w-full">
+								<SearchBox
+									query={query}
+									onChange={setQuery}
+									onSearchClick={() => {
+										const params = new URLSearchParams();
+										params.set('q', query);
+										router.push(`/search?${params.toString()}`);
+									}}
+									leftIcon={
+										<Icon name="Search" size="s" className="text-grey-50" />
+									}
+									rightIcon={
+										<Icon name="Cancel" size="s" className="text-grey-50" />
+									}
+									className="min-w-[315px] max-w-[400px] w-full h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+									rightIconOnClick={handleReset}
+								/>
+							</div>
 						</section>
 						{/* 탭 (리뷰 / 가게명) */}
 						<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40">
@@ -365,11 +378,10 @@ export default function SearchResultSection() {
 
 							{priceSummary ? (
 								// PriceSummary 있을 때
-								<div className="bg-grey-10 mt-4 w-full h-[600px] pt-2 pb-6">
-									<div className="bg-white rounded-2xl w-[341px] h-[110px] mx-auto">
+								<div className="bg-grey-10 mt-4 h-[800px] pt-2 pb-6 ">
+									<div className="flex justify-center px-4">
 										<PriceSummary {...priceSummary} />
 									</div>
-
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between mt-4">
 										{filteredReviews.map((review) => (
@@ -441,6 +453,6 @@ export default function SearchResultSection() {
 					)}
 				</div>
 			</main>
-		</AppShell>
+		</HomeAppShell>
 	);
 }

@@ -32,7 +32,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 	};
 	return (
 		<div
-			className="rounded-xl border border-gray-100 p-4 cursor-pointer"
+			className="bg-white rounded-xl p-4 min-w-[341px] max-w-[420px] w-full cursor-pointer"
 			onClick={handleClick}
 		>
 			<div className="flex items-center justify-between text-sm text-gray-500">

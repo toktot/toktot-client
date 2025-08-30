@@ -54,8 +54,8 @@ export default function LocationSearchPage() {
 	return (
 		<RadiusProvider>
 			<Suspense fallback={<div>로딩 중...</div>}>
-				<div className="relative h-screen w-full overflow-hidden">
-					<div className="fixed top-0 left-0 w-full z-50">
+				<div className="relative h-screen mx-auto min-w-[375px] max-w-[480px] overflow-hidden">
+					<div className="fixed top-0 min-w-[375px] max-w-[480px] w-full z-50">
 						<HeaderBox />
 					</div>
 
@@ -319,9 +319,9 @@ function LocationSearchContent({
 			<BottomSheet open>
 				<BottomSheetContent
 					className="
-    fixed bottom-0 left-0.2 mx-auto
+    fixed bottom-0 left-0 right-0 mx-auto
     z-50 bg-white max-h-[50vh] p-4 overflow-y-auto
-    w-full max-w-[380px] md:max-w-[510px]
+    w-full min-w-[375px] lg:w-[480px]
   "
 				>
 					{/* 검색 범위 */}
@@ -529,26 +529,28 @@ function LocationSearchContent({
 							</div>
 						</section>
 					</div>
-					<div className="fixed bottom-0 left-0 w-full bg-white pt-2 pb-4">
-						<div className="flex flex-row items-center justify-between mr-4">
-							<PrimaryButton
-								text="초기화"
-								className="w-[100px] bg-grey-50 text-white flex items-center justify-center ml-4 gap-2"
-								bgColorWhenEnabled="bg-grey-50"
-								onClick={handleReset}
-							>
-								<Icon name="Reset" size="s" />
-								초기화
-							</PrimaryButton>
-							<PrimaryButton
-								text="완료"
-								className="w-[239px]"
-								bgColorWhenEnabled="bg-grey-90"
-								textColorWhenEnabled="text-primary-40"
-								onClick={handleConfirm}
-							/>
+					<div className="fixed bottom-0 left-0 right-0 z-50 bg-white pt-2 pb-4">
+						<div className="mx-auto w-full min-w-[375px] max-w-[480px]">
+							<div className="flex flex-row items-center justify-center gap-4">
+								<PrimaryButton
+									text="초기화"
+									className="w-[100px] bg-grey-50 text-white flex items-center justify-center ml-3 "
+									bgColorWhenEnabled="bg-grey-50"
+									onClick={handleReset}
+								>
+									<Icon name="Reset" size="s" />
+									초기화
+								</PrimaryButton>
+								<PrimaryButton
+									text="완료"
+									className="w-[239px]"
+									bgColorWhenEnabled="bg-grey-90"
+									textColorWhenEnabled="text-primary-40"
+									onClick={handleConfirm}
+								/>
+							</div>
+							<div className="w-16 h-[2px] bg-[#000000] ml-35 rounded-full mx-auto mt-3 bottom-3 z-50" />
 						</div>
-						<div className="w-16 h-[2px] bg-[#000000] ml-35 rounded-full mx-auto mt-3 bottom-3 z-50" />
 					</div>
 					{/* 지도 */}
 				</BottomSheetContent>

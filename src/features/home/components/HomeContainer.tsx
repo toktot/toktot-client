@@ -11,6 +11,7 @@ import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
 import Toast from '@/shared/components/Toast';
 import Icon from '@/shared/ui/Icon';
+import { getDecryptedToken } from '@/shared/utils/storage';
 
 import { mockHome } from '../model/mockHome';
 import FilterBar from './FilterBar';
@@ -27,6 +28,7 @@ export default function HomeContainer() {
 
 	const router = useRouter();
 	const [showToast, setShowToast] = useState(false);
+
 	const handleSearchClick = () => {
 		console.log('검색어', query);
 	};
@@ -94,6 +96,14 @@ export default function HomeContainer() {
 		setShowToast(true);
 	};
 	useEffect(() => {
+		const token = getDecryptedToken();
+		console.log('Token', token);
+		console.log(token);
+		if (!token) {
+			router.replace('/login');
+		}
+	}, [router]);
+	useEffect(() => {
 		router.prefetch('/searchBar');
 	}, [router]);
 
@@ -121,6 +131,12 @@ export default function HomeContainer() {
 		};
 		// placeName을 리뷰 텍스트 대신 임시 사용
 	});
+	const toNumber = (d?: string) =>
+		d != null ? parseFloat(d) : Number.POSITIVE_INFINITY;
+
+	const sortedStores = [...mockStores].sort(
+		(a, b) => toNumber(a.distance) - toNumber(b.distance),
+	);
 
 	return (
 		<main className="flex flex-col h-screen">
@@ -129,7 +145,7 @@ export default function HomeContainer() {
 				<div className="bg-grey-10">
 					<section className="relative mt-2 justify-center flex items-center gap-2 bg-grey-10">
 						<div className="rounded-[18px] bg-gradient-to-r from-[#171D29] via-[#3AC8FF] to-[#2295C0] p-[2px]">
-							<div className="w-[351px] h-[48px] rounded-[16px] bg-gradient-to-r from-[#F6FCFF] to-[#F9FCFF] flex items-center">
+							<div className="w-full min-w-[351px] max-w-[480px]  h-[48px] rounded-[16px] bg-gradient-to-r from-[#F6FCFF] to-[#F9FCFF] flex items-center">
 								<SearchBox
 									query={query}
 									onChange={setQuery}
@@ -138,7 +154,7 @@ export default function HomeContainer() {
 									leftIcon={
 										<Icon name="Search" size="s" className="text-primary-40" />
 									}
-									className="w-[351px] h-[48px] flex items-center"
+									className=" h-[48px] flex items-center"
 									placeholder="제주도 여행가서 먹고 싶은 음식은?"
 									placeholderColor="placeholder-primary-60"
 								/>
@@ -158,8 +174,8 @@ export default function HomeContainer() {
 						</h2>
 						<button className="text-sm text-gray-500">더보기</button>
 					</div>
-					<div className="overflow-x-auto py-2 justify-start scrollbar-hide">
-						<div className="flex justify-start">
+					<div className="overflow-x-auto py-2 scrollbar-hide">
+						<div className="inline-flex justify-start">
 							<FilterBar
 								value={filter}
 								onChange={handleFilterChange}
@@ -167,10 +183,17 @@ export default function HomeContainer() {
 							/>
 						</div>
 					</div>
-					<div className="overflow-x-auto py-2 scrollbar-hide">
-						<div className="flex gap-4">
+					<div
+						className="overflow-x-auto py-2 scrollbar-hide"
+						style={{ WebkitOverflowScrolling: 'touch' }}
+					>
+						<div className="inline-flex gap-4">
 							{mappedReviews.map((review) => (
-								<div key={review.id} className="flex-shrink-0 w-[290px]">
+								<div
+									key={review.id}
+									className="flex-shrink-0 w-[290px]"
+									style={{ WebkitOverflowScrolling: 'touch' }}
+								>
 									<PhotoReviewCard review={review} stores={mockStores} />
 								</div>
 							))}
@@ -185,8 +208,8 @@ export default function HomeContainer() {
 						<button className="text-sm text-gray-500">더보기</button>
 					</div>
 					<PriceTabs />
-					<div className="flex justify-start mt-5">
-						<button className="w-[343px] border border-grey-40 rounded-3xl text-grey-90 text-center py-2">
+					<div className="flex justify-center mt-5">
+						<button className="min-w-[343px] max-w-[430px] w-full border border-grey-40 rounded-3xl text-grey-90 text-center py-2">
 							더보기
 						</button>
 					</div>
@@ -203,7 +226,7 @@ export default function HomeContainer() {
 
 					{/* StoreInfoCard 목록 */}
 					<div className="flex flex-col gap-4">
-						{mockStores.map((store) => (
+						{sortedStores.map((store) => (
 							<StoreInfoCard key={store.id} review={store} />
 						))}
 					</div>

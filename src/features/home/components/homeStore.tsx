@@ -91,7 +91,7 @@ export default function PriceTabs() {
 			</div>
 
 			{/* 가게 카드들 */}
-			<div className="flex flex-col gap-4 justify-start items-start">
+			<div className="flex flex-col gap-4 justify-center items-center">
 				{filteredStores.map((store) => (
 					<StoreCardNew key={store.id} review={store} />
 				))}

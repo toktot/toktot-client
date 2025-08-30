@@ -1,10 +1,8 @@
-'use client';
-
 import React from 'react';
 
-import { BottomNav, BottomNavItem } from '../../../widgets/layout/ui/BottomNav';
-import { DEFAULT_NAVIGATION_ITEMS } from '../config/navigation';
-import { CenterButton } from '../ui/BottomNav';
+import { BottomNav, BottomNavItem } from '@/widgets/layout';
+import { DEFAULT_NAVIGATION_ITEMS } from '@/widgets/layout/config/navigation';
+import { CenterButton } from '@/widgets/layout/ui/BottomNav';
 
 interface AppShellProps {
 	children: React.ReactNode;

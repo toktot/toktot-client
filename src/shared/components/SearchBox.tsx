@@ -48,7 +48,7 @@ export default function SearchBox({
 
 	return (
 		<div
-			className={`relative w-[343px] transition-all duration-300 rounded-[18px] ${className}`}
+			className={`relative transition-all duration-300 rounded-[18px] ${className}`}
 			style={style}
 		>
 			{leftIcon && (
