@@ -42,9 +42,10 @@ export const AddFolderInput = ({
 				onChange={(e) => setName(e.target.value)}
 				maxLength={10}
 				placeholder="폴더명 (10자 이내)"
-				className="flex flex-1 h-full px-4 bg-grey-10 rounded-2xl"
+				className="flex flex-1 px-4 h-full bg-grey-10 rounded-2xl"
 				onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
 				autoFocus
+				spellCheck={false}
 			/>
 			<button
 				onClick={handleAdd}

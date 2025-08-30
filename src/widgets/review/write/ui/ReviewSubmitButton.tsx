@@ -21,7 +21,6 @@ interface ReviewSubmitButtonProps {
 
 type MinimalImage = { id: string; order: number };
 
-// TODO: 리뷰보기 이미지 비율 처리
 const buildSubmitPayload = (
 	restaurantId: number,
 	images: MinimalImage[],
