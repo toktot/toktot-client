@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { mockReviews } from '@/entities/store/model/mockReview';
 import { mockStores } from '@/entities/store/model/mockStore';
+
 import { useRouter, useSearchParams } from 'next/navigation';
+
 
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
@@ -240,7 +242,9 @@ export default function HomeContainer() {
 						onClose={handleToastClose}
 					/>
 				)}
+
 			</div>
+
 		</main>
 	);
 }
