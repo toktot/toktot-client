@@ -4,8 +4,7 @@ import { Suspense, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { BottomNav, BottomNavItem } from '@/widgets/layout';
-import { CenterButton } from '@/widgets/layout/ui/BottomNav';
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import Auto from '@/features/searchBar/components/Auto';
@@ -36,48 +35,51 @@ export default function Search() {
 		setShowToast(false);
 	};
 	return (
-		<main className="min-h-screen p-6 bg-white">
-			<Suspense fallback={<div>로딩 중...</div>}>
-				<HeaderBox onLocationSaved={handleLocationSaved} />
-				<div className="flex justify-center items-center gap-2 mr-2">
-					<button onClick={() => router.back()}>
-						<Icon name="ArrowLeft" className="text-grey-70" />
-					</button>
+		<HomeAppShell showBottomNav={true}>
+			<HeaderBox onLocationSaved={handleLocationSaved} />
+			<main className="min-h-screen p-6 bg-white">
+				<Suspense fallback={<div>로딩 중...</div>}>
+					<div className="flex justify-center items-center gap-1.5 relative -mt-3">
+						<button onClick={() => router.back()}>
+							<Icon name="ArrowLeft" className="text-grey-70 -ml-3" />
+						</button>
+						<div className="flex justify-center items-center min-w-[315px] max-w-[400px] w-full">
+							<SearchBox
+								query={text}
+								onChange={(val) => {
+									setText(val);
+								}}
+								onSearchClick={() => handleSelect}
+								leftIcon={
+									<Icon name="Search" size="s" className="text-grey-50" />
+								}
+								rightIcon={
+									<Icon name="Cancel" size="s" className="text-grey-50" />
+								}
+								className="w-full min-w-[315px] max-w-[400px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+								rightIconOnClick={handleReset}
+							/>
+						</div>
+					</div>
 
-					<SearchBox
-						query={text}
-						onChange={(val) => {
-							setText(val);
-						}}
-						onSearchClick={() => handleSelect}
-						leftIcon={<Icon name="Search" size="s" className="text-grey-50" />}
-						rightIcon={<Icon name="Cancel" size="s" className="text-grey-50" />}
-						className="w-full max-w-[315px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
-						rightIconOnClick={handleReset}
+					<div className="mt-5">
+						<FilterBar
+							value={filter}
+							onChange={setFilter}
+							onClick={() => router.push('/searchDetection?from=search')}
+						/>
+					</div>
+
+					<Auto query={text} onSelect={handleSelect} />
+				</Suspense>
+				{showToast && (
+					<Toast
+						message="위치가 설정되었어요."
+						duration={2000}
+						onClose={handleToastClose}
 					/>
-				</div>
-
-				<div className="mt-5">
-					<FilterBar value={filter} onChange={setFilter} />
-				</div>
-				<Auto query={text} onSelect={handleSelect} />
-			</Suspense>
-			{showToast && (
-				<Toast
-					message="위치가 설정되었어요."
-					duration={2000}
-					onClose={handleToastClose}
-				/>
-			)}
-			<section>
-				<BottomNav>
-					<BottomNavItem href="/home" iconName="Home" label="home" />
-					<BottomNavItem href="/review" iconName="Review" label="review" />
-					<CenterButton href="/write" iconName="Plus" aria-label="plus" />
-					<BottomNavItem href="/bookmark" iconName="Route" label="route" />
-					<BottomNavItem href="/mypage" iconName="My" label="my" />
-				</BottomNav>
-			</section>
-		</main>
+				)}
+			</main>
+		</HomeAppShell>
 	);
 }

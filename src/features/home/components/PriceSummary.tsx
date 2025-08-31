@@ -32,7 +32,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 	};
 	return (
 		<div
-			className="rounded-xl border border-gray-100 p-4 cursor-pointer"
+			className="bg-white rounded-xl p-4 min-w-[341px] max-w-[420px] w-full cursor-pointer"
 			onClick={handleClick}
 		>
 			<div className="flex items-center justify-between text-sm text-gray-500">
@@ -67,7 +67,7 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 				<span className="text-grey-90">최고</span>
 			</div>
 
-			<div className="mt-1 flex justify-between text-xs text-gray-500">
+			<div className="flex justify-between text-grey-70 text-[9px]">
 				<span>{formatKRW(minPrice)}</span>
 				<span>{formatKRW(avgPrice)}</span>
 				<span>{formatKRW(maxPrice)}</span>

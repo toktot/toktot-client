@@ -5,6 +5,8 @@ import { useMemo, useState } from 'react';
 import { mockMenu } from '@/entities/store/menu/mockMenu';
 import Link from 'next/link';
 
+import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
+
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
@@ -44,32 +46,39 @@ export default function StoreMenuSection() {
 	}
 
 	return (
-		<section className="p-4">
-			<SingleCategorySelect
-				value={selectedCategory}
-				onChange={setSelectedCategory}
-			>
-				{categoryTypes.map((type, index) => (
-					<SingleCategorySelect.Item key={type} value={index}>
-						{type}
-					</SingleCategorySelect.Item>
-				))}
-			</SingleCategorySelect>
+		<HomeAppShell showBottomNav={true}>
+			<section className="p-4">
+				<SingleCategorySelect
+					value={selectedCategory}
+					onChange={setSelectedCategory}
+				>
+					{categoryTypes.map((type, index) => (
+						<SingleCategorySelect.Item key={type} value={index}>
+							{type}
+						</SingleCategorySelect.Item>
+					))}
+				</SingleCategorySelect>
 
-			<div className="mt-6 space-y-4">
-				{filteredMenu.map((menu) => (
-					<MenuInfoCard
-						key={menu.id}
-						review={{
-							id: String(menu.id),
-							menuImageUrl: menu.imageUrl,
-							menuName: menu.menuName,
-							price: menu.price,
-							peopleNumber: menu.peopleNumber,
-						}}
-					/>
-				))}
-			</div>
-		</section>
+				<div className="mt-2 flex flex-col items-start w-full">
+					{filteredMenu.map((menu, index) => (
+						<div key={menu.id} className="w-full">
+							<MenuInfoCard
+								review={{
+									id: String(menu.id),
+									menuImageUrl: menu.imageUrl,
+									menuName: menu.menuName,
+									price: menu.price,
+									peopleNumber: menu.peopleNumber,
+								}}
+							/>
+							{/* 마지막 카드가 아니면 선 추가 */}
+							{index !== filteredMenu.length - 1 && (
+								<div className="bg-grey-10 w-full h-[1px]" />
+							)}
+						</div>
+					))}
+				</div>
+			</section>
+		</HomeAppShell>
 	);
 }

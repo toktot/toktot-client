@@ -13,10 +13,11 @@ import {
 } from '@/shared/utils/storage';
 
 import { User } from '../../../entities/user/types/auth';
+import { LoginResponse } from '../components/LoginForm';
 
 interface AuthContextType {
 	user: User | null;
-	login: (username: string, password: string) => Promise<boolean>;
+	login: (username: string, password: string) => Promise<LoginResponse>;
 	logout: () => void;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const loginHandler = async (
 		email: string,
 		password: string,
-	): Promise<boolean> => {
+	): Promise<LoginResponse> => {
 		try {
 			const res = await fetch('https://api.toktot.site/v1/auth/login', {
 				method: 'POST',
@@ -44,20 +45,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				},
 				body: JSON.stringify({ email, password }),
 			});
-			const data = await res.json();
+			const data: LoginResponse = await res.json();
 
-			if (!data.success || !data.data?.access_token) {
-				return false;
+			if (data.success && data.data?.access_token) {
+				setEncryptedToken(data.data.access_token);
 			}
-			console.log('login response', data);
-			const accessToken = data.data.access_token;
 
-			setEncryptedToken(accessToken);
-
-			return true;
+			return data;
 		} catch (error) {
 			console.error('Login error:', error);
-			return false;
+			return {
+				success: false,
+				message: '로그인 실패',
+				data: { access_token: '', token_type: '', expires_in: 0 },
+			};
 		}
 	};
 

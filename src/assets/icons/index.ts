@@ -37,7 +37,7 @@ export { default as WesternFood } from './western-food.svg';
 export { default as Search } from './search.svg';
 export { default as LocalJeju } from './localjeju.svg';
 export { default as Checkmark } from './checkmark.svg';
-export { default as GoodPrice } from './good_price.svg';
+export { default as GoodPrice } from './GoodPrice.svg';
 export { default as Questionmark } from './questionmark.svg';
 export { default as FillLocalJeju } from './fill_localjeju.svg';
 export { default as Back } from './Icon_system.svg';
@@ -64,8 +64,13 @@ export { default as morning } from './morning.svg';
 export { default as call } from './call.svg';
 export { default as Kebab } from './kebab.svg';
 
-export { default as lunch } from './evening.svg';
-export { default as breakfast } from './morning.svg';
 export { default as Gasimbi } from './gasimbi.svg';
 export { default as Reset } from './Reset.svg';
+export { default as OrangeGasimbi } from './OrangeGasimbi.svg';
+export { default as GreenGasimbi } from './GreenGasimbi.svg';
+export { default as Menu } from './Menu.svg';
+export { default as Newhome } from './Newhome.svg';
+
+export { default as lunch } from './evening.svg';
+export { default as breakfast } from './morning.svg';
 export { default as MenuBoard } from './menu-board.svg';

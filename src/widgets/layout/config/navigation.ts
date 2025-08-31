@@ -15,7 +15,7 @@ export type CenterActionItem = {
 };
 
 export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
-	{ type: 'link', href: '/home', iconName: 'Home', label: 'home' },
+	{ type: 'link', href: '/home', iconName: 'Newhome', label: 'home' },
 	{ type: 'link', href: '/review/view', iconName: 'Review', label: 'review' },
 	{
 		type: 'action',

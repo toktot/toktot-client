@@ -37,7 +37,7 @@ export default function SearchResultSection() {
 				<div className="text-base font-semibold">{query}</div>
 				<Icon name="Bell" />
 			</header>
-			<div className="w-full px-3 py-2 overflow-x-auto whitespace-nowrap flex gap-4 bg-white">
+			<div className="w-full px-3 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap flex gap-4 bg-white">
 				{categories?.map((item, idx) => {
 					const isSelected = item.name === query;
 					return (
@@ -47,7 +47,7 @@ export default function SearchResultSection() {
 							className="flex flex-col items-center text-center text-xs text-gray-700"
 						>
 							<div
-								className={`rounded-md w-12 h-12 flex items-center justify-center shadow-sm mb-1
+								className={`rounded-xl w-12 h-12 flex items-center justify-center mb-1
 						${isSelected ? 'bg-primary-20 border-primary-20' : 'bg-white'}`}
 							>
 								<Icon name={item.icon} />

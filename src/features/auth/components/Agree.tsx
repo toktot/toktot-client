@@ -51,13 +51,14 @@ export default function AgreementModal({ onAgree }: Props) {
 							onClick={handleCheckAll}
 						>
 							<div
-								className={`w-5 h-5 rounded-full flex items-center justify-center border ${
-									allChecked
-										? 'bg-primary-40 text-white border-primary-40'
-										: 'border-gray-300'
+								className={` ${
+									allChecked ? 'text-primary-40 text-white' : 'border-gray-300'
 								}`}
 							>
-								<Icon name={allChecked ? 'ReviewCurrent' : 'ReviewDisabled'} />
+								<Icon
+									name={allChecked ? 'ReviewCurrent' : 'ReviewDisabled'}
+									size="s"
+								/>
 							</div>
 							<span className="font-semibold">똑똑 이용약관 동의 (전체)</span>
 						</div>
@@ -71,25 +72,22 @@ export default function AgreementModal({ onAgree }: Props) {
 									onClick={() => toggleCheck(term.id)}
 								>
 									<div className="flex items-center gap-2">
-										{term.id === 'terms1' ? (
-											<Icon name={'Plus'} />
-										) : (
-											<div
-												className={`w-5 h-5 rounded-full flex items-center justify-center border ${
+										<div
+											className={`${
+												checkedItems[term.id]
+													? 'text-primary-40 text-white '
+													: 'border-gray-300'
+											}`}
+										>
+											<Icon
+												name={
 													checkedItems[term.id]
-														? 'bg-primary-40 text-white border-primary-40'
-														: 'border-gray-300'
-												}`}
-											>
-												<Icon
-													name={
-														checkedItems[term.id]
-															? 'ReviewCurrent'
-															: 'ReviewDisabled'
-													}
-												/>
-											</div>
-										)}
+														? 'ReviewCurrent'
+														: 'ReviewDisabled'
+												}
+												size="xs"
+											/>
+										</div>
 
 										<span className="text-sm text-gray-800">{term.label}</span>
 									</div>
