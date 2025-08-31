@@ -9,6 +9,7 @@ export const mockUser: User[] = [
 		profileImageUrl: '/images/user1',
 		reviewCount: 2,
 		averageRating: 3,
+		gasimbi: 80,
 	},
 	{
 		id: 2,
@@ -18,6 +19,7 @@ export const mockUser: User[] = [
 		profileImageUrl: '/images/user1',
 		reviewCount: 2,
 		averageRating: 3,
+		gasimbi: 20,
 	},
 	{
 		id: 3,
@@ -27,5 +29,6 @@ export const mockUser: User[] = [
 		profileImageUrl: '/images/user1',
 		reviewCount: 2,
 		averageRating: 3,
+		gasimbi: 30,
 	},
 ];

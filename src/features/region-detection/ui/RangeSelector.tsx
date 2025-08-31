@@ -26,51 +26,77 @@ export const RangeSelector = () => {
 		<div className="relative w-full">
 			{/* FIXME: 공용버튼으로 변경 */}
 			<button
-				className="rounded-xl px-3 py-1 mb-5 w-[50px] h-[29px] text-[14px] bg-grey-10 text-grey-60"
+				className="rounded-xl px-3 py-1 mb-5 w-[49px] h-[29px] text-[14px] bg-grey-10 text-grey-60"
 				onClick={() => handleRadiusChange(0)}
 			>
 				전체
 			</button>
-			<div className="flex items-center justify-between relative h-6">
-				{RANGE_STEPS.map((step, idx) => {
-					const isFilled = step <= radius;
+			<div className="relative w-full px-2">
+				<div className="flex items-center justify-between relative h-6">
+					{RANGE_STEPS.map((step, idx) => {
+						const isFilled = step <= radius;
+						const isCenter = idx === Math.floor(RANGE_STEPS.length / 2);
 
-					return (
-						<div
-							key={step}
-							className={`${idx === 0 ? '' : 'flex  flex-1  items-center'}`}
-						>
-							{/* 선: 앞쪽 점과 현재 점 사이 */}
-							{idx > 0 && (
-								<div
-									className={`flex-1 h-1 ${
-										step <= radius ? 'bg-sky-400' : 'bg-gray-200'
-									}`}
-								/>
-							)}
-
-							{/* 점 */}
+						return (
 							<div
-								className={`w-5 h-5 rounded-full border-2 transition-all duration-150 cursor-pointer ${
-									isFilled
-										? 'bg-sky-400 border-sky-400'
-										: 'bg-gray-100 border-gray-300'
-								}`}
-								onClick={() => handleRadiusChange(step)}
-							/>
-						</div>
-					);
-				})}
+								key={step}
+								className="flex-1 flex flex-col items-center relative"
+							>
+								{/* 점 + 선 묶음 */}
+								<div className="flex items-center w-full">
+									{/* 왼쪽 선 */}
+									{idx > 0 && (
+										<div
+											className={`flex-1 h-1 ${
+												RANGE_STEPS[idx] <= radius
+													? 'bg-sky-400'
+													: 'bg-gray-200'
+											}`}
+										/>
+									)}
+
+									{/* 점 */}
+									<div
+										className={`rounded-full  transition-all duration-150 cursor-pointer z-10 ${
+											isFilled ? 'bg-sky-400 ' : 'bg-gray-100 '
+										} ${isCenter ? 'w-7 h-7' : 'w-4 h-4'}`}
+										onClick={() => handleRadiusChange(step)}
+									/>
+
+									{/* 오른쪽 선 */}
+									{idx < RANGE_STEPS.length - 1 && (
+										<div
+											className={`flex-1 h-1 ${
+												RANGE_STEPS[idx + 1] <= radius
+													? 'bg-sky-400'
+													: 'bg-gray-200'
+											}`}
+										/>
+									)}
+								</div>
+
+								{/* 점 밑 라벨 */}
+							</div>
+						);
+					})}
+				</div>
+				<div className="flex justify-between mt-2 text-[11px] text-grey-70">
+					{RANGE_STEPS.map((step) => (
+						<span key={step} className={`${step >= 800 ? 'mr-1' : ''}`}>
+							{step >= 1000 ? `${step / 1000}km` : `${step}m`}
+						</span>
+					))}
+				</div>
 			</div>
 
 			{/* 라벨 */}
-			<div className="mt-2 gap-5 ml-1 flex justify-center text-[11px] text-grey-70">
-				{RANGE_STEPS.map((step) => (
-					<span key={step}>{`${step}m`}</span>
-				))}
-			</div>
+
 			<div className="mt-5 text-xl text-[#000000] text-[20px] font-semibold text-center">
-				{radius === 0 ? '전체 거리' : `${radius}m 이내`}
+				{radius === 0
+					? '전체 거리'
+					: radius >= 1000
+						? `${radius / 1000}km 이내`
+						: `${radius}m 이내`}
 			</div>
 		</div>
 	);

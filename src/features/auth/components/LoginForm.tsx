@@ -12,6 +12,15 @@ import { getKakaoLoginUrl } from '@/shared/utils/storage';
 
 import { useAuth } from '../context/AuthProvider';
 
+export interface LoginResponse {
+	success: boolean;
+	message: string;
+	data: {
+		access_token: string;
+		token_type: string;
+		expires_in: number;
+	};
+}
 export default function LoginForm() {
 	const { login } = useAuth();
 	const router = useRouter();
@@ -50,14 +59,14 @@ export default function LoginForm() {
 			setError('비밀번호 형식이 올바르지 않습니다.');
 			return;
 		}
-
-		const success = await login(username, password); // 여기만 호출
-		console.log(success);
-
-		if (success) {
-			router.push('/'); // 로그인 성공 시 이동
-		} else {
-			setError('아이디 또는 비밀번호를 확인하세요.');
+		try {
+			const response = await login(username, password);
+			if (response.success && response.data?.access_token) {
+				router.push('/');
+			}
+		} catch (err: unknown) {
+			if (err instanceof Error) setError(err.message);
+			else setError('알수 없는 에러가 발생했습니다.');
 		}
 	};
 

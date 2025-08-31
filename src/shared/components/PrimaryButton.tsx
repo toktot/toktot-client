@@ -8,8 +8,11 @@ type PrimaryButtonProps = {
 	type?: 'button' | 'submit' | 'reset';
 	textColorWhenEnabled?: string;
 	bgColorWhenEnabled?: string;
+
 	disabledColor?: string;
+
 	children?: React.ReactNode;
+
 };
 
 const PrimaryButton = ({
@@ -21,9 +24,12 @@ const PrimaryButton = ({
 	textColorWhenEnabled = 'text-primary-40',
 	bgColorWhenEnabled = 'bg-grey-90',
 
-	disabledColor = '',
 
 	children,
+
+	disabledColor = '',
+
+
 
 }: PrimaryButtonProps) => {
 	const baseClass = `h-[48px] rounded-[20px] font-semibold `;

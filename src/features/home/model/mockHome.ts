@@ -4,7 +4,7 @@ export interface Review {
 	placeName: string;
 	location: string;
 	distance: string;
-	rating?: number;
+	rating: number;
 	mealTime?: string;
 	category?: string[];
 	mainMenu?: string;
@@ -28,13 +28,15 @@ export interface Review {
 	parking?: number[]; // 주차 관련 옵션
 	writer?: string;
 	time?: string;
+	gasimbi?: number;
+	text?: string;
 }
 
 export const mockHome: Review[] = [
 	{
 		id: 1,
 		imageUrl: '/images/foodImage1.png',
-		placeName: '다요이네 삼밥',
+		placeName: '제주돔베고기집',
 		location: '서귀포시 중구',
 		distance: '100m',
 		mealTime: '아침',
@@ -54,7 +56,9 @@ export const mockHome: Review[] = [
 		price: [1],
 		service: [1],
 		writer: '혼잣말 잘해요',
-		time: '1분',
+		time: '20분 전',
+		gasimbi: 50,
+		text: '아삭하고 새콤해요 수육도 부드러워요. 동네주민이 많이 보여요',
 	},
 	{
 		id: 2,

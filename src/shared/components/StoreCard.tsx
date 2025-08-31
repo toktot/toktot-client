@@ -4,18 +4,21 @@ import StoreCategoryTag from '@/entities/storeCard/components/StoreCategoryTag';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import GasimbiCategoryTag from '@/features/home/model/GasimbiCategory';
+import TopPercentTag from '@/features/home/model/TopPercentTag';
+
 import Icon from '@/shared/ui/Icon';
 
 export interface StoreInfoCardProps {
 	review: {
-		id: string;
+		id: number;
 		storeImageUrl: string;
 		storeName: string;
 		isKindStore?: boolean;
 		mainMenus: string[];
-		reviewCount: number;
+		reviewCount?: number;
 		valueScore: number;
-		topPercent: number;
+		topPercent: string;
 		address: string;
 
 		rating: number;
@@ -60,17 +63,10 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 					</span>
 				</div>
 				<div className="flex items-center gap-1 text-xs mt-1">
-					<span className="text-grey-90 text-[9px] flex flex-wrap bg-primary-20 rounded-full px-1 py-1">
-						<Icon name="Gasimbi" size="xxs" />
-						상위 {review.topPercent}%
-					</span>
-					<div className="px-2 py-0.5 rounded-full bg-primary-10">
-						<span className=" text-grey-80 text-[9px]">가심비</span>
-						<span className="text-orange-500 text-[9px] ml-1">
-							{review.valueScore}점
-						</span>
-					</div>
+					<TopPercentTag value={review.topPercent} />
+					<GasimbiCategoryTag value={review.valueScore} />
 				</div>
+
 				<div className="text-xs text-grey-70 flex items-center">
 					<Icon name={'Location'} size="xxs" /> {review.address} ·{' '}
 					{review.distance}

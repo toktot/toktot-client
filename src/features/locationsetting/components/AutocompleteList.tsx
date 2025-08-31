@@ -98,17 +98,17 @@ export default function AutocompleteList({
 	}, [query]);
 
 	return (
-		<div className="bg-white mt-2 w-full max-w-[375px] mx-auto z-10 relative">
+		<div className="bg-white w-full min-w-[375px] max-w-[480px] mx-auto z-10 relative">
 			{/* 현재 위치 */}
 			<div
 				onClick={onCurrentLocationClick}
-				className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer "
+				className="flex items-center gap-2 py-3 px-6 hover:bg-gray-100 cursor-pointer "
 			>
 				<Icon name={'Current'} className="text-grey-50" size="xs" />
 
 				<span className="text-grey-70 text-[14px]">현재 위치로 설정</span>
-				<span className="ml-auto text-grey-20">
-					<Icon name="ArrowRight" className="text-grey-50" size="xs" />
+				<span className="ml-auto -mr-3 text-grey-20">
+					<Icon name="ArrowRight" className="text-grey-50 " size="xs" />
 				</span>
 			</div>
 			<div className="border-t border-grey-60 w-full"></div>

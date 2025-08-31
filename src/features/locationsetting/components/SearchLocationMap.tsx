@@ -51,8 +51,8 @@ export default function SearchLocationMap({
 	}, [lat, lng, map]);
 
 	return (
-		<div className={`relative w-[375px] h-[400px] -ml-6`}>
-			<div id="map" className="w-full h-full rounded-lg shadow-md" />
+		<div className={`relative h-[400px]`}>
+			<div id="map" className="w-full h-full " />
 			{map && position && (
 				<Marker map={map} position={position} onClick={onMarkerClick} />
 			)}

@@ -15,18 +15,20 @@ export type CenterActionItem = {
 };
 
 export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
-	{ type: 'link', href: '/home', iconName: 'Home', label: 'home' },
+	{ type: 'link', href: '/home', iconName: 'Newhome', label: 'home' },
 	{ type: 'link', href: '/review/view', iconName: 'Review', label: 'review' },
 	{
 		type: 'action',
 		href: '/review/write/1',
-		iconName: 'ReviewPlus',
+		iconName: 'Plus',
 		'aria-label': '리뷰 작성하기',
 	},
 	{
 		type: 'link',
 		href: '/menu-upload',
-		iconName: 'Route',
+
+		iconName: 'Menu',
+
 		label: 'menu',
 	},
 	{ type: 'link', href: '/my', iconName: 'My', label: 'my' },

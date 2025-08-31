@@ -20,6 +20,7 @@ interface Props {
 const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 	const router = useRouter();
 	const { categories } = useCategories();
+	console.log(categories);
 
 	const handleClick = (item: CategoryItem) => {
 		if (onSelect) onSelect(item);

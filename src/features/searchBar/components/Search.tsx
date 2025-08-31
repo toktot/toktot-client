@@ -29,7 +29,11 @@ export default function Search() {
 				onSearchClick={() => handleSelect}
 				className="text-grey-80"
 			/>
-			<FilterBar value={filter} onChange={setFilter} />
+			<FilterBar
+				value={filter}
+				onChange={setFilter}
+				onClick={() => router.push('/searchDetection?from=search')}
+			/>
 			<Auto query={text} onSelect={handleSelect} />
 		</main>
 	);

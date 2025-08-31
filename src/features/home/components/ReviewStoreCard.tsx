@@ -24,7 +24,7 @@ const ReviewStoreCard: React.FC<ReviewStoreCardProps> = ({ review }) => {
 					className="absolute top-2 right-2 transform rotate-90 text-white"
 				/>
 				<div className="absolute bottom-1 left-3 text-[9px] text-[#FFFFFF] ">
-					{review.writer} · {review.time}전
+					{review.writer} · {review.time}
 				</div>
 			</div>
 			<div className="p-2">

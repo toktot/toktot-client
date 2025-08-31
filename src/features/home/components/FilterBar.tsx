@@ -33,13 +33,15 @@ const filterItems: FilterItem[] = [
 interface Props {
 	value: number | null;
 	onChange: (val: number | null) => void;
+	onClick: () => void;
 	onSummaryChange?: (summary: string) => void;
 }
 
-const FilterBar: React.FC<Props> = ({ value, onChange }) => {
+const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 	const [filterTags, setFilterTags] = useState<string[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
+
 	const [displayItems, setDisplayItems] = useState(filterItems);
 	const [isQueryActive, setIsQueryActive] = useState(false);
 	const distance = searchParams.get('distance');
@@ -126,10 +128,6 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 		setDisplayItems(updatedItems);
 	}, [distance, maxPrice, menu, minPrice, rating, mealTime, searchParams]);
 
-	const handleIconClick = () => {
-		router.push('/searchDetection');
-	};
-
 	const handleFilterChange = (newFilter: number | null) => {
 		onChange(newFilter);
 		const params = new URLSearchParams(searchParams.toString());
@@ -182,7 +180,7 @@ const FilterBar: React.FC<Props> = ({ value, onChange }) => {
 					name={'Filter'}
 					className="text-grey-70"
 					size="xs"
-					onClick={handleIconClick}
+					onClick={onClick}
 				/>
 			</div>
 
