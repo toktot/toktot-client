@@ -41,7 +41,7 @@ export const ReviewImageWidget = () => {
 		remainingSlots,
 		setMainImage,
 		mainImageId,
-	} = useReviewImageManager(1);
+	} = useReviewImageManager(831);
 	const {
 		buildInteractiveImages,
 		beginTooltipForImage,

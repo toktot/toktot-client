@@ -5,7 +5,7 @@ import { AppShell } from '@/widgets/layout';
 export default function ComingSoonPage() {
 	return (
 		<AppShell showBottomNav={true}>
-			<div className="flex-1 bg-gradient-to-br from-primary-30 via-primary-10 to-primary-20 flex items-center justify-center p-4">
+			<div className="flex-1 bg-gradient-to-br from-primary-30 via-primary-10 to-primary-20 flex items-center justify-center p-4 h-full">
 				<div className="text-center max-w-md mx-auto">
 					{/* Construction Icon */}
 					<div className="mb-8 relative flex justify-center">

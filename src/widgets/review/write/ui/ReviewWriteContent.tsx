@@ -27,9 +27,11 @@ export function ReviewWriteContent({
 				<Header.Left>
 					<BackButton />
 				</Header.Left>
-				<Header.Center>리뷰 쓰기</Header.Center>
+				<Header.Center>
+					<span className="leading-[48px]">리뷰 쓰기</span>
+				</Header.Center>
 			</Header>
-			<div className="flex flex-col items-center p-4 gap-9 relative">
+			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
 				<ReviewImageWidget />
 				<KeywordSelectionWidget
@@ -67,7 +69,7 @@ export function ReviewWriteContent({
 					category="mealtime"
 					keywords={KEYWORDS_BY_CATEGORY.mealtime}
 				/>
-				<div className="mt-auto w-full pt-4 sticky bottom-2">
+				<div className="w-full sticky bottom-2">
 					<NextButton restaurantId={parseInt(storeId)} />
 				</div>
 			</div>

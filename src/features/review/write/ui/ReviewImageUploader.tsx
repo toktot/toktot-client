@@ -12,12 +12,12 @@ export const ReviewImageUploader = ({
 	maxCount: number;
 	maxFileSize: number;
 }) => {
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
 
 		const fileArray = Array.from(files);
-		const { validFiles, errorMessage } = validateFiles(
+		const { validFiles, errorMessage } = await validateFiles(
 			fileArray,
 			maxCount,
 			maxFileSize,
@@ -25,10 +25,10 @@ export const ReviewImageUploader = ({
 
 		if (errorMessage) {
 			alert(errorMessage);
+		} else {
+			onUpload(validFiles);
+			e.target.value = '';
 		}
-
-		onUpload(validFiles);
-		e.target.value = '';
 	};
 
 	return (

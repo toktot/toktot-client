@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { FoodTooltip, useReviewImageManager } from '@/entities/review';
+import { useReviewImageStore } from '@/entities/review/lib/useReviewImageManager';
 import { useRouter } from 'next/navigation';
 
 import { createWriteReviewApi } from '@/features/review/write/api/api';
@@ -27,15 +28,17 @@ const buildSubmitPayload = (
 	const { tooltips, tooltipsByImageId } = useReviewWriteStore.getState();
 	const { mealTime, keywords } = useKeywordStore.getState().getSubmitData();
 	const { valueForMoneyScore } = useReviewWriteStore.getState();
+	const { mainImageId } = useReviewImageStore.getState();
 
 	return {
-		external_kakao_id: restaurantId,
+		id: restaurantId,
 		keywords: keywords,
 		meal_time: mealTime,
 		value_for_money_score: valueForMoneyScore ?? 0, // 혹은 null 대신 기본값 결정
 		images: images.map((image) => ({
 			image_id: image.id,
 			order: image.order,
+			is_main: image.id === mainImageId,
 			tooltips: (tooltipsByImageId[image.id as ReviewImageId] || [])
 				.map((tooltipId) => {
 					const tooltip = tooltips[tooltipId];

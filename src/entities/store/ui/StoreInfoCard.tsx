@@ -17,7 +17,7 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 				src={store.storeImageUrl ?? '/images/mockReview.jpg'}
 				alt={store.storeName}
 			/>
-			<div className="w-60 self-stretch inline-flex flex-col justify-between">
+			<div className="flex-1 self-stretch inline-flex flex-col justify-between">
 				<div className="inline-flex justify-start items-center gap-1.5">
 					<div className="justify-center text-sm font-semibold">
 						{store.storeName}

@@ -15,7 +15,7 @@ interface ProgressBarProps {
 export const ProgressBar = ({
 	total,
 	current,
-	activeColor = 'bg-grey-10',
+	activeColor = 'bg-primary-30',
 	inactiveColor = 'bg-grey-70',
 }: ProgressBarProps) => {
 	if (total <= 0) {

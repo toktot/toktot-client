@@ -2,6 +2,8 @@
 
 import clsx from 'clsx';
 
+import Icon from './Icon';
+
 interface CustomCheckboxProps {
 	checked: boolean;
 	onChange: (checked: boolean) => void;
@@ -27,14 +29,18 @@ export const CustomCheckbox = ({
 			/>
 			<div
 				className={clsx(
-					'w-5 h-5 rounded-full outline outline-offset-[-0.5px] transition-colors',
-					checked ? 'outline-primary-50' : 'outline-grey-60 bg-grey-10',
-					'peer-focus-visible:ring-2 peer-focus-visible:ring-primary-50 peer-focus-visible:ring-offset-2',
+					'w-5 h-5 rounded-full outline outline-offset-[-0.5px] transition-colors flex items-center justify-center',
+					'outline-grey-60 bg-grey-10',
 				)}
 			>
-				{checked && (
-					<div className="absolute left-[3px] top-[3px] h-3.5 w-3.5 rounded-full bg-primary-50" />
-				)}
+				<Icon
+					name={'Checkmark'}
+					size="m"
+					className={clsx(
+						'absolute transition-opacity',
+						checked ? 'opacity-100 fill-primary-50 text-white' : 'opacity-0',
+					)}
+				/>
 			</div>
 		</label>
 	);

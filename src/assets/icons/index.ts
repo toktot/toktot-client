@@ -73,3 +73,4 @@ export { default as Newhome } from './Newhome.svg';
 
 export { default as lunch } from './evening.svg';
 export { default as breakfast } from './morning.svg';
+export { default as MenuBoard } from './menu-board.svg';
