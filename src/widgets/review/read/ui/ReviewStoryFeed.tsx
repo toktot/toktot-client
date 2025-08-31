@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
+import { ReviewStoreWithSheet } from '@/features/review/read/ui/ReviewStoreWithSheet';
 
 import {
 	MoodKeywordId,
@@ -21,7 +22,6 @@ import {
 
 import { InteractiveReview } from './InteractiveReview';
 import ReviewStore from './ReviewStore';
-import { ReviewTooltipSheet } from './ReviewTooltipSheet';
 import ReviewUser from './ReviewUser';
 
 export const mockReview1: ReviewView = {
@@ -43,15 +43,16 @@ export const mockReview1: ReviewView = {
 	createdAt: '2025-07-25T14:00:00.000Z',
 	images: [
 		{
-			id: 'img-001' as ReviewImageId,
-			url: '/images/mockReview.jpg',
-			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId, 't3' as TooltipId],
-		},
-		{
 			id: 'img-002' as ReviewImageId,
 			url: '/images/review1.png',
 			tooltipIds: ['t3' as TooltipId],
 		},
+		{
+			id: 'img-001' as ReviewImageId,
+			url: '/images/mockReview.jpg',
+			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId, 't3' as TooltipId],
+		},
+
 		{
 			id: 'img-003' as ReviewImageId,
 			url: '/images/review3.jpg',
@@ -163,8 +164,6 @@ export function ReviewStoryFeed() {
 
 	const [showGuide, setShowGuide] = useState(true);
 
-	const [selectedReview, setSelectedReview] = useState<ReviewView | null>(null);
-
 	const handleTooltipClick = (tooltip: Tooltip) => {
 		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
 		// setSelectedReview(currentPost);
@@ -173,70 +172,73 @@ export function ReviewStoryFeed() {
 	const currentPost = data[currentIndex];
 
 	return (
-		<div className="relative flex flex-col h-full">
-			<AnimatePresence initial={false} custom={direction}>
-				<motion.div
-					className="absolute h-full w-full"
-					key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
-					custom={direction}
-					variants={variants}
-					initial="enter"
-					animate="center"
-					exit="exit"
-					transition={{
-						y: { type: 'spring', stiffness: 300, damping: 30 },
-						opacity: { duration: 0.2 },
-					}}
-					// --- 상/하 스와이프 로직 ---
-					drag="y"
-					dragConstraints={{ top: 0, bottom: 0 }}
-					dragElastic={1}
-					onDragEnd={(e, { offset, velocity }) => {
-						const swipe = swipePower(offset.y, velocity.y);
+		<AnimatePresence initial={false} custom={direction}>
+			<motion.div
+				key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
+				custom={direction}
+				variants={variants}
+				initial="enter"
+				animate="center"
+				exit="exit"
+				transition={{
+					y: { type: 'spring', stiffness: 300, damping: 30 },
+					opacity: { duration: 0.2 },
+				}}
+				// --- 상/하 스와이프 로직 ---
+				drag="y"
+				dragConstraints={{ top: 0, bottom: 0 }}
+				dragElastic={1}
+				onDragEnd={(e, { offset, velocity }) => {
+					const swipe = swipePower(offset.y, velocity.y);
 
-						if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(1); // 위로 스와이프 -> 다음 리뷰
-						} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(-1); // 아래로 스와이프 -> 이전 리뷰
-						}
-					}}
-				>
-					<div className="relative flex flex-col h-full">
-						<div className="flex-1 relative">
-							<InteractiveReview reviewId={currentPost.id}>
-								<AnimatePresence>
-									{showGuide && (
-										<InteractionGuide onClose={() => setShowGuide(false)} />
-									)}
-								</AnimatePresence>
-								<ImagePaginator
-									images={currentPost.images}
-									tooltips={currentPost.tooltips}
-									onTooltipClick={handleTooltipClick}
-								/>
-							</InteractiveReview>
-						</div>
-						<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
-							<ReviewUser
-								author={currentPost.author}
-								extra={{ totalReviewCount: 200, averageRating: 300 }}
+					if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
+						paginate(1); // 위로 스와이프 -> 다음 리뷰
+					} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
+						paginate(-1); // 아래로 스와이프 -> 이전 리뷰
+					}
+				}}
+			>
+				<div className="relative flex flex-col h-full">
+					<div className="flex-1 relative">
+						<InteractiveReview reviewId={currentPost.id}>
+							<AnimatePresence>
+								{showGuide && (
+									<InteractionGuide onClose={() => setShowGuide(false)} />
+								)}
+							</AnimatePresence>
+							<ImagePaginator
+								images={currentPost.images}
+								tooltips={currentPost.tooltips}
+								onTooltipClick={handleTooltipClick}
 							/>
-							<div className="bg-grey-90 rounded-xl">
+						</InteractiveReview>
+					</div>
+					<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
+						<ReviewUser
+							author={currentPost.author}
+							extra={{ totalReviewCount: 200, averageRating: 300 }}
+						/>
+
+						<div className=" flex gap-2 w-full">
+							<div className="bg-grey-90 flex-2">
 								<ReviewStore
 									store={currentPost.store}
 									extra={{ distance: 200 }}
 								/>
 							</div>
+							<div className="flex flex-1 w-full">
+								<ReviewStoreWithSheet review={currentPost} />
+							</div>
 						</div>
 					</div>
-				</motion.div>
+				</div>
+			</motion.div>
 
-				<ReviewTooltipSheet
+			{/* <ReviewTooltipSheet
 					open={!!selectedReview}
 					onOpenChange={(o) => !o && setSelectedReview(null)}
 					review={selectedReview}
-				/>
-			</AnimatePresence>
-		</div>
+				/> */}
+		</AnimatePresence>
 	);
 }

@@ -25,7 +25,7 @@ export const ImageUploadResponseSchema = z.object({
 
 export const ReviewSubmitResponseSchema = z.object({
 	review_id: z.number(),
-	id: z.number(),
+	restaurant_id: z.number(),
 });
 
 // --- 서버 요청 스키마 ---

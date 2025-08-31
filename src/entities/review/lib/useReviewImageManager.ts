@@ -90,7 +90,7 @@ export const useReviewImageStore = create<
 			const { restaurantId, remainingSlots } = get();
 			if (!restaurantId) return;
 
-			const { validFiles, errorMessage } = validateFiles(
+			const { validFiles, errorMessage } = await validateFiles(
 				files,
 				remainingSlots ?? MAX_IMAGE_COUNT,
 				MAX_FILE_SIZE,

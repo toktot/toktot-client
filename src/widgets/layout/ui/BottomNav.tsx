@@ -9,6 +9,8 @@ import { usePathname } from 'next/navigation';
 import type { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
 
+import { BOTTOM_NAV_HEIGHT } from '../config/height';
+
 interface ItemProps {
 	href: string;
 	iconName: IconName;
@@ -80,12 +82,10 @@ interface BottomNavProps {
 	children: ReactNode;
 }
 
-export const BOTTOM_NAV_HEIGHT = 48;
-
 export const BottomNav = ({ children }: BottomNavProps) => {
 	return (
 		<nav
-			className="bg-white shadow-top z-10 w-full"
+			className="bg-white shadow-top z-10 fixed bottom-0 left-0 right-0 w-full"
 			style={{ height: BOTTOM_NAV_HEIGHT }}
 		>
 			<div className="flex items-center justify-around h-full mx-auto">

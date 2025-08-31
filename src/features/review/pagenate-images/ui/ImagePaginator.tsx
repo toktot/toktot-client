@@ -42,29 +42,39 @@ export const ImagePaginator = ({
 	};
 
 	return (
-		<div className="w-full h-full relative" onClick={handleTap}>
-			<Image
-				src={currentImage.url}
-				alt="리뷰 이미지"
-				fill
-				className="object-fill"
-				priority={true}
-			/>
-			{currentImage.tooltipIds.map((id) => {
-				const tooltip = tooltips[id];
-				if (!tooltip) return null;
+		<div
+			className="w-full h-full flex items-center bg-grey-90"
+			onClick={handleTap}
+		>
+			<div className="relative w-full">
+				<Image
+					src={currentImage.url}
+					alt="리뷰 이미지"
+					priority={true}
+					width={0}
+					height={0}
+					sizes="100vw"
+					style={{
+						width: '100%',
+						height: 'auto',
+					}}
+				/>
+				{currentImage.tooltipIds.map((id) => {
+					const tooltip = tooltips[id];
+					if (!tooltip) return null;
 
-				return (
-					<div key={id} className="tooltip-marker">
-						<TooltipMarker
-							tip={tooltip}
-							onClick={() => onTooltipClick(tooltip)}
-						/>
-					</div>
-				);
-			})}
-			<div className="absolute bottom-0 left-0 right-0">
-				<ProgressBar total={images.length} current={currentIndex} />
+					return (
+						<div key={id} className="tooltip-marker">
+							<TooltipMarker
+								tip={tooltip}
+								onClick={() => onTooltipClick(tooltip)}
+							/>
+						</div>
+					);
+				})}
+				<div className="absolute bottom-0 left-0 right-0">
+					<ProgressBar total={images.length} current={currentIndex} />
+				</div>
 			</div>
 		</div>
 	);

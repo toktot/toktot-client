@@ -31,12 +31,12 @@ export const SearchVisitedStoreWidget = () => {
 		clearImages();
 		setShowContinueModal(false);
 		// FIXME: 임시 라우팅 처리
-		router.push('/review/write/1');
+		router.push('/review/write/831');
 	};
 
 	const handleContinue = () => {
 		setShowContinueModal(false);
-		router.push('/review/write/1');
+		router.push('/review/write/831');
 	};
 
 	return (

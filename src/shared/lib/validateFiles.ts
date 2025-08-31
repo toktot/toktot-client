@@ -1,8 +1,8 @@
-export const validateFiles = (
+export const validateFiles = async (
 	files: File[],
 	maxCount: number,
-	maxFileSize: number, // 개별 파일 최대 크기
-) => {
+	maxFileSize: number,
+): Promise<{ validFiles: File[]; errorMessage: string | null }> => {
 	if (files.length > maxCount) {
 		return {
 			validFiles: [],
@@ -17,6 +17,35 @@ export const validateFiles = (
 			return {
 				validFiles: [],
 				errorMessage: `${file.name} 파일이 ${fileSizeMB}MB입니다. 개별 파일은 ${maxSizeMB}MB 이하로 선택해주세요.`,
+			};
+		}
+
+		const isValidDimension = await new Promise<boolean>((resolve) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				const img = new Image();
+				img.onload = () => {
+					if (img.width < 400 || img.height < 400) {
+						resolve(false);
+					} else {
+						resolve(true);
+					}
+				};
+				img.onerror = () => resolve(false);
+				if (typeof reader.result === 'string') {
+					img.src = reader.result;
+				} else {
+					resolve(false);
+				}
+			};
+			reader.onerror = () => resolve(false);
+			reader.readAsDataURL(file);
+		});
+
+		if (!isValidDimension) {
+			return {
+				validFiles: [],
+				errorMessage: `${file.name} 이미지는 최소 400px 이상만 업로드할 수 있습니다.`,
 			};
 		}
 	}

@@ -68,3 +68,4 @@ export { default as lunch } from './evening.svg';
 export { default as breakfast } from './morning.svg';
 export { default as Gasimbi } from './gasimbi.svg';
 export { default as Reset } from './Reset.svg';
+export { default as MenuBoard } from './menu-board.svg';
