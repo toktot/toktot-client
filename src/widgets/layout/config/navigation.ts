@@ -32,7 +32,7 @@ export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 	},
 	{
 		type: 'action',
-		href: '/review/write/831',
+		href: '/review/write',
 		iconName: 'Plus',
 		'aria-label': '리뷰 작성하기',
 	},

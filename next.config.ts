@@ -61,6 +61,10 @@ const nextConfig: NextConfig = {
 				protocol: 'https',
 				hostname: process.env.NEXT_PUBLIC_IMAGE_HOST!,
 			},
+			{
+				protocol: 'http',
+				hostname: 'tong.visitkorea.or.kr',
+			},
 		],
 	},
 	// 헤더 설정 추가로 manifest.json 접근 보장
