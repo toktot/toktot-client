@@ -9,7 +9,7 @@ import { createWriteReviewApi } from '@/features/review/write/api/api';
 
 import { createAuthApi } from '@/shared/api';
 import { validateFiles } from '@/shared/lib/validateFiles';
-import { ReviewImageId } from '@/shared/model/types';
+import { ReviewImageId, StoreId } from '@/shared/model/types';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
 import { mapServerImagesToUploadReviewImages } from '../api/mappers';
@@ -198,7 +198,7 @@ export const useReviewImageStore = create<
 	})),
 );
 
-export const useReviewImageManager = (restaurantId: number) => {
+export const useReviewImageManager = (restaurantId: StoreId) => {
 	const {
 		images,
 		isLoading,
@@ -214,7 +214,7 @@ export const useReviewImageManager = (restaurantId: number) => {
 	} = useReviewImageStore();
 
 	useEffect(() => {
-		setRestaurantId(restaurantId);
+		setRestaurantId(Number(restaurantId));
 	}, [restaurantId, setRestaurantId]);
 
 	return {

@@ -12,7 +12,7 @@ import { useKeywordStore } from '@/features/review/write/model/useKeywordStore';
 import { useReviewWriteStore } from '@/features/review/write/model/useReviewWriteStore';
 
 import { createAuthApi } from '@/shared/api';
-import { ReviewImageId } from '@/shared/model/types';
+import { ReviewImageId, StoreId } from '@/shared/model/types';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
 interface ReviewSubmitButtonProps {
@@ -78,7 +78,7 @@ export const ReviewSubmitButton = ({
 }: ReviewSubmitButtonProps) => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const imageManager = useReviewImageManager(restaurantId);
+	const imageManager = useReviewImageManager(String(restaurantId) as StoreId);
 
 	const valueForMoneyScore = useReviewWriteStore(
 		(state) => state.valueForMoneyScore,

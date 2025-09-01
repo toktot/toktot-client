@@ -1,4 +1,3 @@
-// src/features/review/write/api/api.ts
 import type { KyInstance } from 'ky';
 import { z } from 'zod';
 

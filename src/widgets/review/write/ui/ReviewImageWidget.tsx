@@ -26,13 +26,17 @@ import {
 	BottomSheetOverlay,
 } from '@/shared/components/BottomSheet';
 import { PeekableBottomSheetContent } from '@/shared/components/PeekableBottomSheetContent';
-import { ReviewImageId, TooltipId } from '@/shared/model/types';
+import { ReviewImageId, StoreId, TooltipId } from '@/shared/model/types';
 import Typography from '@/shared/ui/Typography';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
 // TODO: props로 받아오고 페이지에서는 path로 storeId 받아오기
-export const ReviewImageWidget = () => {
+export const ReviewImageWidget = ({
+	restaurantId,
+}: {
+	restaurantId: StoreId;
+}) => {
 	const {
 		images,
 		uploadImages,
@@ -41,7 +45,7 @@ export const ReviewImageWidget = () => {
 		remainingSlots,
 		setMainImage,
 		mainImageId,
-	} = useReviewImageManager(831);
+	} = useReviewImageManager(restaurantId);
 	const {
 		buildInteractiveImages,
 		beginTooltipForImage,

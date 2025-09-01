@@ -9,6 +9,8 @@ import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelecti
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
+import { StoreId } from '@/shared/model/types';
+
 import { MealTimeSelectionWidget } from './MealTimeSelectionWidget';
 import { NextButton } from './NextButton';
 
@@ -33,7 +35,7 @@ export function ReviewWriteContent({
 			</Header>
 			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget store={visitedStoreData} />
-				<ReviewImageWidget />
+				<ReviewImageWidget restaurantId={storeId as StoreId} />
 				<KeywordSelectionWidget
 					title="음식"
 					category="food"

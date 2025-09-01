@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 
 import { useKeywordStore } from '@/features/review/write/model/useKeywordStore';
 
+import { StoreId } from '@/shared/model/types';
+
 export const NextButton = ({ restaurantId }: { restaurantId: number }) => {
 	const router = useRouter();
 
-	const imageManager = useReviewImageManager(restaurantId);
+	const imageManager = useReviewImageManager(String(restaurantId) as StoreId);
 
 	const hasImages = imageManager.images.length > 0;
 
