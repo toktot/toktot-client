@@ -9,7 +9,6 @@ import HomeContainer from '../../features/home/components/HomeContainer';
 export default function Home() {
 	return (
 		<>
-
 			<HomeAppShell showBottomNav={true}>
 				<main className="flex-1">
 					<Suspense fallback={<div>Loading...</div>}>
@@ -17,7 +16,6 @@ export default function Home() {
 					</Suspense>
 				</main>
 			</HomeAppShell>
-
 		</>
 	);
 }

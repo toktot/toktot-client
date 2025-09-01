@@ -4,6 +4,7 @@ export type NavItem = {
 	type: 'link';
 	href: string;
 	iconName: IconName;
+	activeIconName?: IconName;
 	label: string;
 };
 
@@ -15,8 +16,20 @@ export type CenterActionItem = {
 };
 
 export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
-	{ type: 'link', href: '/home', iconName: 'Newhome', label: 'home' },
-	{ type: 'link', href: '/review/view', iconName: 'Review', label: 'review' },
+	{
+		type: 'link',
+		href: '/home',
+		iconName: 'Home',
+		activeIconName: 'HomeFill',
+		label: 'home',
+	},
+	{
+		type: 'link',
+		href: '/review/view',
+		iconName: 'Review',
+		activeIconName: 'ReviewFill',
+		label: 'review',
+	},
 	{
 		type: 'action',
 		href: '/review/write/831',
@@ -27,7 +40,14 @@ export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 		type: 'link',
 		href: '/menu-upload',
 		iconName: 'MenuBoard',
+		activeIconName: 'MenuFill',
 		label: 'menu',
 	},
-	{ type: 'link', href: '/my', iconName: 'My', label: 'my' },
+	{
+		type: 'link',
+		href: '/my',
+		iconName: 'My',
+		activeIconName: 'MyFill',
+		label: 'my',
+	},
 ];
