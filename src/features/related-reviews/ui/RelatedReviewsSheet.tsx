@@ -24,7 +24,7 @@ export const RelatedReviewsSheet = ({
 	const [selectedCategory, setSelectedCategory] =
 		useState<TooltipCategory>('food');
 
-	const { data: otherReviews, isLoading } = useInfiniteStoreReviews(storeId);
+	const { data: reviews, isLoading } = useInfiniteStoreReviews(storeId);
 
 	const handleCategoryChange = (category: TooltipCategory) => {
 		setSelectedCategory(category);
@@ -47,7 +47,7 @@ export const RelatedReviewsSheet = ({
 				<hr className="border-grey-20 -mx-4" />
 				{isLoading && <div className="p-4 text-center">로딩 중...</div>}
 				{!isLoading &&
-					otherReviews.map((review) => (
+					reviews.map((review) => (
 						<div key={review.id}>
 							<ReviewDetailItem review={review} />
 							<hr className="border-grey-20 -mx-4" />

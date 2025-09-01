@@ -6,7 +6,6 @@ import { z } from 'zod';
 
 import { mapServerReviewToClientView } from './mappers';
 
-// 서버 응답의 가장 깊은 레벨부터 스키마를 정의합니다.
 const ReviewMenuServerSchema = z.object({
 	menuName: z.string(),
 	totalPrice: z.number(),
@@ -26,21 +25,24 @@ const ReviewUserServerSchema = z.object({
 	averageRating: z.number(),
 });
 
-// 개별 리뷰에 대한 서버 스키마
 const ReviewServerSchema = z.object({
 	id: z.number(),
 	user: ReviewUserServerSchema,
 	images: z.array(ReviewImageServerSchema),
 	keywords: z.array(z.string()),
 	createdAt: z.string(),
+	isBookmarked: z.boolean().optional(), // 응답에 없을 수 있음
 	isWriter: z.boolean(),
 });
 
-// 페이지네이션 응답 전체에 대한 서버 스키마
 export const StoreReviewsPageServerSchema = z.object({
 	content: z.array(ReviewServerSchema),
 	last: z.boolean(),
-	// ... 기타 페이지네이션 필드들
+	totalElements: z.number(),
+	totalPages: z.number(),
+	size: z.number(),
+	number: z.number(),
+	// 필요시 pageable 등 추가
 });
 
 // 서버 스키마를 클라이언트에서 사용할 ReviewView 모델로 변환합니다.

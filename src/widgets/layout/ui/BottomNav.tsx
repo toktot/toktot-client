@@ -14,6 +14,7 @@ import { BOTTOM_NAV_HEIGHT } from '../config/height';
 interface ItemProps {
 	href: string;
 	iconName: IconName;
+	activeIconName?: IconName;
 	label: string;
 	foreActive?: boolean;
 }
@@ -21,6 +22,7 @@ interface ItemProps {
 export const BottomNavItem = ({
 	href,
 	iconName,
+	activeIconName,
 	label,
 	foreActive,
 }: ItemProps) => {
@@ -36,10 +38,7 @@ export const BottomNavItem = ({
 			href={href}
 			className="flex flex-col items-center justify-center text-center"
 		>
-			<Icon
-				name={iconName}
-				className={clsx(isActive ? 'text-primary-50' : 'text-grey-70')}
-			/>
+			<Icon name={isActive && activeIconName ? activeIconName : iconName} />
 			<span
 				className={clsx(
 					'text-xs font-medium',
@@ -88,7 +87,7 @@ export const BottomNav = ({ children }: BottomNavProps) => {
 			className="bg-white shadow-top z-10 fixed bottom-0 left-0 right-0 w-full"
 			style={{ height: BOTTOM_NAV_HEIGHT }}
 		>
-			<div className="flex items-center justify-around h-full mx-auto">
+			<div className="flex items-center justify-around h-full mx-auto lg:w-[480px]">
 				{children}
 			</div>
 		</nav>

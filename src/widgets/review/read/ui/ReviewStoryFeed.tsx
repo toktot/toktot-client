@@ -34,7 +34,7 @@ export const mockReview1: ReviewView = {
 		averageRating: 0,
 	},
 	store: {
-		id: '1' as StoreId,
+		id: '831' as StoreId,
 		storeName: '맛있는김밥천국',
 		mainMenu: '참치김밥',
 		address: '서울특별시 강남구 테헤란로 123',
@@ -233,12 +233,6 @@ export function ReviewStoryFeed() {
 					</div>
 				</div>
 			</motion.div>
-
-			{/* <ReviewTooltipSheet
-					open={!!selectedReview}
-					onOpenChange={(o) => !o && setSelectedReview(null)}
-					review={selectedReview}
-				/> */}
 		</AnimatePresence>
 	);
 }

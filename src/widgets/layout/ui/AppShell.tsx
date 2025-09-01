@@ -42,6 +42,7 @@ export const AppShell = ({ children, showBottomNav = true }: AppShellProps) => {
 								key={item.href}
 								href={item.href}
 								iconName={item.iconName}
+								activeIconName={item.activeIconName}
 								label={item.label}
 							/>
 						);
