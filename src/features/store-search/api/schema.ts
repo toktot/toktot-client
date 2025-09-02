@@ -11,7 +11,7 @@ export const PlaceSchema = z.object({
 	is_good_price_store: z.boolean().nullable(),
 	is_local_store: z.boolean().nullable(),
 	image: z.string().nullable(),
-	point: z.any().nullable(), // 'point'와 'percent'의 정확한 타입을 몰라 any로 설정
+	point: z.any().nullable(),
 	percent: z.any().nullable(),
 });
 

@@ -7,7 +7,7 @@ import { useKeywordStore } from '@/features/review/write/model/useKeywordStore';
 
 import { StoreId } from '@/shared/model/types';
 
-export const NextButton = ({ restaurantId }: { restaurantId: number }) => {
+export const NextButton = ({ restaurantId }: { restaurantId: StoreId }) => {
 	const router = useRouter();
 
 	const imageManager = useReviewImageManager(String(restaurantId) as StoreId);
