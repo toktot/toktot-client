@@ -32,12 +32,37 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 			mealtime: new Set(),
 		},
 
-		// 키워드 토글 액션
 		toggleKeyword: (category: KeywordCategory, keywordId: KeywordId) => {
 			set((state) => {
 				const newSelectedKeywords = { ...state.selectedKeywords };
 				const categorySet = new Set(newSelectedKeywords[category]);
 
+				// ----- 카테고리별 제약 조건 -----
+				if (!categorySet.has(keywordId)) {
+					switch (category) {
+						case 'price':
+							// 가격: 최대 1개
+							if (categorySet.size >= 1) return state;
+							break;
+
+						case 'food':
+							break;
+
+						case 'service':
+							break;
+
+						case 'cleanliness':
+							break;
+
+						case 'atmosphere':
+							break;
+
+						case 'accessibility':
+							break;
+					}
+				}
+
+				// ----- 토글 처리 -----
 				if (categorySet.has(keywordId)) {
 					categorySet.delete(keywordId);
 				} else {
@@ -45,7 +70,6 @@ export const useKeywordStore = create<KeywordState & KeywordActions>()(
 				}
 
 				newSelectedKeywords[category] = categorySet;
-
 				return { selectedKeywords: newSelectedKeywords };
 			});
 		},
