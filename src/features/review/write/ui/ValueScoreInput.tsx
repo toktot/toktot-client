@@ -16,12 +16,15 @@ const scoreSchema = z
 			.string()
 			.regex(/^[0-1]?$/, '0 또는 1만 입력 가능')
 			.optional(),
-		d2: z.string().regex(/^[0-9]$/, '숫자만 입력 가능합니다.'),
+		d2: z
+			.string()
+			.regex(/^[0-9]?$/, '숫자만 입력 가능')
+			.optional(),
 		d3: z.string().regex(/^[0-9]$/, '숫자만 입력 가능합니다.'),
 	})
 	.refine(
 		(data) => {
-			const raw = `${data.d1 ?? ''}${data.d2}${data.d3}`;
+			const raw = `${data.d1 ?? ''}${data.d2 ?? ''}${data.d3}`;
 			const score = parseInt(raw, 10);
 			return score <= 100;
 		},
@@ -52,7 +55,7 @@ export const ValueScoreInput = () => {
 	const digits = useWatch({ control });
 	useEffect(() => {
 		if (isValid) {
-			const raw = `${digits.d1 ?? ''}${digits.d2}${digits.d3}`;
+			const raw = `${digits.d1 ?? ''}${digits.d2 ?? ''}${digits.d3}`;
 			const score = parseInt(raw, 10);
 			setValueForMoneyScore(score);
 		} else {
