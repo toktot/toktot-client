@@ -15,7 +15,7 @@ export const AppShell = ({ children, showBottomNav = true }: AppShellProps) => {
 	return (
 		<div className="h-dvh min-w-[375px] flex flex-col lg:w-[480px] lg:mx-auto">
 			<div
-				className="flex-1 overflow-y-auto"
+				className="flex-1 flex flex-col overflow-y-auto"
 				style={{
 					minHeight: `calc(100vh${showBottomNav ? ` - ${BOTTOM_NAV_HEIGHT}px` : ''})`,
 					paddingBottom: showBottomNav ? `${BOTTOM_NAV_HEIGHT}px` : 0,

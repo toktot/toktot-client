@@ -25,7 +25,7 @@ export const Header = ({ children, className }: HeaderProps) => {
 	return (
 		<header
 			className={clsx(
-				'relative flex items-center justify-between h-12 px-4',
+				'sticky top-0 z-10 flex items-center justify-between h-12 px-4 flex-shrink-0',
 				className,
 			)}
 		>
