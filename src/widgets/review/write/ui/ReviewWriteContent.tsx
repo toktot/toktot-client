@@ -18,7 +18,7 @@ interface ReviewWriteContentProps {
 export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 	return (
 		<AppShell showBottomNav={false}>
-			<Header>
+			<Header className="bg-white">
 				<Header.Left>
 					<BackButton />
 				</Header.Left>

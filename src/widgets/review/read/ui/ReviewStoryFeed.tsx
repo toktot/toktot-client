@@ -138,22 +138,18 @@ const SWIPE_CONFIDENCE_THRESHOLD = 10000;
 const swipePower = (offset: number, velocity: number) => {
 	return Math.abs(offset) * velocity;
 };
-
 // 슬라이드 애니메이션을 위한 variants
 const variants = {
 	enter: (direction: number) => ({
 		y: direction > 0 ? '100%' : '-100%',
-		opacity: 0,
 	}),
 	center: {
 		zIndex: 1,
 		y: 0,
-		opacity: 1,
 	},
 	exit: (direction: number) => ({
 		zIndex: 0,
 		y: direction < 0 ? '100%' : '-100%',
-		opacity: 0,
 	}),
 };
 
@@ -180,6 +176,7 @@ export function ReviewStoryFeed() {
 				initial="enter"
 				animate="center"
 				exit="exit"
+				className="h-full"
 				transition={{
 					y: { type: 'spring', stiffness: 300, damping: 30 },
 					opacity: { duration: 0.2 },
@@ -214,19 +211,21 @@ export function ReviewStoryFeed() {
 						</InteractiveReview>
 					</div>
 					<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
-						<ReviewUser
-							author={currentPost.author}
-							extra={{ totalReviewCount: 200, averageRating: 300 }}
-						/>
+						<div className="flex-shrink-0">
+							<ReviewUser
+								author={currentPost.author}
+								extra={{ totalReviewCount: 200, averageRating: 300 }}
+							/>
+						</div>
 
-						<div className=" flex gap-2 w-full">
-							<div className="bg-grey-90 flex-2">
+						<div className="flex gap-2 w-full flex-1 min-h-0">
+							<div className="bg-grey-90 flex-1 min-h-0 rounded-xl">
 								<ReviewStore
 									store={currentPost.store}
 									extra={{ distance: 200 }}
 								/>
 							</div>
-							<div className="flex flex-1 w-full">
+							<div className="flex flex-1 w-full min-h-0 bg-grey-90 rounded-xl">
 								<ReviewStoreWithSheet review={currentPost} />
 							</div>
 						</div>

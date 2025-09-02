@@ -43,7 +43,7 @@ export const ImagePaginator = ({
 
 	return (
 		<div
-			className="w-full h-full flex items-center bg-grey-90"
+			className="w-full h-full flex items-center bg-black"
 			onClick={handleTap}
 		>
 			<div className="relative w-full">
