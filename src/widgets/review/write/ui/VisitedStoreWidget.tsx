@@ -32,7 +32,7 @@ export const VisitedStoreWidget = ({ storeId }: VisitedStoreWidgetProps) => {
 		id: store.id as StoreId,
 		storeName: store.storeName,
 		address: store.address,
-		storeImageUrl: store.storeImageUrl || '/images/mockReview.jpg',
+		storeImageUrl: store.storeImageUrl || '',
 		mainMenu: store.mainMenu,
 		distance: 0,
 	};
