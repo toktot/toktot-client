@@ -14,14 +14,23 @@ const scoreSchema = z
 	.object({
 		d1: z
 			.string()
-			.regex(/^[0-1]$/, '첫 번째 자리는 0 또는 1만 입력할 수 있습니다.'),
+			.regex(/^[0-1]?$/, '0 또는 1만 입력 가능')
+			.optional(),
 		d2: z.string().regex(/^[0-9]$/, '숫자만 입력 가능합니다.'),
 		d3: z.string().regex(/^[0-9]$/, '숫자만 입력 가능합니다.'),
 	})
-	.refine((data) => parseInt(`${data.d1}${data.d2}${data.d3}`) <= 100, {
-		message: '100 이하의 값만 입력할 수 있습니다.',
-		path: ['d1'],
-	});
+	.refine(
+		(data) => {
+			const raw = `${data.d1 ?? ''}${data.d2}${data.d3}`;
+			const score = parseInt(raw, 10);
+			return score <= 100;
+		},
+		{
+			message: '100 이하의 값만 입력할 수 있습니다.',
+			path: ['d1'],
+		},
+	);
+
 type ScoreFormValues = z.infer<typeof scoreSchema>;
 
 export const ValueScoreInput = () => {
@@ -43,7 +52,8 @@ export const ValueScoreInput = () => {
 	const digits = useWatch({ control });
 	useEffect(() => {
 		if (isValid) {
-			const score = parseInt(`${digits.d1}${digits.d2}${digits.d3}`);
+			const raw = `${digits.d1 ?? ''}${digits.d2}${digits.d3}`;
+			const score = parseInt(raw, 10);
 			setValueForMoneyScore(score);
 		} else {
 			setValueForMoneyScore(null);
@@ -88,6 +98,8 @@ export const ValueScoreInput = () => {
 						const target = e.currentTarget;
 						target.value = target.value.replace(/[^01]/g, ''); // 0, 1만 허용
 					}}
+					inputMode="numeric"
+					pattern="[0-9]*"
 					tabIndex={0}
 					maxLength={1}
 					className="w-16 h-16 bg-grey-20 text-primary-50 rounded-2xl text-4xl text-center focus:border-2 focus:border-primary-40 
@@ -97,6 +109,8 @@ export const ValueScoreInput = () => {
 					{...register('d2')}
 					onKeyUp={(e) => handleKeyUp(e, 'd3')}
 					onKeyDown={(e) => handleKeyDown(e, 'd2')}
+					inputMode="numeric"
+					pattern="[0-9]*"
 					tabIndex={1}
 					onInput={(e) => {
 						const target = e.currentTarget;
@@ -114,6 +128,8 @@ export const ValueScoreInput = () => {
 					{...register('d3')}
 					onKeyDown={(e) => handleKeyDown(e, 'd3')}
 					tabIndex={2}
+					inputMode="numeric"
+					pattern="[0-9]*"
 					onInput={(e) => {
 						const target = e.currentTarget;
 						if (digits.d1 === '1') {
