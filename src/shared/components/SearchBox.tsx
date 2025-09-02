@@ -46,8 +46,14 @@ export default function SearchBox({
 	const inputPaddingRight =
 		leftIcon && leftIconPosition === 'right' ? 'pr-12' : 'pr-4';
 
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		onSearchClick();
+	};
+
 	return (
-		<div
+		<form
+			onSubmit={handleSubmit}
 			className={`relative transition-all duration-300 rounded-[18px] ${className}`}
 			style={style}
 		>
@@ -80,6 +86,6 @@ export default function SearchBox({
 				onChange={(e) => onChange(e.target.value)}
 				className={`w-full h-full  border-none outline-none bg-transparent ${inputPaddingLeft} ${inputPaddingRight} ${placeholderColor}`}
 			/>
-		</div>
+		</form>
 	);
 }
