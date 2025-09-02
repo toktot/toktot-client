@@ -1,7 +1,4 @@
-'use client';
-
 import { KEYWORDS_BY_CATEGORY } from '@/entities/keyword/config/data';
-import { StoreData } from '@/entities/store';
 
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
@@ -15,14 +12,10 @@ import { MealTimeSelectionWidget } from './MealTimeSelectionWidget';
 import { NextButton } from './NextButton';
 
 interface ReviewWriteContentProps {
-	storeId: string;
-	visitedStoreData: StoreData & { distance: number };
+	storeId: StoreId;
 }
 
-export function ReviewWriteContent({
-	storeId,
-	visitedStoreData,
-}: ReviewWriteContentProps) {
+export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 	return (
 		<AppShell showBottomNav={false}>
 			<Header>
@@ -34,8 +27,8 @@ export function ReviewWriteContent({
 				</Header.Center>
 			</Header>
 			<div className="flex flex-col items-center p-4 gap-9">
-				<VisitedStoreWidget store={visitedStoreData} />
-				<ReviewImageWidget restaurantId={storeId as StoreId} />
+				<VisitedStoreWidget storeId={storeId} />
+				<ReviewImageWidget restaurantId={storeId} />
 				<KeywordSelectionWidget
 					title="음식"
 					category="food"
@@ -72,7 +65,7 @@ export function ReviewWriteContent({
 					keywords={KEYWORDS_BY_CATEGORY.mealtime}
 				/>
 				<div className="w-full sticky bottom-2">
-					<NextButton restaurantId={parseInt(storeId)} />
+					<NextButton restaurantId={storeId} />
 				</div>
 			</div>
 		</AppShell>

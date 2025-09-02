@@ -48,7 +48,7 @@ const ImagePayloadSchema = z.object({
 });
 
 export const ReviewSubmitPayloadSchema = z.object({
-	id: z.number(),
+	id: z.string(),
 	value_for_money_score: z.number(),
 	keywords: z.array(z.string()),
 	meal_time: z.string(),

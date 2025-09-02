@@ -31,7 +31,7 @@ const buildSubmitPayload = (
 	const { mainImageId } = useReviewImageStore.getState();
 
 	return {
-		id: restaurantId,
+		id: restaurantId.toString(),
 		keywords: keywords,
 		meal_time: mealTime,
 		value_for_money_score: valueForMoneyScore ?? 0, // 혹은 null 대신 기본값 결정

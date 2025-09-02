@@ -31,7 +31,6 @@ import Typography from '@/shared/ui/Typography';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
-// TODO: props로 받아오고 페이지에서는 path로 storeId 받아오기
 export const ReviewImageWidget = ({
 	restaurantId,
 }: {
