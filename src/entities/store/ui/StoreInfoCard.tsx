@@ -8,7 +8,7 @@ interface StoreInfoCardProps {
 
 export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 	return (
-		<div className="flex justify-center items-center gap-3">
+		<div className="flex justify-center items-center gap-3 ">
 			<div className="relative w-9 h-9 text-center rounded flex-shrink-0">
 				{store.storeImageUrl ? (
 					<Image
@@ -18,11 +18,15 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 						className="rounded-lg"
 					/>
 				) : (
-					<div className="rounded-lg text-xs text-grey-50 bg-grey-20 p-1 w-full h-full flex items-center justify-center"></div>
+					<div className="rounded-lg text-[5px] text-grey-50 bg-grey-20 p-1 w-full h-full flex items-center justify-center">
+						등록된 사진이
+						<br />
+						없어요.
+					</div>
 				)}
 			</div>
-			<div className="flex-1 min-w-0 self-stretch inline-flex flex-col justify-between">
-				<div className="inline-flex justify-start items-center gap-1.5 min-w-0">
+			<div className="flex-1 self-stretch inline-flex flex-col justify-between">
+				<div className="inline-flex justify-start items-center gap-1.5">
 					<div className="justify-center text-sm font-semibold truncate">
 						{store.storeName}
 					</div>
@@ -30,7 +34,7 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 						{store.mainMenu}
 					</div>
 				</div>
-				<div className="inline-flex justify-start items-center gap-1 min-w-0">
+				<div className="inline-flex justify-start items-center gap-1">
 					<div className="justify-center text-xs truncate">{store.address}</div>
 				</div>
 			</div>
