@@ -37,10 +37,10 @@ export const ReviewDetailItem = ({
 			<div className="flex items-center justify-between">
 				<div className="flex gap-2">
 					<span className="font-bold">{review.author.nickname}</span>
-					<span className="text-grey-80">
+					<span className="text-grey-70">
 						평균 {review.author.averageRating.toFixed(1)}
 					</span>
-					<span className="text-grey-80">({review.author.reviewCount}개)</span>
+					<span className="text-grey-70">({review.author.reviewCount}개)</span>
 				</div>
 			</div>
 			{/* 리뷰 정보 */}
@@ -74,29 +74,33 @@ export const ReviewDetailItem = ({
 			</div>
 
 			<div>
-				{review.tooltips.map((tooltip) => {
-					const categoryKey = tooltip.type.toLowerCase() as TooltipCategory;
-					const markerStyle = tooltipMarkerStyleMap[categoryKey];
-					const tooltipCategoryColor =
-						RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
+				{review.images.flatMap((image) =>
+					image.tooltips.map((tooltip) => {
+						const categoryKey = tooltip.type.toLowerCase() as TooltipCategory;
+						const markerStyle = tooltipMarkerStyleMap[categoryKey];
+						const tooltipCategoryColor =
+							RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
 
-					return (
-						<div key={tooltip.id} className="flex items-center gap-3 text-xs">
-							<div
-								className={`flex items-center gap-1 rounded-full w-fit px-2 bg-white`}
-							>
-								<Icon
-									name={markerStyle.icon}
-									fill={tooltipCategoryColor}
-									color={tooltipCategoryColor}
-									size={'xs'}
-								/>
-								<span>{tooltip.rating}</span>
+						return (
+							<div key={tooltip.id} className="flex items-center gap-3 text-xs">
+								<div
+									className={`flex items-center gap-1 rounded-full w-fit px-2 bg-white`}
+								>
+									<Icon
+										name={markerStyle.icon}
+										fill={tooltipCategoryColor}
+										color={tooltipCategoryColor}
+										size={'xs'}
+									/>
+									<span>{tooltip.rating}</span>
+								</div>
+								<p className="font-semibold text-sm">
+									{tooltip.detailedReview}
+								</p>
 							</div>
-							<p className="font-semibold text-sm">{tooltip.detailedReview}</p>
-						</div>
-					);
-				})}
+						);
+					}),
+				)}
 			</div>
 		</div>
 	);

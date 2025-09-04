@@ -29,7 +29,7 @@ export const ReviewTooltipSheet = ({ open, onOpenChange, review }: Props) => {
 				<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
 				<Typography as="h3">가격에 비해 만족스럽나요?</Typography>
 				<ReviewStore storeId={review.store.id} />
-				<RelatedReviewsSheet clickedReview={review} storeId={review.store.id} />
+				<RelatedReviewsSheet storeId={review.store.id} />
 			</BottomSheetContent>
 		</BottomSheet>
 	);

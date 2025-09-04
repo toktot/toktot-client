@@ -4,8 +4,6 @@
  */
 import { z } from 'zod';
 
-import { mapServerReviewToClientView } from './mappers';
-
 export const TooltipServerSchema = z.object({
 	id: z.number(),
 	type: z.enum(['FOOD', 'CLEAN', 'SERVICE']), // enum으로 확장 가능
@@ -60,8 +58,8 @@ export type StoreReviewsPageServer = z.infer<
 >;
 
 // 서버 스키마를 클라이언트에서 사용할 ReviewView 모델로 변환합니다.
-export const ReviewClientSchema = ReviewServerSchema.transform(
-	mapServerReviewToClientView,
-);
+// export const ReviewClientSchema = ReviewServerSchema.transform(
+// 	mapServerReviewToClientView,
+// );
 
 export type ReviewServer = z.infer<typeof ReviewServerSchema>;

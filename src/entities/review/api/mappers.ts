@@ -9,91 +9,99 @@ import {
 	ReviewView,
 	SERVER_CATEGORY_MAP,
 	ServiceTooltip,
+	Tooltip,
 	UploadReviewImage,
 } from '@/entities/review';
+import { StoreData } from '@/entities/store';
 
+import type { ReviewContent } from '@/features/review/read/api/schema';
 import { ReviewWriteServerImage } from '@/features/review/write/api/schema';
 
 import {
 	ReviewId,
 	ReviewImageId,
+	StoreId,
 	TooltipId,
 	UserId,
 } from '@/shared/model/types';
 
-import type { ReviewServer } from './schema';
-
-/**
- * 서버의 이미지 배열을 클라이언트 뷰모델 이미지 배열로 변환
- */
-function mapServerImagesToClient(serverImages: ReviewServer['images']): {
-	images: (BaseReviewImage & { tooltipIds: TooltipId[] })[];
-} {
-	const images: (BaseReviewImage & { tooltipIds: TooltipId[] })[] = [];
-
-	serverImages.forEach((serverImg) => {
-		const imageId = String(serverImg.imageId) as ReviewImageId;
-		const newImage: BaseReviewImage & { tooltipIds: TooltipId[] } = {
-			id: imageId,
-			url: serverImg.imageUrl,
-			tooltipIds: [],
-		};
-
-		images.push(newImage);
-	});
-
-	return { images };
-}
+import { Author } from '../model/author';
 
 /**
  * 서버의 Review 응답 전체를 클라이언트의 ReviewView 모델로 변환하는 메인 매퍼 함수
  */
-export function mapServerReviewToClientView(
-	serverReview: ReviewServer,
-): Omit<ReviewView, 'store'> {
-	const { images } = mapServerImagesToClient(serverReview.images);
+export function mapReviewContentToView(content: ReviewContent): ReviewView {
+	const tooltips: Record<TooltipId, Tooltip> = {};
+	const images: (BaseReviewImage & { tooltipIds: TooltipId[] })[] = [];
 
-	const tooltips = serverReview.tooltips.map((tooltip) => {
-		const clientCategory = SERVER_CATEGORY_MAP[tooltip.type]; // 'FOOD' → 'food'
+	content.images.forEach((serverImg) => {
+		const imageId = serverImg.imageId as ReviewImageId;
+		const imageTooltipIds: TooltipId[] = [];
 
-		const baseTooltip = {
-			id: String(tooltip.id) as TooltipId,
-			x: 0, // 좌표 데이터는 현재 API에 없으므로 기본값 처리
-			y: 0,
-			category: clientCategory,
-			rating: tooltip.rating,
-			description: tooltip.detailedReview,
-		};
+		serverImg.tooltips.forEach((serverTooltip) => {
+			const tooltipId = String(serverTooltip.id) as TooltipId;
+			const clientCategory = SERVER_CATEGORY_MAP[serverTooltip.type];
 
-		if (clientCategory === 'food') {
-			return {
-				...baseTooltip,
-				category: 'food',
-				menuName: tooltip.menuName ?? '',
-				price: tooltip.totalPrice ?? 0,
-				servings: tooltip.servingSize ?? 1,
-			} as FoodTooltip;
-		} else {
-			return {
-				...baseTooltip,
+			const baseTooltip = {
+				id: tooltipId,
+				x: serverTooltip.xPosition,
+				y: serverTooltip.yPosition,
 				category: clientCategory,
-			} as ServiceTooltip | CleanTooltip;
-		}
+				rating: serverTooltip.rating,
+				description: serverTooltip.detailedReview,
+			};
+
+			if (clientCategory === 'food') {
+				tooltips[tooltipId] = {
+					...baseTooltip,
+					category: 'food',
+					menuName: serverTooltip.menuName ?? '',
+					price: serverTooltip.totalPrice ?? 0,
+					servings: serverTooltip.servingSize ?? 1,
+				} as FoodTooltip;
+			} else {
+				tooltips[tooltipId] = {
+					...baseTooltip,
+					category: clientCategory,
+				} as ServiceTooltip | CleanTooltip;
+			}
+			imageTooltipIds.push(tooltipId);
+		});
+
+		images.push({
+			id: imageId,
+			url: serverImg.imageUrl,
+			tooltipIds: imageTooltipIds,
+		});
 	});
 
+	const author: Author = {
+		id: content.author.id as UserId,
+		nickname: content.author.nickname,
+		profileImageUrl: content.author.profileImageUrl,
+		reviewCount: content.author.reviewCount,
+		averageRating: content.author.averageRating,
+	};
+
+	const store: StoreData = {
+		id: String(content.restaurant.id) as StoreId,
+		storeName: content.restaurant.name,
+		mainMenu: content.restaurant.representativeMenu ?? '대표 메뉴 정보 없음',
+		address: content.restaurant.address,
+	};
+
 	return {
-		id: String(serverReview.id) as ReviewId,
-		author: {
-			id: serverReview.author.id as UserId,
-			nickname: serverReview.author.nickname,
-			reviewCount: serverReview.author.reviewCount,
-			averageRating: serverReview.author.averageRating,
-			profileImageUrl: serverReview.author.profileImageUrl,
-		},
-		createdAt: serverReview.createdAt,
+		id: String(content.id) as ReviewId,
+		author,
+		store,
+		createdAt: content.createdAt,
 		images,
-		keywords: serverReview.keywords,
+		keywords: content.keywords,
 		tooltips,
+		satisfactionScore: content.satisfactionScore,
+		mealTime: content.mealTime,
+		isBookmarked: content.isBookmarked,
+		isWriter: content.isWriter,
 	};
 }
 
