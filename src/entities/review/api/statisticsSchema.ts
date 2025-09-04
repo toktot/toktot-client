@@ -26,12 +26,6 @@ export const ReviewStatisticsServerSchema = z.object({
 	satisfactionDistribution: SatisfactionDistributionSchema,
 });
 
-// 최종 API 응답 스키마 (success 래핑 포함)
-export const ReviewStatisticsApiResponseSchema = z.object({
-	success: z.boolean(),
-	data: ReviewStatisticsServerSchema,
-});
-
 // 타입 추론
 export type ReviewStatisticsServer = z.infer<
 	typeof ReviewStatisticsServerSchema
