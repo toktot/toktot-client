@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { ReviewView } from '@/entities/review';
 import { TooltipCategory } from '@/entities/review';
 import { useInfiniteStoreReviews } from '@/entities/review/api/useInfiniteStoreReviews';
 import { ReviewDetailItem } from '@/entities/review/ui/ReviewDetailItem';
@@ -12,15 +11,11 @@ import { StoreId } from '@/shared/model/types';
 import { ReviewCategorySelector } from './ReviewCategorySelector';
 
 interface RelatedReviewsSheetProps {
-	clickedReview: ReviewView;
 	storeId: StoreId;
 }
 
 //TODO: 카테고리 별 리뷰 조회
-export const RelatedReviewsSheet = ({
-	// clickedReview,
-	storeId,
-}: RelatedReviewsSheetProps) => {
+export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 	const [selectedCategory, setSelectedCategory] =
 		useState<TooltipCategory>('food');
 
@@ -42,8 +37,7 @@ export const RelatedReviewsSheet = ({
 				<hr className="border-grey-20" />
 			</>
 			{/* 리뷰 리스트 */}
-			<div className="px-4 bg-slate-50 max-h-[30vh] overflow-y-auto">
-				{/* <ReviewDetailItem review={clickedReview} isSelected /> */}
+			<div className="px-4 bg-slate-50 max-h-[30vh] overflow-y-auto [&::-webkit-scrollbar]:hidden -mx-2">
 				<hr className="border-grey-20 -mx-4" />
 				{isLoading && <div className="p-4 text-center">로딩 중...</div>}
 				{!isLoading &&

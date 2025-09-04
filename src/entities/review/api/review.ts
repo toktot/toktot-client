@@ -7,11 +7,10 @@ import type { KyInstance } from 'ky';
 import { ApiResponseSchema } from '@/shared/api/schema';
 import { StoreId } from '@/shared/model/types';
 
-import { BaseReviewView } from '../model/view';
-import { ReviewClientSchema, StoreReviewsPageServerSchema } from './schema';
+import { ReviewServer, StoreReviewsPageServerSchema } from './schema';
 
 export interface GetStoreReviewsResponse {
-	reviews: BaseReviewView[];
+	reviews: ReviewServer[];
 	isLastPage: boolean;
 }
 
@@ -21,15 +20,16 @@ export const createReviewApi = (kyInstance: KyInstance) => ({
 	 */
 	async getStoreReviews(
 		restaurantId: StoreId,
-		page: number,
-		size: number,
+		page: number = 0,
+		size: number = 10,
+		sort: string = 'createdAt',
 	): Promise<GetStoreReviewsResponse> {
 		const raw = await kyInstance
 			.get(`v1/restaurants/${restaurantId}/reviews`, {
 				searchParams: {
 					page,
 					size,
-					sort: 'createdAt', // desc
+					sortType: sort, // desc
 				},
 			})
 			.json();
@@ -57,12 +57,8 @@ export const createReviewApi = (kyInstance: KyInstance) => ({
 			throw new Error('응답에 데이터가 없습니다.');
 		}
 
-		const reviews = pageData.content.map((review) =>
-			ReviewClientSchema.parse(review),
-		);
-
 		return {
-			reviews,
+			reviews: pageData.content,
 			isLastPage: pageData.last,
 		};
 	},
