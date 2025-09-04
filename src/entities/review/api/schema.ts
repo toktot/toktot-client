@@ -6,15 +6,22 @@ import { z } from 'zod';
 
 import { mapServerReviewToClientView } from './mappers';
 
-const ReviewMenuServerSchema = z.object({
-	menuName: z.string(),
-	totalPrice: z.number(),
+export const TooltipServerSchema = z.object({
+	id: z.number(),
+	type: z.enum(['FOOD', 'CLEAN', 'SERVICE']), // enum으로 확장 가능
+	rating: z.number(),
+	menuName: z.string().nullable(),
+	totalPrice: z.number().nullable(),
+	servingSize: z.number().nullable(),
+	detailedReview: z.string(),
 });
 
 const ReviewImageServerSchema = z.object({
-	id: z.number(),
+	imageId: z.string(),
+	imageOrder: z.number(),
 	imageUrl: z.string(),
-	menus: z.array(ReviewMenuServerSchema),
+	isMain: z.boolean(),
+	tooltips: z.array(TooltipServerSchema),
 });
 
 const ReviewUserServerSchema = z.object({
@@ -27,12 +34,16 @@ const ReviewUserServerSchema = z.object({
 
 const ReviewServerSchema = z.object({
 	id: z.number(),
-	user: ReviewUserServerSchema,
+	author: ReviewUserServerSchema,
 	images: z.array(ReviewImageServerSchema),
 	keywords: z.array(z.string()),
 	createdAt: z.string(),
-	isBookmarked: z.boolean().optional(), // 응답에 없을 수 있음
+	isBookmarked: z.boolean().optional(),
 	isWriter: z.boolean(),
+	satisfactionScore: z.number(),
+	tooltips: z.array(TooltipServerSchema),
+	mealTime: z.string(),
+	reviewRating: z.number(),
 });
 
 export const StoreReviewsPageServerSchema = z.object({
@@ -42,10 +53,15 @@ export const StoreReviewsPageServerSchema = z.object({
 	totalPages: z.number(),
 	size: z.number(),
 	number: z.number(),
-	// 필요시 pageable 등 추가
 });
+
+export type StoreReviewsPageServer = z.infer<
+	typeof StoreReviewsPageServerSchema
+>;
 
 // 서버 스키마를 클라이언트에서 사용할 ReviewView 모델로 변환합니다.
 export const ReviewClientSchema = ReviewServerSchema.transform(
 	mapServerReviewToClientView,
 );
+
+export type ReviewServer = z.infer<typeof ReviewServerSchema>;

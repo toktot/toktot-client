@@ -4,76 +4,35 @@
  */
 import {
 	BaseReviewImage,
+	CleanTooltip,
+	FoodTooltip,
 	ReviewView,
+	SERVER_CATEGORY_MAP,
+	ServiceTooltip,
 	UploadReviewImage,
 } from '@/entities/review';
-import { StoreData } from '@/entities/store';
-import { MoodKeyword } from '@/entities/store/mood/model/types';
 
 import { ReviewWriteServerImage } from '@/features/review/write/api/schema';
 
 import {
-	MoodKeywordId,
 	ReviewId,
 	ReviewImageId,
 	TooltipId,
 	UserId,
 } from '@/shared/model/types';
 
-// --- 타입 정의 ---
-// 이 파일에서만 사용할 서버 응답의 타입을 간략하게 정의합니다.
-// 실제 Zod 스키마는 schema.ts에 있습니다.
-interface ServerUser {
-	id: number;
-	nickname: string;
-	profileImageUrl: string | null;
-}
-interface ServerMenu {
-	menuName: string;
-	totalPrice: number;
-}
-interface ServerImage {
-	id: number;
-	imageUrl: string;
-	menus: ServerMenu[];
-}
-interface ServerReview {
-	id: number;
-	user: ServerUser;
-	images: ServerImage[];
-	keywords: string[];
-	createdAt: string;
-	isWriter: boolean;
-}
+import type { ReviewServer } from './schema';
 
-// --- 매퍼 함수들 ---
 /**
- * 서버의 `keywords` (string[])를 클라이언트의 `moodKeywords` (MoodKeyword[])로 변환합니다.
- * @description 현재 API 명세에는 키워드의 ID가 없으므로, 프론트엔드에서 미리 정의된 맵을 사용하거나 임시 ID를 부여합니다.
+ * 서버의 이미지 배열을 클라이언트 뷰모델 이미지 배열로 변환
  */
-const KEYWORD_TO_ID_MAP: Record<string, MoodKeywordId> = {
-	로컬: 1 as MoodKeywordId,
-	아늑한: 2 as MoodKeywordId,
-	'현지인이 많은': 3 as MoodKeywordId,
-	트렌디한: 4 as MoodKeywordId,
-	한적한: 5 as MoodKeywordId,
-};
-function mapServerKeywordsToMoodKeywords(keywords: string[]): MoodKeyword[] {
-	return keywords
-		.map((label) => {
-			const id = KEYWORD_TO_ID_MAP[label];
-			return id ? { id, label } : null;
-		})
-		.filter((kw): kw is MoodKeyword => kw !== null);
-}
-
-function mapServerImagesToClient(serverImages: ServerImage[]): {
+function mapServerImagesToClient(serverImages: ReviewServer['images']): {
 	images: (BaseReviewImage & { tooltipIds: TooltipId[] })[];
 } {
 	const images: (BaseReviewImage & { tooltipIds: TooltipId[] })[] = [];
 
 	serverImages.forEach((serverImg) => {
-		const imageId = String(serverImg.id) as ReviewImageId;
+		const imageId = String(serverImg.imageId) as ReviewImageId;
 		const newImage: BaseReviewImage & { tooltipIds: TooltipId[] } = {
 			id: imageId,
 			url: serverImg.imageUrl,
@@ -90,24 +49,51 @@ function mapServerImagesToClient(serverImages: ServerImage[]): {
  * 서버의 Review 응답 전체를 클라이언트의 ReviewView 모델로 변환하는 메인 매퍼 함수
  */
 export function mapServerReviewToClientView(
-	serverReview: ServerReview,
-): Omit<ReviewView, 'tooltips'> {
+	serverReview: ReviewServer,
+): Omit<ReviewView, 'store'> {
 	const { images } = mapServerImagesToClient(serverReview.images);
-	const moodKeywords = mapServerKeywordsToMoodKeywords(serverReview.keywords);
+
+	const tooltips = serverReview.tooltips.map((tooltip) => {
+		const clientCategory = SERVER_CATEGORY_MAP[tooltip.type]; // 'FOOD' → 'food'
+
+		const baseTooltip = {
+			id: String(tooltip.id) as TooltipId,
+			x: 0, // 좌표 데이터는 현재 API에 없으므로 기본값 처리
+			y: 0,
+			category: clientCategory,
+			rating: tooltip.rating,
+			description: tooltip.detailedReview,
+		};
+
+		if (clientCategory === 'food') {
+			return {
+				...baseTooltip,
+				category: 'food',
+				menuName: tooltip.menuName ?? '',
+				price: tooltip.totalPrice ?? 0,
+				servings: tooltip.servingSize ?? 1,
+			} as FoodTooltip;
+		} else {
+			return {
+				...baseTooltip,
+				category: clientCategory,
+			} as ServiceTooltip | CleanTooltip;
+		}
+	});
 
 	return {
 		id: String(serverReview.id) as ReviewId,
 		author: {
-			id: serverReview.user.id as UserId,
-			nickname: serverReview.user.nickname,
-			reviewCount: 0,
-			averageRating: 0,
-			profileImageUrl: null,
+			id: serverReview.author.id as UserId,
+			nickname: serverReview.author.nickname,
+			reviewCount: serverReview.author.reviewCount,
+			averageRating: serverReview.author.averageRating,
+			profileImageUrl: serverReview.author.profileImageUrl,
 		},
-		store: {} as StoreData, // 가게 정보는 이 API에 없으므로, 상위 컴포넌트에서 주입해야 함
 		createdAt: serverReview.createdAt,
 		images,
-		moodKeywords,
+		keywords: serverReview.keywords,
+		tooltips,
 	};
 }
 

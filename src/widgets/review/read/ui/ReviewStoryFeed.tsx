@@ -34,7 +34,7 @@ export const mockReview1: ReviewView = {
 		averageRating: 0,
 	},
 	store: {
-		id: '831' as StoreId,
+		id: '1045' as StoreId,
 		storeName: '맛있는김밥천국',
 		mainMenu: '참치김밥',
 		address: '서울특별시 강남구 테헤란로 123',
@@ -103,7 +103,7 @@ export const mockReview2: ReviewView = {
 		averageRating: 0,
 	},
 	store: {
-		id: '2' as StoreId,
+		id: '1106' as StoreId,
 		storeName: '청결한국밥집',
 		mainMenu: '순대국밥',
 		address: '부산광역시 수영구 광안해변로 456',
@@ -221,7 +221,7 @@ export function ReviewStoryFeed() {
 						<div className="flex gap-2 w-full flex-1 min-h-0">
 							<div className="bg-grey-90 flex-1 min-h-0 rounded-xl">
 								<ReviewStore
-									store={currentPost.store}
+									storeId={currentPost.store.id}
 									extra={{ distance: 200 }}
 								/>
 							</div>

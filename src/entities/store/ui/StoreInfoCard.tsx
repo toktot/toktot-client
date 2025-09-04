@@ -1,5 +1,7 @@
 import Image from 'next/image';
 
+import Icon from '@/shared/ui/Icon';
+
 import type { StoreData } from '../model/types';
 
 interface StoreInfoCardProps {
@@ -19,9 +21,7 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 					/>
 				) : (
 					<div className="rounded-lg text-[5px] text-grey-50 bg-grey-20 p-1 w-full h-full flex items-center justify-center">
-						등록된 사진이
-						<br />
-						없어요.
+						<Icon size="s" name={'KoreanDish'} />
 					</div>
 				)}
 			</div>
