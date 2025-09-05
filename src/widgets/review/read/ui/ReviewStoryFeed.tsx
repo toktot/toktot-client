@@ -10,10 +10,10 @@ import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
-import { ReviewStoreWithSheet } from '@/features/review/read/ui/ReviewStoreWithSheet';
 
 import { InteractiveReview } from './InteractiveReview';
 import ReviewStore from './ReviewStore';
+import { ReviewStoreWithSheet } from './ReviewStoreWithSheet';
 import ReviewUser from './ReviewUser';
 
 // 스와이프 강도를 계산하기 위한 상수
@@ -56,19 +56,19 @@ export function ReviewStoryFeed() {
 	const currentPost = reviews[currentIndex];
 
 	if (!currentPost) {
-		return <div>리뷰를 불러오는 중...</div>; // Or a proper loader
+		return <div>리뷰를 불러오는 중...</div>;
 	}
 
 	return (
 		<AnimatePresence initial={false} custom={direction}>
 			<motion.div
+				className="h-full overflow-x-hidden"
 				key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
 				custom={direction}
 				variants={variants}
 				initial="enter"
 				animate="center"
 				exit="exit"
-				className="h-full"
 				transition={{
 					y: { type: 'spring', stiffness: 300, damping: 30 },
 					opacity: { duration: 0.2 },
@@ -112,11 +112,11 @@ export function ReviewStoryFeed() {
 							<ReviewUser author={currentPost.author} />
 						</div>
 
-						<div className="flex gap-2 w-full flex-1 min-h-0">
-							<div className="bg-grey-90 flex-1 min-h-0 rounded-xl">
+						<div className="flex gap-2">
+							<div className="bg-grey-90 rounded-xl flex-[4] min-w-0">
 								<ReviewStore storeId={currentPost.store.id} />
 							</div>
-							<div className="flex flex-1 w-full min-h-0 bg-grey-90 rounded-xl">
+							<div className="bg-grey-90 rounded-xl flex-[1.3] min-w-0">
 								<ReviewStoreWithSheet
 									review={currentPost}
 									isSheetOpen={isSheetOpen}

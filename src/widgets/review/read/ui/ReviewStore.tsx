@@ -45,7 +45,7 @@ const ReviewStore = ({ storeId, extra }: ReviewStoreInfoProps) => {
 		// 	href={`/store/${store.id}`}
 		// 	aria-label={`${store.storeName} 상세 보기`}
 		// >
-		<div className="px-3 py-2 flex justify-between items-center rounded-xl">
+		<div className="px-3 py-2 flex justify-between items-center rounded-xl ">
 			<StoreInfoCard store={storeDataForDisplay} />
 			{extra?.distance && <span className="text-sm">{extra.distance}m</span>}
 			<Icon name={'ArrowRight'} size={'xs'} />

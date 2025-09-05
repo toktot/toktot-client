@@ -5,13 +5,16 @@ import { ReviewTooltipSheet } from '@/widgets/review/read/ui/ReviewTooltipSheet'
 import Icon from '@/shared/ui/Icon';
 
 interface ReviewStoreWithSheetProps {
-  review: ReviewView;
-  isSheetOpen: boolean;
-  onSheetOpenChange: (isOpen: boolean) => void;
+	review: ReviewView;
+	isSheetOpen: boolean;
+	onSheetOpenChange: (isOpen: boolean) => void;
 }
 
-export function ReviewStoreWithSheet({ review, isSheetOpen, onSheetOpenChange }: ReviewStoreWithSheetProps) {
-
+export function ReviewStoreWithSheet({
+	review,
+	isSheetOpen,
+	onSheetOpenChange,
+}: ReviewStoreWithSheetProps) {
 	return (
 		<div className="w-full px-2 py-2 rounded-xl text-sm">
 			<button
@@ -25,7 +28,11 @@ export function ReviewStoreWithSheet({ review, isSheetOpen, onSheetOpenChange }:
 				</span>
 				<Icon name={'ArrowRight'} size={'xs'} />
 			</button>
-			<ReviewTooltipSheet open={isSheetOpen} onOpenChange={onSheetOpenChange} review={review} />
+			<ReviewTooltipSheet
+				open={isSheetOpen}
+				onOpenChange={onSheetOpenChange}
+				review={review}
+			/>
 		</div>
 	);
 }
