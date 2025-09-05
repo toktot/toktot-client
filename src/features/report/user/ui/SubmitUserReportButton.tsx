@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 import {
 	isUserReportSubmitEnabled,
@@ -26,7 +27,7 @@ export const SubmitUserReportButton = () => {
 		const success = await submit();
 		if (success) {
 			// TODO: 신고 완료 페이지로 이동하거나, 이전 페이지로 돌아가기
-			alert('신고가 접수되었습니다.');
+			toast.success('신고가 접수되었습니다.');
 			router.back();
 		}
 		setIsModalOpen(false);

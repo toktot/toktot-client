@@ -1,4 +1,5 @@
 import ky, { Options } from 'ky';
+import toast from 'react-hot-toast';
 
 const baseOptions: Options = {
 	prefixUrl: process.env.NEXT_PUBLIC_API_URL,
@@ -15,7 +16,7 @@ interface AuthApiOptions {
 }
 
 const handleAuthRequired = (loginPath: string, alertMessage: string) => {
-	alert(alertMessage);
+	toast.error(alertMessage);
 	window.location.href = loginPath;
 };
 

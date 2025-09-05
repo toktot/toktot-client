@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 import { createAuthApi } from '@/shared/api';
 import { ApiError } from '@/shared/api/ApiError';
@@ -53,9 +54,9 @@ export const useReport = (
 			router.push(url);
 		} catch (error) {
 			if (error instanceof ApiError) {
-				alert(error.message);
+				toast.error(error.message);
 			} else {
-				alert('알 수 없는 오류로 신고를 진행할 수 없습니다.');
+				toast.error('알 수 없는 오류로 신고를 진행할 수 없습니다.');
 				console.error(error);
 			}
 		} finally {

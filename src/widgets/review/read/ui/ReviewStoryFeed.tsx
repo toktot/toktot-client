@@ -117,7 +117,6 @@ export function ReviewStoryFeed() {
 								<ReviewStore storeId={currentPost.store.id} />
 							</div>
 							<div className="flex flex-1 w-full min-h-0 bg-grey-90 rounded-xl">
-								<ReviewStoreWithSheet review={currentPost} />
 								<ReviewStoreWithSheet
 									review={currentPost}
 									isSheetOpen={isSheetOpen}

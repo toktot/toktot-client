@@ -9,6 +9,7 @@ import {
 	useReviewImageManager,
 } from '@/entities/review';
 import { ReviewImageItem } from '@/entities/review';
+import toast from 'react-hot-toast';
 
 import {
 	CreateReviewSheet,
@@ -86,12 +87,12 @@ export const ReviewImageWidget = ({
 
 	const handleImageClick = (coord: { x: number; y: number }) => {
 		if (activeTooltipId) {
-			alert('먼저 현재 툴팁 작성을 완료해주세요.');
+			toast.error('먼저 현재 툴팁 작성을 완료해주세요.');
 			return;
 		}
 		if (!selectedImage) return;
 		if (selectedImage.tooltipIds.length >= MAX_TOOLTIP_COUNT) {
-			alert(
+			toast.error(
 				`툴팁은 이미지당 최대 ${MAX_TOOLTIP_COUNT}개까지 추가할 수 있습니다.`,
 			);
 			return;
@@ -106,7 +107,7 @@ export const ReviewImageWidget = ({
 			setActiveTooltipId(result.tooltipId);
 			setIsSheetOpen(true);
 		} else if (result.reason === 'LIMIT_REACHED') {
-			alert('툴팁 개수 제한에 도달했습니다.');
+			toast.error('툴팁 개수 제한에 도달했습니다.');
 		}
 	};
 

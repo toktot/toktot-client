@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
+import { Toaster } from 'react-hot-toast';
 
 import ClientProviders from '@/features/auth/context/ClientProviders';
+
+import Icon from '@/shared/ui/Icon';
 
 import { manrope, pretendard } from './font/font';
 import './globals.css';
@@ -20,7 +23,21 @@ export default function RootLayout({
 			<body
 				className={`${pretendard.variable} ${manrope.variable} antialiased`}
 			>
-				<ClientProviders>{children}</ClientProviders>
+				<ClientProviders>
+					{children}
+					<Toaster
+						position="bottom-center"
+						reverseOrder={false}
+						toastOptions={{
+							success: {
+								icon: <Icon name="Success" />,
+							},
+							error: {
+								icon: <Icon name="Error" />,
+							},
+						}}
+					/>
+				</ClientProviders>
 			</body>
 		</html>
 	);

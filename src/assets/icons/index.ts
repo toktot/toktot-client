@@ -80,3 +80,5 @@ export { default as HomeFill } from './home_fill.svg';
 export { default as MyFill } from './my_fill.svg';
 export { default as MenuFill } from './menu_fill.svg';
 export { default as ReviewFill } from './review_fill.svg';
+export { default as Error } from './error.svg';
+export { default as Success } from './success.svg';
