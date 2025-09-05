@@ -26,7 +26,9 @@ export const DEFAULT_NAVIGATION_ITEMS: (NavItem | CenterActionItem)[] = [
 	{
 		type: 'link',
 		href: '/menu-upload',
+
 		iconName: 'Menu',
+
 		label: 'menu',
 	},
 	{ type: 'link', href: '/my', iconName: 'My', label: 'my' },
