@@ -10,7 +10,7 @@ interface StoreInfoCardProps {
 
 export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 	return (
-		<div className="flex justify-center items-center gap-3 ">
+		<div className="flex justify-center items-center gap-3 overflow-hidden">
 			<div className="relative w-9 h-9 text-center rounded flex-shrink-0">
 				{store.storeImageUrl ? (
 					<Image
@@ -25,17 +25,17 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 					</div>
 				)}
 			</div>
-			<div className="flex-1 self-stretch inline-flex flex-col justify-between">
-				<div className="inline-flex justify-start items-center gap-1.5">
+			<div className="flex-1 self-stretch inline-flex flex-col justify-between min-w-0">
+				<div className="inline-flex justify-start items-center gap-1.5 min-w-0">
 					<div className="justify-center text-sm font-semibold truncate">
 						{store.storeName}
 					</div>
-					<div className="justify-center text-xs flex-shrink-0">
+					<div className="justify-center text-xs flex-shrink-0 truncate">
 						{store.mainMenu}
 					</div>
 				</div>
-				<div className="inline-flex justify-start items-center gap-1">
-					<div className="justify-center text-xs truncate">{store.address}</div>
+				<div className="flex items-center gap-1 min-w-0 overflow-hidden">
+					<span className="text-xs truncate">{store.address}</span>
 				</div>
 			</div>
 		</div>

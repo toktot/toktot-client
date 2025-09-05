@@ -1,4 +1,5 @@
 import { USER_REPORT_REASON_MAP } from '@/entities/report/config/reasons';
+import toast from 'react-hot-toast';
 import { create } from 'zustand';
 
 import { createReportApi } from '@/features/report/api/api';
@@ -67,7 +68,7 @@ export const useUserReportStore = create<UserReportStore>()(
 				state.selectedReasonIds.size === 0 ||
 				!state.isPrivacyAgreed
 			) {
-				alert('필수 항목을 모두 입력해주세요.');
+				toast.error('필수 항목을 모두 입력해주세요.');
 				return false;
 			}
 
@@ -85,7 +86,7 @@ export const useUserReportStore = create<UserReportStore>()(
 				get().initialize(0 as UserId, ''); // 성공 시 초기화
 				return true;
 			} catch (error) {
-				alert(
+				toast.error(
 					error instanceof Error ? error.message : '신고 제출에 실패했습니다.',
 				);
 				return false;

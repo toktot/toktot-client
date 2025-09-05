@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
@@ -97,7 +98,7 @@ export const useReviewImageStore = create<
 			);
 
 			if (errorMessage) {
-				alert(errorMessage);
+				toast.error(errorMessage);
 			}
 			if (validFiles.length === 0) return;
 
@@ -127,7 +128,7 @@ export const useReviewImageStore = create<
 				});
 			} catch (error) {
 				console.error('이미지 업로드 실패:', error);
-				alert(error instanceof Error ? error.message : '알 수 없는 오류');
+				toast.error(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
 				set({ isLoading: false });
 			}
@@ -160,7 +161,7 @@ export const useReviewImageStore = create<
 				});
 			} catch (error) {
 				console.error('이미지 삭제 실패:', error);
-				alert(error instanceof Error ? error.message : '알 수 없는 오류');
+				toast.error(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
 				set({ isLoading: false });
 			}
@@ -182,7 +183,7 @@ export const useReviewImageStore = create<
 				set(initialState); // 모든 상태를 초기값으로 리셋
 			} catch (error) {
 				console.error('이미지 세션 초기화 실패:', error);
-				alert(error instanceof Error ? error.message : '알 수 없는 오류');
+				toast.error(error instanceof Error ? error.message : '알 수 없는 오류');
 			} finally {
 				set({ isLoading: false });
 			}

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MAX_REVIEWS_PER_FOLDER } from '@/entities/review-folder/model/constants';
 import { useReviewFolderStore } from '@/entities/review-folder/model/store';
 import { FolderListItem } from '@/entities/review-folder/ui/FolderListItem';
+import toast from 'react-hot-toast';
 
 import { AddFolderInput } from '@/features/review-folder/ui/AddFolderInput';
 
@@ -71,14 +72,13 @@ export const SaveReviewSheet = ({
 		const result = await saveReviewsToFolders(reviewId, folderIdsToSave);
 
 		if (result.success) {
-			// TODO: 토스트로 대체하기
-			alert('리뷰가 저장되었습니다.');
+			toast.success('리뷰가 저장되었습니다.');
 			onClose();
 		} else {
 			const errorMessage = result.fullFolders?.length
 				? `다음 폴더는 저장 공간이 가득 찼습니다:\n[${result.fullFolders.join(', ')}]`
 				: '리뷰 저장에 실패했습니다.';
-			alert('error: ' + errorMessage);
+			toast.error('error: ' + errorMessage);
 		}
 	};
 

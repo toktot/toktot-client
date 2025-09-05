@@ -1,5 +1,7 @@
 import { ChangeEvent } from 'react';
 
+import toast from 'react-hot-toast';
+
 import { validateFiles } from '@/shared/lib/validateFiles';
 import Icon from '@/shared/ui/Icon';
 
@@ -24,7 +26,7 @@ export const ReviewImageUploader = ({
 		);
 
 		if (errorMessage) {
-			alert(errorMessage);
+			toast.error(errorMessage);
 		} else {
 			onUpload(validFiles);
 			e.target.value = '';

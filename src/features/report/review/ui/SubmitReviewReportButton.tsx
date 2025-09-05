@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 import {
 	isReviewReportSubmitEnabled,
@@ -22,7 +23,7 @@ export const SubmitReviewReportButton = () => {
 	const handleConfirm = async () => {
 		const success = await submitReport();
 		if (success) {
-			alert('신고가 접수되었습니다.');
+			toast.success('신고가 접수되었습니다.');
 			router.back();
 		}
 		setIsModalOpen(false);
