@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -35,25 +35,27 @@ export default function HomeContainer() {
 
 	return (
 		<HomeAppShell showBottomNav={true}>
-			<main className="flex flex-col h-screen">
-				<div className="flex-1 overflow-y-auto scrollbar-hide">
-					<section className="  bg-white px-4 py-4">
-						{/* 상단 제목 + 더보기 */}
+			<Suspense fallback={<div>Loading...</div>}>
+				<main className="flex flex-col h-screen">
+					<div className="flex-1 overflow-y-auto scrollbar-hide">
+						<section className="  bg-white px-4 py-4">
+							{/* 상단 제목 + 더보기 */}
 
-						{/* 가격 + 음식 필터 */}
-						<div className="mt-8 flex items-center justify-between mb-4">
-							<h2 className="text-[18px] font-semibold">
-								가격도 착하고 맛까지 좋은 가게는?
-							</h2>
-						</div>
-						<PriceTabs
-							initialPrice={selectedPrice}
-							initialFood={selectedFood}
-							onSelect={handleFilterSelect}
-						/>
-					</section>
-				</div>
-			</main>
+							{/* 가격 + 음식 필터 */}
+							<div className="mt-8 flex items-center justify-between mb-4">
+								<h2 className="text-[18px] font-semibold">
+									가격도 착하고 맛까지 좋은 가게는?
+								</h2>
+							</div>
+							<PriceTabs
+								initialPrice={selectedPrice}
+								initialFood={selectedFood}
+								onSelect={handleFilterSelect}
+							/>
+						</section>
+					</div>
+				</main>
+			</Suspense>
 		</HomeAppShell>
 	);
 }
