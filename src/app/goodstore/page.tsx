@@ -10,7 +10,7 @@ import PriceTabs from '@/features/home/components/homeStore';
 
 import { getDecryptedToken } from '@/shared/utils/storage';
 
-export default function HomeContainer() {
+export default function Goodstore() {
 	const searchParams = useSearchParams();
 
 	const initialPrice = searchParams.get('price') || '';
