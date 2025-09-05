@@ -2,13 +2,16 @@
 
 import { useReviewImageManager } from '@/entities/review/lib/useReviewImageManager';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 import { useKeywordStore } from '@/features/review/write/model/useKeywordStore';
 
-export const NextButton = ({ restaurantId }: { restaurantId: number }) => {
+import { StoreId } from '@/shared/model/types';
+
+export const NextButton = ({ restaurantId }: { restaurantId: StoreId }) => {
 	const router = useRouter();
 
-	const imageManager = useReviewImageManager(restaurantId);
+	const imageManager = useReviewImageManager(String(restaurantId) as StoreId);
 
 	const hasImages = imageManager.images.length > 0;
 
@@ -30,7 +33,7 @@ export const NextButton = ({ restaurantId }: { restaurantId: number }) => {
 
 	const handleNext = async () => {
 		if (imageManager.images.length === 0) {
-			alert('이미지를 1장 이상 등록해주세요.');
+			toast.error('이미지를 1장 이상 등록해주세요.');
 			return;
 		}
 
@@ -38,7 +41,7 @@ export const NextButton = ({ restaurantId }: { restaurantId: number }) => {
 			router.push(`/review/write/${restaurantId}/value-score`);
 		} catch (error) {
 			console.error('Review submission error:', error);
-			alert(
+			toast.error(
 				error instanceof Error ? error.message : '리뷰 제출에 실패했습니다.',
 			);
 		}

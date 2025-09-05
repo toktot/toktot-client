@@ -3,201 +3,86 @@
 import React, { useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
-import { ReviewView } from '@/entities/review/model/view';
+import { mapReviewContentToView } from '@/entities/review/api/mappers';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
+import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
-
-import {
-	MoodKeywordId,
-	ReviewId,
-	ReviewImageId,
-	StoreId,
-	TooltipId,
-	UserId,
-} from '@/shared/model/types';
 
 import { InteractiveReview } from './InteractiveReview';
 import ReviewStore from './ReviewStore';
-import { ReviewTooltipSheet } from './ReviewTooltipSheet';
+import { ReviewStoreWithSheet } from './ReviewStoreWithSheet';
 import ReviewUser from './ReviewUser';
-
-export const mockReview1: ReviewView = {
-	id: '1' as ReviewId,
-	author: {
-		id: 1 as UserId,
-		nickname: 'food91',
-		profileImageUrl: null,
-		reviewCount: 0,
-		averageRating: 0,
-	},
-	store: {
-		id: '1' as StoreId,
-		storeName: '맛있는김밥천국',
-		mainMenu: '참치김밥',
-		address: '서울특별시 강남구 테헤란로 123',
-		storeImageUrl: '/images/store1.png',
-	},
-	createdAt: '2025-07-25T14:00:00.000Z',
-	images: [
-		{
-			id: 'img-001' as ReviewImageId,
-			url: '/images/mockReview.jpg',
-			tooltipIds: ['t1' as TooltipId, 't2' as TooltipId, 't3' as TooltipId],
-		},
-		{
-			id: 'img-002' as ReviewImageId,
-			url: '/images/review1.png',
-			tooltipIds: ['t3' as TooltipId],
-		},
-		{
-			id: 'img-003' as ReviewImageId,
-			url: '/images/review3.jpg',
-			tooltipIds: [],
-		},
-	],
-	tooltips: {
-		['t1' as TooltipId]: {
-			id: 't1' as TooltipId,
-			x: 20,
-			y: 80,
-			category: 'food',
-			rating: 4,
-			menuName: '참치김밥',
-			price: 3500,
-			servings: 1,
-			description: '참치가 많이 들어가서 맛있었어요.',
-		},
-		['t2' as TooltipId]: {
-			id: 't2' as TooltipId,
-			x: 40,
-			y: 30,
-			category: 'service',
-			rating: 5,
-			description: '직원분이 정말 친절했어요.',
-		},
-		['t3' as TooltipId]: {
-			id: 't2' as TooltipId,
-			x: 53.17647058823529,
-			y: 10,
-			category: 'clean',
-			rating: 5,
-			description: '직원분이 정말 친절했어요.',
-		},
-	},
-	moodKeywords: [
-		{ id: 1 as MoodKeywordId, label: '가성비 좋아요' },
-		{ id: 2 as MoodKeywordId, label: '혼밥하기 좋아요' },
-	],
-};
-export const mockReview2: ReviewView = {
-	id: '2' as ReviewId,
-	author: {
-		id: 4 as UserId,
-		nickname: 'cleane22',
-		profileImageUrl: null,
-		reviewCount: 0,
-		averageRating: 0,
-	},
-	store: {
-		id: '2' as StoreId,
-		storeName: '청결한국밥집',
-		mainMenu: '순대국밥',
-		address: '부산광역시 수영구 광안해변로 456',
-		storeImageUrl: '/images/store2.png',
-	},
-	createdAt: '2025-07-26T11:20:00.000Z',
-	images: [
-		{
-			id: 'img-002' as ReviewImageId,
-			url: '/images/mockReview.jpg',
-			tooltipIds: ['t3' as TooltipId],
-		},
-	],
-	tooltips: {
-		['t3' as TooltipId]: {
-			id: 't3' as TooltipId,
-			x: 90,
-			y: 40,
-			category: 'clean',
-			rating: 5,
-			description: '테이블과 식기가 정말 깔끔했어요.',
-		},
-	},
-	moodKeywords: [
-		{ id: 3 as MoodKeywordId, label: '가족과 함께 좋아요' },
-		{ id: 4 as MoodKeywordId, label: '청결해요' },
-	],
-};
 
 // 스와이프 강도를 계산하기 위한 상수
 const SWIPE_CONFIDENCE_THRESHOLD = 10000;
 const swipePower = (offset: number, velocity: number) => {
 	return Math.abs(offset) * velocity;
 };
-
 // 슬라이드 애니메이션을 위한 variants
 const variants = {
 	enter: (direction: number) => ({
 		y: direction > 0 ? '100%' : '-100%',
-		opacity: 0,
+		position: 'absolute',
 	}),
-	center: {
-		zIndex: 1,
-		y: 0,
-		opacity: 1,
-	},
+	center: { y: 0, position: 'absolute' },
 	exit: (direction: number) => ({
-		zIndex: 0,
 		y: direction < 0 ? '100%' : '-100%',
-		opacity: 0,
+		position: 'absolute',
 	}),
 };
 
 export function ReviewStoryFeed() {
-	const data = [mockReview1, mockReview2];
-	const { page, direction, paginate } = useReviewPagination(0, data.length);
+	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed({});
+	const reviews = reviewsData.map(mapReviewContentToView);
+
+	const { page, direction, paginate } = useReviewPagination(0, reviews.length);
 	const currentIndex = page;
 
 	const [showGuide, setShowGuide] = useState(true);
 
-	const [selectedReview, setSelectedReview] = useState<ReviewView | null>(null);
+	const [selectedTooltip, setSelectedTooltip] = useState<Tooltip | null>(null);
+
+	const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
-		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
-		// setSelectedReview(currentPost);
+		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : tooltip));
 	};
 
-	const currentPost = data[currentIndex];
+	const currentPost = reviews[currentIndex];
+
+	if (!currentPost) {
+		return <div>리뷰를 불러오는 중...</div>;
+	}
 
 	return (
-		<div className="relative flex flex-col h-full">
+		<div className="relative h-full overflow-hidden bg-black">
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
-					className="absolute h-full w-full"
+					className="h-full overflow-x-hidden"
 					key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
 					custom={direction}
 					variants={variants}
 					initial="enter"
 					animate="center"
 					exit="exit"
-					transition={{
-						y: { type: 'spring', stiffness: 300, damping: 30 },
-						opacity: { duration: 0.2 },
-					}}
-					// --- 상/하 스와이프 로직 ---
+					transition={{ duration: 0.3, ease: 'easeOut' }}
 					drag="y"
 					dragConstraints={{ top: 0, bottom: 0 }}
-					dragElastic={1}
+					dragElastic={0.05}
 					onDragEnd={(e, { offset, velocity }) => {
 						const swipe = swipePower(offset.y, velocity.y);
 
 						if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(1); // 위로 스와이프 -> 다음 리뷰
+							paginate(1);
 						} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(-1); // 아래로 스와이프 -> 이전 리뷰
+							paginate(-1);
+						}
+
+						if (currentIndex === reviews.length - 2) {
+							fetchNextPage();
 						}
 					}}
 				>
@@ -213,29 +98,31 @@ export function ReviewStoryFeed() {
 									images={currentPost.images}
 									tooltips={currentPost.tooltips}
 									onTooltipClick={handleTooltipClick}
+									selectTooltip={selectedTooltip}
+									onOpenSheet={() => setIsSheetOpen(true)}
 								/>
 							</InteractiveReview>
 						</div>
 						<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
-							<ReviewUser
-								author={currentPost.author}
-								extra={{ totalReviewCount: 200, averageRating: 300 }}
-							/>
-							<div className="bg-grey-90 rounded-xl">
-								<ReviewStore
-									store={currentPost.store}
-									extra={{ distance: 200 }}
-								/>
+							<div className="flex-shrink-0">
+								<ReviewUser author={currentPost.author} />
+							</div>
+
+							<div className="flex gap-2">
+								<div className="bg-grey-90 rounded-xl flex-[4] min-w-0">
+									<ReviewStore storeId={currentPost.store.id} />
+								</div>
+								<div className="bg-grey-90 rounded-xl flex-[1.3] min-w-0">
+									<ReviewStoreWithSheet
+										review={currentPost}
+										isSheetOpen={isSheetOpen}
+										onSheetOpenChange={setIsSheetOpen}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
 				</motion.div>
-
-				<ReviewTooltipSheet
-					open={!!selectedReview}
-					onOpenChange={(o) => !o && setSelectedReview(null)}
-					review={selectedReview}
-				/>
 			</AnimatePresence>
 		</div>
 	);

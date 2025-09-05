@@ -1,7 +1,4 @@
-'use client';
-
 import { KEYWORDS_BY_CATEGORY } from '@/entities/keyword/config/data';
-import { StoreData } from '@/entities/store';
 
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
@@ -9,29 +6,29 @@ import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelecti
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
+import { StoreId } from '@/shared/model/types';
+
 import { MealTimeSelectionWidget } from './MealTimeSelectionWidget';
 import { NextButton } from './NextButton';
 
 interface ReviewWriteContentProps {
-	storeId: string;
-	visitedStoreData: StoreData & { distance: number };
+	storeId: StoreId;
 }
 
-export function ReviewWriteContent({
-	storeId,
-	visitedStoreData,
-}: ReviewWriteContentProps) {
+export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 	return (
 		<AppShell showBottomNav={false}>
-			<Header>
+			<Header className="bg-white">
 				<Header.Left>
 					<BackButton />
 				</Header.Left>
-				<Header.Center>리뷰 쓰기</Header.Center>
+				<Header.Center>
+					<span className="leading-[48px]">리뷰 쓰기</span>
+				</Header.Center>
 			</Header>
-			<div className="flex flex-col items-center p-4 gap-9 relative">
-				<VisitedStoreWidget store={visitedStoreData} />
-				<ReviewImageWidget />
+			<div className="flex flex-col items-center p-4 gap-9">
+				<VisitedStoreWidget storeId={storeId} />
+				<ReviewImageWidget restaurantId={storeId} />
 				<KeywordSelectionWidget
 					title="음식"
 					category="food"
@@ -67,8 +64,8 @@ export function ReviewWriteContent({
 					category="mealtime"
 					keywords={KEYWORDS_BY_CATEGORY.mealtime}
 				/>
-				<div className="mt-auto w-full pt-4 sticky bottom-2">
-					<NextButton restaurantId={parseInt(storeId)} />
+				<div className="w-full sticky bottom-2">
+					<NextButton restaurantId={storeId} />
 				</div>
 			</div>
 		</AppShell>

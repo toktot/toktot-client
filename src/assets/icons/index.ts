@@ -69,10 +69,21 @@ export { default as Reset } from './Reset.svg';
 export { default as OrangeGasimbi } from './OrangeGasimbi.svg';
 export { default as GreenGasimbi } from './GreenGasimbi.svg';
 export { default as Menu } from './Menu.svg';
-export { default as Newhome } from './Newhome.svg';
+// export { default as Newhome } from './Newhome.svg';
 
 export { default as lunch } from './evening.svg';
 export { default as breakfast } from './morning.svg';
 export { default as Sort } from './Sort.svg';
 export { default as Emptyradiobin } from './emptyradiobin.svg';
 export { default as Radiobtn } from './radiobtn.svg';
+
+export { default as MenuBoard } from './menu-board.svg';
+
+// 바텀 네브바 fill icons
+export { default as HomeFill } from './home_fill.svg';
+export { default as MyFill } from './my_fill.svg';
+export { default as MenuFill } from './menu_fill.svg';
+export { default as ReviewFill } from './review_fill.svg';
+
+export { default as Error } from './error.svg';
+export { default as Success } from './success.svg';

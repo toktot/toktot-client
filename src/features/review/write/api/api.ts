@@ -1,4 +1,3 @@
-// src/features/review/write/api/api.ts
 import type { KyInstance } from 'ky';
 import { z } from 'zod';
 
@@ -55,7 +54,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	): Promise<SessionData> {
 		const raw = await kyInstance
 			.delete(`v1/reviews/images/${imageId}`, {
-				searchParams: { external_kakao_id: restaurantId },
+				searchParams: { id: restaurantId },
 			})
 			.json();
 		const parsed = ApiResponseSchema(ImageDeleteResponseSchema).safeParse(raw);
@@ -82,7 +81,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	async getImageSession(restaurantId: number): Promise<SessionData> {
 		const raw = await kyInstance
 			.get('v1/reviews/images', {
-				searchParams: { external_kakao_id: restaurantId },
+				searchParams: { id: restaurantId },
 			})
 			.json();
 		const parsed = ApiResponseSchema(ImageSessionResponseSchema).safeParse(raw);
@@ -108,9 +107,7 @@ export const createWriteReviewApi = (kyInstance: KyInstance) => ({
 	 */
 	async clearImageSession(restaurantId: number): Promise<void> {
 		const raw = await kyInstance
-			.delete('v1/reviews/images', {
-				searchParams: { external_kakao_id: restaurantId },
-			})
+			.delete(`v1/reviews/images/clear/${restaurantId}`)
 			.json();
 
 		const parsed = ApiResponseSchema(ImageSessionClearDataSchema).parse(raw);

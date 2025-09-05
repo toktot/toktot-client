@@ -4,110 +4,104 @@
  */
 import {
 	BaseReviewImage,
+	CleanTooltip,
+	FoodTooltip,
 	ReviewView,
+	SERVER_CATEGORY_MAP,
+	ServiceTooltip,
+	Tooltip,
 	UploadReviewImage,
 } from '@/entities/review';
 import { StoreData } from '@/entities/store';
-import { MoodKeyword } from '@/entities/store/mood/model/types';
 
+import type { ReviewContent } from '@/features/review/read/api/schema';
 import { ReviewWriteServerImage } from '@/features/review/write/api/schema';
 
 import {
-	MoodKeywordId,
 	ReviewId,
 	ReviewImageId,
+	StoreId,
 	TooltipId,
 	UserId,
 } from '@/shared/model/types';
 
-// --- 타입 정의 ---
-// 이 파일에서만 사용할 서버 응답의 타입을 간략하게 정의합니다.
-// 실제 Zod 스키마는 schema.ts에 있습니다.
-interface ServerUser {
-	id: number;
-	nickname: string;
-	profileImageUrl: string | null;
-}
-interface ServerMenu {
-	menuName: string;
-	totalPrice: number;
-}
-interface ServerImage {
-	id: number;
-	imageUrl: string;
-	menus: ServerMenu[];
-}
-interface ServerReview {
-	id: number;
-	user: ServerUser;
-	images: ServerImage[];
-	keywords: string[];
-	createdAt: string;
-	isWriter: boolean;
-}
-
-// --- 매퍼 함수들 ---
-/**
- * 서버의 `keywords` (string[])를 클라이언트의 `moodKeywords` (MoodKeyword[])로 변환합니다.
- * @description 현재 API 명세에는 키워드의 ID가 없으므로, 프론트엔드에서 미리 정의된 맵을 사용하거나 임시 ID를 부여합니다.
- */
-const KEYWORD_TO_ID_MAP: Record<string, MoodKeywordId> = {
-	로컬: 1 as MoodKeywordId,
-	아늑한: 2 as MoodKeywordId,
-	'현지인이 많은': 3 as MoodKeywordId,
-	트렌디한: 4 as MoodKeywordId,
-	한적한: 5 as MoodKeywordId,
-};
-function mapServerKeywordsToMoodKeywords(keywords: string[]): MoodKeyword[] {
-	return keywords
-		.map((label) => {
-			const id = KEYWORD_TO_ID_MAP[label];
-			return id ? { id, label } : null;
-		})
-		.filter((kw): kw is MoodKeyword => kw !== null);
-}
-
-function mapServerImagesToClient(serverImages: ServerImage[]): {
-	images: (BaseReviewImage & { tooltipIds: TooltipId[] })[];
-} {
-	const images: (BaseReviewImage & { tooltipIds: TooltipId[] })[] = [];
-
-	serverImages.forEach((serverImg) => {
-		const imageId = String(serverImg.id) as ReviewImageId;
-		const newImage: BaseReviewImage & { tooltipIds: TooltipId[] } = {
-			id: imageId,
-			url: serverImg.imageUrl,
-			tooltipIds: [],
-		};
-
-		images.push(newImage);
-	});
-
-	return { images };
-}
+import { Author } from '../model/author';
 
 /**
  * 서버의 Review 응답 전체를 클라이언트의 ReviewView 모델로 변환하는 메인 매퍼 함수
  */
-export function mapServerReviewToClientView(
-	serverReview: ServerReview,
-): Omit<ReviewView, 'tooltips'> {
-	const { images } = mapServerImagesToClient(serverReview.images);
-	const moodKeywords = mapServerKeywordsToMoodKeywords(serverReview.keywords);
+export function mapReviewContentToView(content: ReviewContent): ReviewView {
+	const tooltips: Record<TooltipId, Tooltip> = {};
+	const images: (BaseReviewImage & { tooltipIds: TooltipId[] })[] = [];
+
+	content.images.forEach((serverImg) => {
+		const imageId = serverImg.imageId as ReviewImageId;
+		const imageTooltipIds: TooltipId[] = [];
+
+		serverImg.tooltips.forEach((serverTooltip) => {
+			const tooltipId = String(serverTooltip.id) as TooltipId;
+			const clientCategory = SERVER_CATEGORY_MAP[serverTooltip.type];
+
+			const baseTooltip = {
+				id: tooltipId,
+				x: serverTooltip.xPosition,
+				y: serverTooltip.yPosition,
+				category: clientCategory,
+				rating: serverTooltip.rating,
+				description: serverTooltip.detailedReview,
+			};
+
+			if (clientCategory === 'food') {
+				tooltips[tooltipId] = {
+					...baseTooltip,
+					category: 'food',
+					menuName: serverTooltip.menuName ?? '',
+					price: serverTooltip.totalPrice ?? 0,
+					servings: serverTooltip.servingSize ?? 1,
+				} as FoodTooltip;
+			} else {
+				tooltips[tooltipId] = {
+					...baseTooltip,
+					category: clientCategory,
+				} as ServiceTooltip | CleanTooltip;
+			}
+			imageTooltipIds.push(tooltipId);
+		});
+
+		images.push({
+			id: imageId,
+			url: serverImg.imageUrl,
+			tooltipIds: imageTooltipIds,
+		});
+	});
+
+	const author: Author = {
+		id: content.author.id as UserId,
+		nickname: content.author.nickname,
+		profileImageUrl: content.author.profileImageUrl,
+		reviewCount: content.author.reviewCount,
+		averageRating: content.author.averageRating,
+	};
+
+	const store: StoreData = {
+		id: String(content.restaurant.id) as StoreId,
+		storeName: content.restaurant.name,
+		mainMenu: content.restaurant.representativeMenu ?? '대표 메뉴 정보 없음',
+		address: content.restaurant.address,
+	};
 
 	return {
-		id: String(serverReview.id) as ReviewId,
-		author: {
-			id: serverReview.user.id as UserId,
-			nickname: serverReview.user.nickname,
-			reviewCount: 0,
-			averageRating: 0,
-			profileImageUrl: null,
-		},
-		store: {} as StoreData, // 가게 정보는 이 API에 없으므로, 상위 컴포넌트에서 주입해야 함
-		createdAt: serverReview.createdAt,
+		id: String(content.id) as ReviewId,
+		author,
+		store,
+		createdAt: content.createdAt,
 		images,
-		moodKeywords,
+		keywords: content.keywords,
+		tooltips,
+		satisfactionScore: content.satisfactionScore,
+		mealTime: content.mealTime,
+		isBookmarked: content.isBookmarked,
+		isWriter: content.isWriter,
 	};
 }
 

@@ -6,7 +6,6 @@ import { Author } from '@/entities/review/model/author';
 import Image from 'next/image';
 
 import { ReportUserButton } from '@/features/report/user/ui/ReportUserButton';
-import { UserExtraInfo } from '@/features/review/read/model/types';
 
 import {
 	BottomSheet,
@@ -16,10 +15,9 @@ import {
 
 interface ReviewUserProps {
 	author: Author;
-	extra?: UserExtraInfo;
 }
 
-const ReviewUser = ({ author, extra }: ReviewUserProps) => {
+const ReviewUser = ({ author }: ReviewUserProps) => {
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 
 	return (
@@ -42,14 +40,11 @@ const ReviewUser = ({ author, extra }: ReviewUserProps) => {
 
 					<div className="flex flex-col min-w-0 flex-1">
 						<div className="text-sm font-semibold">{author.nickname}</div>
-
-						{extra && (
-							<div className="mt-1 flex text-xs">
-								<p>{extra.totalReviewCount}개</p>
-								<div>·</div>
-								<p>평균 {extra.averageRating}점</p>
-							</div>
-						)}
+						<div className="mt-1 flex text-xs">
+							<p>{author.reviewCount}개</p>
+							<div>·</div>
+							<p>평균 {author.averageRating}점</p>
+						</div>
 					</div>
 				</div>
 			</button>

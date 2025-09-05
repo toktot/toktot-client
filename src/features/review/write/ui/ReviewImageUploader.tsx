@@ -1,5 +1,7 @@
 import { ChangeEvent } from 'react';
 
+import toast from 'react-hot-toast';
+
 import { validateFiles } from '@/shared/lib/validateFiles';
 import Icon from '@/shared/ui/Icon';
 
@@ -12,23 +14,23 @@ export const ReviewImageUploader = ({
 	maxCount: number;
 	maxFileSize: number;
 }) => {
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files) return;
 
 		const fileArray = Array.from(files);
-		const { validFiles, errorMessage } = validateFiles(
+		const { validFiles, errorMessage } = await validateFiles(
 			fileArray,
 			maxCount,
 			maxFileSize,
 		);
 
 		if (errorMessage) {
-			alert(errorMessage);
+			toast.error(errorMessage);
+		} else {
+			onUpload(validFiles);
+			e.target.value = '';
 		}
-
-		onUpload(validFiles);
-		e.target.value = '';
 	};
 
 	return (

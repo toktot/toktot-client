@@ -7,12 +7,17 @@ import { useRouter } from 'next/navigation';
 
 import ContinueOrNewReviewModal from '@/features/review/write/ui/ContinueOrNewReviewModal';
 
-import Typography from '@/shared/ui/Typography';
+import { StoreId } from '@/shared/model/types';
 
-export const SearchVisitedStoreWidget = () => {
+export const SearchVisitedStoreWidget = ({
+	restaurantId,
+}: {
+	restaurantId: StoreId;
+}) => {
 	const router = useRouter();
 	const [showContinueModal, setShowContinueModal] = useState(false);
-	const { initializeImages, clearImages, images } = useReviewImageManager(1);
+	const { initializeImages, clearImages, images } =
+		useReviewImageManager(restaurantId);
 
 	useEffect(() => {
 		const checkExistingSession = async () => {
@@ -31,20 +36,16 @@ export const SearchVisitedStoreWidget = () => {
 		clearImages();
 		setShowContinueModal(false);
 		// FIXME: 임시 라우팅 처리
-		router.push('/review/write/1');
+		router.push('/review/write/831');
 	};
 
 	const handleContinue = () => {
 		setShowContinueModal(false);
-		router.push('/review/write/1');
+		router.push('/review/write/831');
 	};
 
 	return (
 		<section className="w-full space-y-3">
-			<Typography as="h3">
-				방문한 가게를
-				<br /> 검색해주세요
-			</Typography>
 			<div className="bg-grey-10 text-grey-80 rounded-xl">
 				{showContinueModal && (
 					<ContinueOrNewReviewModal

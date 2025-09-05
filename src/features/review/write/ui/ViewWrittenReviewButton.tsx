@@ -12,10 +12,12 @@ interface ViewWrittenReviewButtonProps {
 export const ViewWrittenReviewButton = ({
 	reviewId,
 }: ViewWrittenReviewButtonProps) => {
+	console.log('🚀 ~ ViewWrittenReviewButton ~ reviewId:', reviewId);
 	const router = useRouter();
 
 	const handleClick = () => {
-		router.push(`/review/${reviewId}`);
+		// FIXME: 리뷰 보기 구현 시 변경 router.push(`/review/${reviewId}`);
+		router.push(`/home`);
 	};
 
 	return (

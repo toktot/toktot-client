@@ -9,6 +9,7 @@ import {
 	useReviewImageManager,
 } from '@/entities/review';
 import { ReviewImageItem } from '@/entities/review';
+import toast from 'react-hot-toast';
 
 import {
 	CreateReviewSheet,
@@ -26,13 +27,16 @@ import {
 	BottomSheetOverlay,
 } from '@/shared/components/BottomSheet';
 import { PeekableBottomSheetContent } from '@/shared/components/PeekableBottomSheetContent';
-import { ReviewImageId, TooltipId } from '@/shared/model/types';
+import { ReviewImageId, StoreId, TooltipId } from '@/shared/model/types';
 import Typography from '@/shared/ui/Typography';
 
 import { TooltipGuideOverlay } from './TooltipGuideOverlay';
 
-// TODO: props로 받아오고 페이지에서는 path로 storeId 받아오기
-export const ReviewImageWidget = () => {
+export const ReviewImageWidget = ({
+	restaurantId,
+}: {
+	restaurantId: StoreId;
+}) => {
 	const {
 		images,
 		uploadImages,
@@ -41,7 +45,7 @@ export const ReviewImageWidget = () => {
 		remainingSlots,
 		setMainImage,
 		mainImageId,
-	} = useReviewImageManager(1);
+	} = useReviewImageManager(restaurantId);
 	const {
 		buildInteractiveImages,
 		beginTooltipForImage,
@@ -83,12 +87,12 @@ export const ReviewImageWidget = () => {
 
 	const handleImageClick = (coord: { x: number; y: number }) => {
 		if (activeTooltipId) {
-			alert('먼저 현재 툴팁 작성을 완료해주세요.');
+			toast.error('먼저 현재 툴팁 작성을 완료해주세요.');
 			return;
 		}
 		if (!selectedImage) return;
 		if (selectedImage.tooltipIds.length >= MAX_TOOLTIP_COUNT) {
-			alert(
+			toast.error(
 				`툴팁은 이미지당 최대 ${MAX_TOOLTIP_COUNT}개까지 추가할 수 있습니다.`,
 			);
 			return;
@@ -103,7 +107,7 @@ export const ReviewImageWidget = () => {
 			setActiveTooltipId(result.tooltipId);
 			setIsSheetOpen(true);
 		} else if (result.reason === 'LIMIT_REACHED') {
-			alert('툴팁 개수 제한에 도달했습니다.');
+			toast.error('툴팁 개수 제한에 도달했습니다.');
 		}
 	};
 

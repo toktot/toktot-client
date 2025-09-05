@@ -1,20 +1,7 @@
-import { AppShell, Header } from '@/widgets/layout';
-import { SearchVisitedStoreWidget } from '@/widgets/search/ui/SearchVisitedStoreWidget';
+'use client';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { SelectStoreForReview } from '@/features/store-search/ui/SelectStoreForReview';
 
-export default async function RestaurantSearchPage() {
-	return (
-		<AppShell showBottomNav={false}>
-			<Header>
-				<Header.Left>
-					<BackButton />
-				</Header.Left>
-				<Header.Center>리뷰 쓰기</Header.Center>
-			</Header>
-			<div className="flex flex-col items-center p-4 gap-9">
-				<SearchVisitedStoreWidget />
-			</div>
-		</AppShell>
-	);
+export default function Page() {
+	return <SelectStoreForReview />;
 }

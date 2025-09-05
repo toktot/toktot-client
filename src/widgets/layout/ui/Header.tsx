@@ -10,9 +10,7 @@ const Left = ({ children }: HeaderPartProps) => (
 	<div className="flex-shrink-0">{children}</div>
 );
 const Center = ({ children }: HeaderPartProps) => (
-	<div className="absolute left-1/2 -translate-x-1/2 font-semibold">
-		{children}
-	</div>
+	<div className="flex-1 flex justify-center font-semibold">{children}</div>
 );
 const Right = ({ children }: HeaderPartProps) => (
 	<div className="flex-shrink-0">{children}</div>
@@ -27,7 +25,7 @@ export const Header = ({ children, className }: HeaderProps) => {
 	return (
 		<header
 			className={clsx(
-				'relative flex items-center justify-between h-12 px-4',
+				'sticky top-0 z-10 flex items-center justify-between h-12 px-4 flex-shrink-0',
 				className,
 			)}
 		>
