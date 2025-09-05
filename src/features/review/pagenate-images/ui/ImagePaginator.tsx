@@ -1,9 +1,13 @@
 'use client';
 
-import { Tooltip, TooltipMarker } from '@/entities/review';
+import { Tooltip, TooltipBox, TooltipMarker } from '@/entities/review';
 import Image from 'next/image';
 
+import { getTailDirection } from '@/shared/bubble/lib/getTailDirection';
+import { getBubbleTransformFromMarker } from '@/shared/bubble/model/direction';
+import { Bubble } from '@/shared/bubble/ui/Bubble';
 import { ReviewImageId, TooltipId } from '@/shared/model/types';
+import Icon from '@/shared/ui/Icon';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 
 import { useImagePagination } from '../lib/useImagePagination';
@@ -12,12 +16,16 @@ interface ImagePaginatorProps {
 	images: { id: ReviewImageId; url: string; tooltipIds: TooltipId[] }[];
 	tooltips: Record<TooltipId, Tooltip>;
 	onTooltipClick: (tooltip: Tooltip) => void;
+	selectTooltip: Tooltip | null;
+	onOpenSheet: () => void; // 시트를 여는 함수를 prop으로 받음
 }
 
 export const ImagePaginator = ({
 	images,
 	tooltips,
 	onTooltipClick,
+	selectTooltip,
+	onOpenSheet,
 }: ImagePaginatorProps) => {
 	const { currentIndex, goToNext, goToPrevious } = useImagePagination(
 		images.length,
@@ -33,10 +41,8 @@ export const ImagePaginator = ({
 		const { width } = currentTarget.getBoundingClientRect();
 
 		if (clientX < width / 2) {
-			console.log('go prev');
 			goToPrevious();
 		} else {
-			console.log('go next');
 			goToNext();
 		}
 	};
@@ -63,12 +69,35 @@ export const ImagePaginator = ({
 					const tooltip = tooltips[id];
 					if (!tooltip) return null;
 
+					const tooltipDirection = getTailDirection(tooltip.x, tooltip.y);
+
 					return (
-						<div key={id} className="tooltip-marker">
+						<div
+							key={tooltip.id}
+							className="absolute tooltip-marker"
+							style={{ left: `${tooltip.x}%`, top: `${tooltip.y}%` }}
+						>
 							<TooltipMarker
 								tip={tooltip}
 								onClick={() => onTooltipClick(tooltip)}
 							/>
+							{selectTooltip?.id === tooltip.id && (
+								<div
+									className="absolute z-10"
+									style={{
+										transform: getBubbleTransformFromMarker(tooltipDirection),
+									}}
+								>
+									<Bubble direction={tooltipDirection}>
+										<div className="flex items-center">
+											<TooltipBox tooltip={tooltip} />
+											<button onClick={onOpenSheet} className="p-1">
+												<Icon name={'ArrowRight'} size="xs" />
+											</button>
+										</div>
+									</Bubble>
+								</div>
+							)}
 						</div>
 					);
 				})}

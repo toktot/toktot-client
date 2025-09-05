@@ -45,8 +45,12 @@ export function ReviewStoryFeed() {
 
 	const [showGuide, setShowGuide] = useState(true);
 
+	const [selectedTooltip, setSelectedTooltip] = useState<Tooltip | null>(null);
+
+	const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+
 	const handleTooltipClick = (tooltip: Tooltip) => {
-		console.log('🚀 ~ handleTooltipClick ~ tooltip:', tooltip);
+		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : tooltip));
 	};
 
 	const currentPost = reviews[currentIndex];
@@ -98,6 +102,8 @@ export function ReviewStoryFeed() {
 								images={currentPost.images}
 								tooltips={currentPost.tooltips}
 								onTooltipClick={handleTooltipClick}
+								selectTooltip={selectedTooltip}
+								onOpenSheet={() => setIsSheetOpen(true)}
 							/>
 						</InteractiveReview>
 					</div>
@@ -112,6 +118,11 @@ export function ReviewStoryFeed() {
 							</div>
 							<div className="flex flex-1 w-full min-h-0 bg-grey-90 rounded-xl">
 								<ReviewStoreWithSheet review={currentPost} />
+								<ReviewStoreWithSheet
+									review={currentPost}
+									isSheetOpen={isSheetOpen}
+									onSheetOpenChange={setIsSheetOpen}
+								/>
 							</div>
 						</div>
 					</div>

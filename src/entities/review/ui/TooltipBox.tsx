@@ -6,7 +6,7 @@ import { RatingStarView } from './RatingStarView';
 
 interface TooltipBoxProps {
 	tooltip: Tooltip;
-	onDelete: (tooltipId: TooltipId) => void;
+	onDelete?: (tooltipId: TooltipId) => void;
 }
 
 export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
@@ -36,14 +36,17 @@ export const TooltipBox = ({ tooltip, onDelete }: TooltipBoxProps) => {
 					{tooltip.description || '상세 리뷰가 작성되지 않았어요.'}
 				</p>
 			</div>
-
-			<button
-				onClick={() => onDelete(tooltip.id)}
-				className="bg-sub-red-10 flex flex-col w-12 p-2 justify-center items-center rounded-xl"
-			>
-				<Icon name={'Trash'} className="text-sub-red-30" />
-				<span className="text-sub-red-30 text-[9px] font-medium">삭제하기</span>
-			</button>
+			{onDelete && (
+				<button
+					onClick={() => onDelete(tooltip.id)}
+					className="bg-sub-red-10 flex flex-col w-12 p-2 justify-center items-center rounded-xl"
+				>
+					<Icon name={'Trash'} className="text-sub-red-30" />
+					<span className="text-sub-red-30 text-[9px] font-medium">
+						삭제하기
+					</span>
+				</button>
+			)}
 		</div>
 	);
 };
