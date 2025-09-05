@@ -118,7 +118,7 @@ export const KEYWORD_ID_TO_ENUM_MAP: Record<KeywordId, string> = {
 	603: 'PUBLIC_TRANSPORT',
 
 	// MEALTIME_KEYWORDS
-	701: 'BREAKFASE',
+	701: 'BREAKFAST',
 	702: 'LUNCH',
 	703: 'DINNER',
 } as Record<KeywordId, string>;

@@ -68,13 +68,10 @@ export function ReviewStoryFeed() {
 					initial="enter"
 					animate="center"
 					exit="exit"
-					transition={{
-						y: { type: 'spring', stiffness: 300, damping: 30 },
-						opacity: { duration: 0.2 },
-					}}
+					transition={{ duration: 0.3, ease: 'easeOut' }}
 					drag="y"
 					dragConstraints={{ top: 0, bottom: 0 }}
-					dragElastic={1}
+					dragElastic={0.05}
 					onDragEnd={(e, { offset, velocity }) => {
 						const swipe = swipePower(offset.y, velocity.y);
 
