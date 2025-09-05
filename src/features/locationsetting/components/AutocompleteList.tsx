@@ -65,9 +65,10 @@ export default function AutocompleteList({
 		}
 
 		const fetchPlaces = async () => {
+			const searchQuery = `제주 ${query}`;
 			try {
 				const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
-					query,
+					searchQuery,
 				)}&size=10`;
 
 				const res = await fetch(url, {

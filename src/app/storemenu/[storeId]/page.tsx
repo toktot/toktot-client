@@ -58,7 +58,7 @@ export default function StoreDetailPage() {
 			try {
 				const res = await api.get(`/v1/restaurants/${storeId}`, {});
 
-				const json = await res.data();
+				const json = await res.data;
 				if (json.success && json.data) {
 					setStore(json.data);
 				} else {
@@ -91,8 +91,8 @@ export default function StoreDetailPage() {
 	}
 
 	return (
-		<div className="relative min-h-screen">
-			<div className="relative w-full h-[300px] bg-cover bg-center">
+		<div className="relative min-h-screen flex justify-center">
+			<div className="relative w-full h-[300px] max-w-[480px] bg-cover bg-center">
 				{store.image ? (
 					<Image
 						src={store.image}
@@ -154,7 +154,7 @@ export default function StoreDetailPage() {
 
 			<BottomSheet open>
 				<BottomSheetContent
-					className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl max-h-[65vh] overflow-hidden"
+					className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[480px] bg-white rounded-t-3xl max-h-[65vh] overflow-hidden"
 					style={{
 						marginTop: '-16px',
 						borderTopLeftRadius: '24px',

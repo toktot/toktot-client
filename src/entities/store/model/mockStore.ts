@@ -4,16 +4,16 @@ export interface Store {
 	storeName: string;
 	mainMenu?: string;
 	reviewCount?: number;
-	valueScore?: number;
-	topPercent?: string;
+	valueScore: number;
+	topPercent: string;
 	address: string;
 	storeImageUrl: string;
-	isKindStore: boolean;
-	isLocal: boolean;
-	distance: string;
+	isKindStore?: boolean;
+	isLocal?: boolean;
+	distance?: string;
 	rating: number;
-	mealTime: string;
-	moods: string[];
+	mealTime?: string;
+	moods?: string[];
 
 	menuPrices?: {
 		name: string;
@@ -36,7 +36,7 @@ export interface Store {
 	writer?: string;
 	time?: string;
 	parkplace?: string;
-	mainMenus?: string[];
+	mainMenus: string[];
 }
 export const mockStores = [
 	{

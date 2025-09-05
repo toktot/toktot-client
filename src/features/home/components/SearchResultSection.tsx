@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Store, mockStores } from '@/entities/store/model/mockStore';
+import { mealOptions } from '@/entities/home/model/mockMealOptions';
+import { Store } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
 import FilterBar from '@/features/home/components/FilterBar';
-import { mockHome } from '@/features/home/model/mockHome';
 import { Review } from '@/features/home/model/mockHome';
 import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 
@@ -24,21 +24,32 @@ import api from '../lib/api';
 import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
 
-interface Stores {
+interface BackendReview {
 	id: number;
-
-	name: string;
-	address: string;
-	distance: string;
-	main_menus: string[];
-	average_rating: number;
-	is_good_price_store: boolean;
-	is_local_store?: boolean;
-	image: string;
-	point: number;
-	percent: string;
-	reviewCount?: number;
+	author: {
+		id: number;
+		nickname: string;
+		profileImageUrl: string | null;
+		reviewCount: number;
+		averageRating: number;
+	};
+	isBookmarked: boolean;
+	isWriter: boolean;
+	overallRating: number;
+	createdAt: string;
+	keywords: string[];
+	images: {
+		id: string;
+		imageUrl: string;
+		thumbnailUrl: string;
+	}[];
+	restaurant: {
+		id: number;
+		name: string;
+		address: string;
+	};
 }
+
 interface BackendPlace {
 	id: number | null;
 
@@ -51,42 +62,143 @@ interface BackendPlace {
 	is_local_store?: boolean | null;
 	image?: string | null;
 	point?: number | null;
-	percent?: number | null;
+	percent?: string | null;
 	review_count?: number | null;
+}
+
+function toReview(api: BackendReview): Review {
+	return {
+		id: api.id,
+		imageUrl: api.images?.[0]?.thumbnailUrl ?? '',
+		placeName: api.restaurant?.name ?? 'Unknown Place',
+		distance: '234m',
+
+		location: api.restaurant?.address ?? '',
+		rating: api.overallRating ?? 0, // 별점 정보 없으므로 기본값
+		writer: api.author?.nickname ?? '익명',
+		userProfileImageUrl: api.author?.profileImageUrl ?? '',
+		time: api.createdAt ?? '',
+		keywords: api.keywords ?? [],
+		isBookmarked: api.isBookmarked ?? false,
+	};
+}
+function toStore(api: BackendPlace): Store {
+	let parsedMenus: string[] = [];
+
+	if (typeof api.main_menus === 'string') {
+		try {
+			const obj = JSON.parse(api.main_menus);
+			if (obj.firstMenu) {
+				parsedMenus = [obj.firstMenu.trim()]; // ✅ firstMenu만
+			}
+		} catch {
+			parsedMenus = [];
+		}
+	} else if (Array.isArray(api.main_menus)) {
+		parsedMenus = api.main_menus;
+	}
+
+	return {
+		id: api.id ?? 0,
+		storeName: api.name ?? 'Unknown Store',
+		address: api.address ?? '',
+		distance: api.distance ?? '0',
+		mainMenus: parsedMenus,
+		rating: api.average_rating ?? 0,
+		isKindStore: api.is_good_price_store ?? false,
+		storeImageUrl: api.image ?? '/images/foodImage1.png',
+		valueScore: api.point ?? 80,
+		topPercent: api.percent ?? '20',
+		reviewCount: api.review_count ?? 0,
+	};
+}
+
+interface ReviewSearchBody {
+	query: string;
+	page: number;
+
+	sort?: string;
+	location?: {
+		latitude: number;
+		longitude: number;
+		radius: number;
+	};
+	rating?: {
+		min: number;
+	};
+	mealTime?: string;
+	localFood?: {
+		type: string;
+		minPrice?: number;
+		maxPrice?: number;
+	};
+	keywords?: string[];
+}
+
+export interface LocationFilter {
+	latitude: number;
+	longitude: number;
+	radius: number;
+}
+export interface RatingFilter {
+	min: number;
+}
+export interface LocalFoodFilter {
+	type: string;
+	minPrice?: number;
+	maxPrice?: number;
+}
+export interface StoreSearchBody {
+	query?: string;
+	page: number;
+
+	sort?: string;
+	location?: LocationFilter;
+	rating?: RatingFilter;
+	mealTime?: string;
+	localFood?: LocalFoodFilter;
+	keywords?: string[];
 }
 
 export default function SearchResultSection() {
 	const searchParams = useSearchParams();
+	const router = useRouter();
 	const q = searchParams.get('q') ?? '';
-
+	const [sortOption, setSortOption] = useState<
+		'distance' | 'popularity' | 'RATING' | 'satisfaction'
+	>('distance');
+	const [inputValue, setInputValue] = useState(q);
 	const [query, setQuery] = useState(q);
-	const [tab, setTab] = useState<'review' | 'store'>('review');
+	const initialTab = searchParams.get('tab') as 'review' | 'store' | null;
+	const [tab, setTab] = useState<'review' | 'store'>(initialTab ?? 'review');
 	const [filter, setFilter] = useState<number | null>(null);
 	const [filterSummary, setFilterSummary] = useState('');
-	const [stores, setStores] = useState<Stores[]>([]);
+	const [stores, setStores] = useState<Store[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	console.log(filterSummary, loading, error);
 
-	const [page, setPage] = useState(1);
+	const pageRef = useRef(1);
+
+	const [reviews, setReviews] = useState<Review[]>([]);
+	const [reviewPage, setReviewPage] = useState(1);
+	const [hasMoreReviews, setHasMoreReviews] = useState(true);
+
+	const fetchReviewCalledRef = useRef(false);
+
+	console.log(filterSummary, loading, error);
 
 	const handleReset = () => {
 		setQuery('');
+		setInputValue('');
 	};
 	const [hasMore, setHasMore] = useState(true);
+	console.log(setError, hasMoreReviews, hasMore);
 	useEffect(() => {
 		const token = getDecryptedToken();
 		if (!token) {
 			router.replace('/login');
 		}
 	});
-	useEffect(() => {
-		setQuery(q);
-		setStores([]);
-		setPage(1);
-		setHasMore(true);
-		setError(null);
-	}, [q]);
 
 	// 가격 정보 가져오기
 	const priceSummary = useMemo(() => {
@@ -101,183 +213,184 @@ export default function SearchResultSection() {
 		setShowToast(false);
 	};
 	// 리뷰 필터링
-	const router = useRouter();
+	const distance = searchParams.get('distance');
 	const rating = Number(searchParams.get('rating') ?? 0);
 	const mealTime = searchParams.get('mealTime');
 	const menu = searchParams.get('menu');
-	const detailFilters = useMemo(() => {
-		const detailCategories = [
-			'price',
-			'food',
-			'service',
-			'clean',
-			'mood',
-			'parking',
-		] as const;
-		const filters: Record<string, number[]> = {};
 
-		detailCategories.forEach((cat) => {
-			const raw = searchParams.get(cat);
-			if (raw) {
-				filters[cat] = raw.split(',').map(Number);
-			} else {
-				filters[cat] = [];
+	const fetchReviews = useCallback(async () => {
+		if (!query || fetchReviewCalledRef.current) return;
+		fetchReviewCalledRef.current = true;
+		try {
+			const body: ReviewSearchBody = {
+				query,
+				page: reviewPage,
+			};
+			const lat = searchParams.get('lat');
+			const lng = searchParams.get('lng');
+			if (lat && lng) {
+				body.location = {
+					latitude: Number(lat),
+					longitude: Number(lng),
+					radius: Number(distance) || 1000,
+				};
 			}
-		});
-
-		return filters;
-	}, [searchParams]);
-
-	const distance = searchParams.get('distance');
-	const categoryKeyMap = useMemo(
-		() => ({
-			price: 'price',
-			food: 'foodO',
-			service: 'service',
-			cleanliness: 'clean',
-			mood: 'mood',
-			parking: 'parking',
-		}),
-		[],
-	);
-
-	function parseDistance(distanceStr: string): number {
-		if (!distanceStr) return 0;
-
-		const lower = distanceStr.toLowerCase();
-
-		// 숫자 부분만 추출 (정규식)
-		const numMatch = lower.match(/[\d\.]+/);
-		if (!numMatch) return 0;
-
-		const num = parseFloat(numMatch[0]);
-		if (lower.includes('km')) {
-			return num * 1000; // km → m 변환
-		}
-		// 기본 단위는 m
-		return num;
-	}
-
-	const filteredReviews = useMemo(() => {
-		return mockHome.filter((r) => {
-			if (distance && parseDistance(r.distance) > Number(distance))
-				return false;
-			if (rating && (r.rating ?? 0) < rating) return false;
-			if (mealTime && r.mealTime !== mealTime) return false;
-			if (menu && r.mainMenu !== menu) return false;
-			for (const [category, selectedOptions] of Object.entries(detailFilters)) {
-				if (selectedOptions.length === 0) continue;
-				const key = categoryKeyMap[category as keyof typeof categoryKeyMap];
-				const reviewOptions = r[key as keyof Review] as number[] | undefined; // 예: r.price, r.food 등, 데이터 구조에 따라 조정 필요
-				console.log(reviewOptions);
-				if (!reviewOptions) return false;
-				if (!selectedOptions.every((opt) => reviewOptions.includes(opt)))
-					return false;
+			if (rating) {
+				body.rating = { min: rating };
 			}
-			return r.placeName.includes(query);
-		});
-	}, [query, rating, mealTime, distance, menu, detailFilters, categoryKeyMap]);
+			if (mealTime) {
+				body.mealTime = mealTime;
+			}
 
-	useEffect(() => {
-		if (!q || !hasMore) return;
-		const fetchStores = async () => {
+			if (menu) {
+				body.localFood = {
+					type: menu,
+					...(searchParams.get('minPrice')
+						? { minPrice: Number(searchParams.get('minPrice')) }
+						: {}),
+					...(searchParams.get('maxPrice')
+						? { maxPrice: Number(searchParams.get('maxPrice')) }
+						: {}),
+				};
+			}
+			const keywords = searchParams.getAll('keywords');
+			if (keywords.length > 0) {
+				body.keywords = keywords;
+			}
+
 			setLoading(true);
 
-			try {
-				const res = await api.post('/v1/restaurants/search', {
-					query: q,
-					page,
-				});
+			console.log('요청 body', body);
+			const res = await api.post('/v1/reviews/search', body);
+			console.log('응답 데이터 :', res.data);
+			console.log('fetchReviews', res);
 
-				const json = res.data;
-				console.log('json', json);
-				if (!json.success || !json.data) {
-					console.error('API Error Response', json);
-					throw new Error(
-						json.message || 'Failed to fetch data from the server.',
+			if (!res.data.data) return;
+			const { content, totalElements } = res.data.data;
+			const mappedReviews: Review[] = content.map(toReview);
+
+			console.log('content', content);
+
+			if (content) {
+				setReviews((prev) => {
+					const newReviews = mappedReviews.filter(
+						(review) => !prev.find((r) => r.id === review.id),
 					);
-				}
-				const { places, is_end, current_page } = json.data;
-				if (!places || places.length == 0) {
-					setHasMore(false);
-					return;
-				}
-
-				const newStores: Stores[] = places.map((place: BackendPlace) => {
-					let parsedMenus: string[] = [];
-					if (typeof place.main_menus === 'string') {
-						try {
-							const obj = JSON.parse(place.main_menus);
-							if (obj.firstMenu) {
-								parsedMenus = [obj.firstMenu];
-							}
-						} catch (e) {
-							console.error(e);
-							parsedMenus = [];
-						}
-					} else if (Array.isArray(place.main_menus)) {
-						parsedMenus = place.main_menus;
-					}
-
-					return {
-						id: place.id,
-
-						name: place.name ?? 'Unknown Store',
-						address: place.address ?? '',
-						distance: place.distance ?? '0',
-						main_menus: parsedMenus,
-						average_rating: place.average_rating ?? 0,
-						is_good_price_store: place.is_good_price_store ?? false,
-						image: place.image ?? '/images/foodImage1.png',
-						point: place.point ?? 0,
-						percent: place.percent ?? 0,
-						reviewCount: place.review_count ?? 0,
-					};
+					return [...prev, ...newReviews];
 				});
+				setHasMoreReviews(
+					reviews.length + mappedReviews.length < totalElements,
+				);
+			}
+		} finally {
+			setLoading(false);
+			fetchReviewCalledRef.current = false;
+		}
+	}, [
+		query,
+		reviewPage,
+		distance,
+		mealTime,
+		rating,
+		menu,
+		reviews.length,
+		searchParams,
+	]);
 
+	const fetchStores = useCallback(async () => {
+		if (!query) return;
+
+		setLoading(true);
+
+		try {
+			const body: StoreSearchBody = {
+				query,
+				page: pageRef.current,
+				sort: sortOption,
+			};
+			const lat = searchParams.get('lat');
+			const lng = searchParams.get('lng');
+			if (lat && lng) {
+				body.location = {
+					latitude: Number(lat),
+					longitude: Number(lng),
+					radius: Number(distance) || 1000,
+				};
+			}
+			if (rating) {
+				body.rating = { min: rating };
+			}
+			if (mealTime) {
+				body.mealTime = mealTime;
+			}
+			if (menu) {
+				body.localFood = {
+					type: menu,
+					...(searchParams.get('minPrice')
+						? { minPrice: Number(searchParams.get('minPrice')) }
+						: {}),
+					...(searchParams.get('maxPrice')
+						? { maxPrice: Number(searchParams.get('maxPrice')) }
+						: {}),
+				};
+			}
+
+			const keywords = searchParams.getAll('keywords');
+			if (keywords.length > 0) {
+				body.keywords = keywords;
+			}
+			const hasFilter = rating || menu || keywords.length > 0;
+			console.log('요청 body:', body);
+			const endpoint = hasFilter
+				? '/v1/restaurants/search/filter'
+				: '/v1/restaurants/search';
+
+			const res = await api.post(endpoint, body);
+
+			const { places, current_page, is_end } = res.data.data;
+			console.log('places', res.data.data.places);
+			console.log('res', places);
+			if (!places || places.length == 0) {
+				setHasMore(false);
+				return;
+			} else if (places) {
 				setStores((prev) => {
+					const newStores = places.map(toStore);
 					const merged = [...prev, ...newStores];
 					return merged.filter(
-						(store, idx, self) =>
-							idx === self.findIndex((s) => s.id === store.id),
+						(store, index, arr) =>
+							arr.findIndex((s) => s.id === store.id) === index,
 					);
 				});
-				if (is_end) {
-					setHasMore(false);
-				} else {
-					setPage(current_page + 1);
-				}
-				// ✅ 무한스크롤 대비: 다음 요청용 page 업데이트
-			} catch (err) {
-				console.error(err);
-				setHasMore(false);
-			} finally {
-				setLoading(false);
+
+				pageRef.current = current_page + 1;
+				if (is_end) setHasMore(false);
 			}
-		};
+		} finally {
+			setLoading(false);
+		}
+	}, [query, searchParams, distance, rating, menu, mealTime, sortOption]);
+
+	useEffect(() => {
+		pageRef.current = 1;
+		setStores([]);
+
+		setReviews([]);
 
 		fetchStores();
-	}, [q, page, hasMore]); // fetchStores 제거
+		fetchReviews();
+	}, [fetchStores, fetchReviews]);
 
-	const filteredStores = useMemo(() => {
-		return mockStores.filter((s) => {
-			if (distance && Number(s.distance) > Number(distance)) return false;
-			if (rating && s.rating < rating) return false;
-			if (mealTime && s.mealTime !== mealTime) return false;
-			if (menu && s.mainMenu !== menu) return false;
-			for (const [category, selectedOptions] of Object.entries(detailFilters)) {
-				if (selectedOptions.length === 0) continue;
-				const key = categoryKeyMap[category as keyof typeof categoryKeyMap];
-				const reviewOptions = s[key as keyof Store] as number[] | undefined; // 예: r.price, r.food 등, 데이터 구조에 따라 조정 필요
-				console.log(reviewOptions);
-				if (!reviewOptions) return false;
-				if (!selectedOptions.every((opt) => reviewOptions.includes(opt)))
-					return false;
-			}
+	useEffect(() => {
+		if (tab === 'review') {
+			fetchReviewCalledRef.current = false;
+			fetchReviews();
+		} else if (tab === 'store') {
+			pageRef.current = 1;
 
-			return s.storeName.toLowerCase().includes(query.toLowerCase());
-		});
-	}, [query, rating, mealTime, distance, menu, categoryKeyMap, detailFilters]);
+			fetchStores();
+		}
+	}, [tab, fetchReviews, fetchStores]);
 
 	const handleFilterChange = (newFilter: number | null) => {
 		setFilter(newFilter);
@@ -287,7 +400,17 @@ export default function SearchResultSection() {
 		} else {
 			params.delete('filter');
 		}
-		router.push(`/search?q=${query}&${params.toString()}`);
+
+		router.push(`/search?${params.toString()}`);
+		pageRef.current = 1;
+		setStores([]);
+		setReviews([]);
+		setReviewPage(1);
+		setHasMore(true);
+		setHasMoreReviews(true);
+
+		fetchStores();
+		fetchReviews();
 	};
 	useEffect(() => {
 		const summaryParts: string[] = [];
@@ -300,6 +423,13 @@ export default function SearchResultSection() {
 			summaryParts.push(
 				`${searchParams.get('minPrice')} ~ ${searchParams.get('maxPrice')}만원`,
 			);
+		}
+		const mealTimeValue = searchParams.get('meal');
+		if (mealTimeValue) {
+			const selectedOption = mealOptions.find(
+				(opt) => opt.value === Number(mealTimeValue),
+			);
+			if (selectedOption) summaryParts.push(selectedOption.label);
 		}
 
 		setFilterSummary(summaryParts.join(' '));
@@ -320,12 +450,25 @@ export default function SearchResultSection() {
 							{/* 검색창 */}
 							<div className="min-w-[315px] max-w-[400px] w-full">
 								<SearchBox
-									query={query}
-									onChange={setQuery}
+									query={inputValue}
+									onChange={setInputValue}
 									onSearchClick={() => {
-										const params = new URLSearchParams();
-										params.set('q', query);
+										const params = new URLSearchParams(searchParams.toString());
+										params.set('q', inputValue);
+										params.delete('filter');
 										router.push(`/search?${params.toString()}`);
+										setQuery(inputValue);
+										setFilter(null);
+
+										pageRef.current = 1;
+										setStores([]);
+										setReviews([]);
+										setReviewPage(1);
+										setHasMore(true);
+										setHasMoreReviews(true);
+
+										fetchStores();
+										fetchReviews();
 									}}
 									leftIcon={
 										<Icon name="Search" size="s" className="text-grey-50" />
@@ -372,7 +515,12 @@ export default function SearchResultSection() {
 									value={filter}
 									onChange={handleFilterChange}
 									onSummaryChange={setFilterSummary}
-									onClick={() => router.push('/searchDetection?from=search')}
+									onClick={() =>
+										router.push(
+											`/searchDetection?from=search&q=${encodeURIComponent(query)}`,
+										)
+									}
+									onSortChange={(newSort) => setSortOption(newSort)}
 								/>
 							</div>
 
@@ -384,7 +532,7 @@ export default function SearchResultSection() {
 									</div>
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between mt-4">
-										{filteredReviews.map((review) => (
+										{reviews.map((review) => (
 											<ReviewStoreCard key={review.id} review={review} />
 										))}
 									</div>
@@ -394,7 +542,7 @@ export default function SearchResultSection() {
 								<div className="bg-white mt-4 w-full pt-0 pb-6">
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between">
-										{filteredReviews.map((review) => (
+										{reviews.map((review) => (
 											<ReviewStoreCard key={review.id} review={review} />
 										))}
 									</div>
@@ -411,36 +559,39 @@ export default function SearchResultSection() {
 									value={filter}
 									onChange={handleFilterChange}
 									onSummaryChange={setFilterSummary}
-									onClick={() => router.push('/searchDetection?from=search')}
+									onClick={() =>
+										router.push(
+											`/searchDetection?from=search&q=${encodeURIComponent(query)}`,
+										)
+									}
+									onSortChange={(newSort) => setSortOption(newSort)}
 								/>
 							</div>
 							<div className="mt-4 w-full flex flex-col">
-								{stores.map((store, index) => (
-									<div
-										key={store.id}
-										className={`w-full ${
-											index < filteredStores.length - 1
-												? 'border-b border-grey-10' // 얇은 회색 선
-												: ''
-										}`}
-									>
-										<StoreInfoCard
-											review={{
-												id: store.id,
-												storeImageUrl: store.image ?? '/default.png',
-												storeName: store.name,
-												isKindStore: store.is_good_price_store ?? false,
-												mainMenus: store.main_menus?.slice(0, 2) ?? [],
-												reviewCount: store.reviewCount ?? 0,
-												valueScore: store.point ?? 0,
-												topPercent: store.percent ?? '',
-												address: store.address,
-												rating: Number(store.average_rating ?? 0),
-												distance: store.distance,
-											}}
-										/>
-									</div>
-								))}
+								{stores
+									.filter((store) => {
+										const queryLower = query.toLowerCase();
+										const nameMatch = store.storeName
+											.toLowerCase()
+											.includes(queryLower);
+										const menuMatch = store.mainMenus.some((menu) =>
+											menu.toLowerCase().includes(queryLower),
+										);
+										return nameMatch || menuMatch;
+									})
+
+									.map((store, index) => (
+										<div
+											key={store.id}
+											className={`w-full ${
+												index < stores.length - 1
+													? 'border-b border-grey-10' // 얇은 회색 선
+													: ''
+											}`}
+										>
+											<StoreInfoCard review={store} />
+										</div>
+									))}
 							</div>
 							{showToast && (
 								<Toast

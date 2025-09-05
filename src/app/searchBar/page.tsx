@@ -36,10 +36,10 @@ export default function Search() {
 	};
 	return (
 		<HomeAppShell showBottomNav={true}>
-			<HeaderBox onLocationSaved={handleLocationSaved} />
-			<main className="min-h-screen p-6 bg-white">
+			<main className="min-h-screen bg-white p-4">
+				<HeaderBox onLocationSaved={handleLocationSaved} />
 				<Suspense fallback={<div>로딩 중...</div>}>
-					<div className="flex justify-center items-center gap-1.5 relative -mt-3">
+					<div className="flex justify-center items-center gap-1.5 relative p-3 -mt-3 overflow-y-auto">
 						<button onClick={() => router.back()}>
 							<Icon name="ArrowLeft" className="text-grey-70 -ml-3" />
 						</button>
@@ -49,7 +49,7 @@ export default function Search() {
 								onChange={(val) => {
 									setText(val);
 								}}
-								onSearchClick={() => handleSelect}
+								onSearchClick={() => handleSelect(text)}
 								leftIcon={
 									<Icon name="Search" size="s" className="text-grey-50" />
 								}
@@ -62,7 +62,7 @@ export default function Search() {
 						</div>
 					</div>
 
-					<div className="mt-5">
+					<div className="mt-1 ml-2">
 						<FilterBar
 							value={filter}
 							onChange={setFilter}

@@ -28,6 +28,7 @@ export interface StoreInfoCardProps {
 
 export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 	const router = useRouter();
+	console.log(review.id);
 	return (
 		<div
 			className="flex gap-3 p-3 b-border-1 bg-white  w-full"
@@ -58,9 +59,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 					<span className="mr-1">{review.rating.toFixed(1)}</span>
 					<span className="text-grey-90 mr-2">({review.reviewCount})</span>
 
-					<span className="truncate">
-						{review.mainMenus.slice(0, 2).join(',')}
-					</span>
+					<span className="truncate">{review.mainMenus}</span>
 				</div>
 				<div className="flex items-center gap-1 text-xs mt-1">
 					<TopPercentTag value={review.topPercent} />

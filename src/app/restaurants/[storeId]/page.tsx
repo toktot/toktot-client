@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 import { mockReviews } from '@/entities/store/model/mockReview';
 import { useParams } from 'next/navigation';
 
+import ReviewCard, {
+	ReviewCardProps,
+} from '@/features/StoreDetail/components/ReviewCard';
 import api from '@/features/home/lib/api';
-import { mockHome } from '@/features/home/model/mockHome';
 
 import Icon from '@/shared/ui/Icon';
-
-import ReviewCard, { ReviewCardProps } from '../ReviewCard';
 
 interface ReviewResponse {
 	id: number;
@@ -42,6 +42,21 @@ interface ReviewResponse {
 	keywords: string[];
 	isBookmarked: boolean;
 	isWriter: boolean;
+}
+
+interface ReviewStatistics {
+	totalReviewCount: number;
+	overallRating: number;
+	tooltipRatings: {
+		foodRating: number;
+		cleanRating: number;
+		serviceRating: number;
+	};
+	satisfactionDistribution: {
+		highRange: number;
+		midRange: number;
+		lowRange: number;
+	};
 }
 
 function mapReviewResponseToCard(review: ReviewResponse) {
@@ -77,7 +92,7 @@ function mapReviewResponseToCard(review: ReviewResponse) {
 		date: review.createdAt,
 		gasimbi: review.satisfactionScore,
 		text,
-		type: '음식',
+		type: '음식 23',
 		categories: {},
 	};
 }
@@ -93,50 +108,69 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 
 	const [reviews, setReviews] = useState<ReviewCardProps['review'][]>([]);
 	const [loading, setLoading] = useState(false);
+	console.log(loading);
+	const [stats, setStats] = useState<ReviewStatistics>({
+		totalReviewCount: 0,
+		overallRating: 0,
+		tooltipRatings: { foodRating: 0, cleanRating: 0, serviceRating: 0 },
+		satisfactionDistribution: { highRange: 0, midRange: 0, lowRange: 0 },
+	});
 
 	useEffect(() => {
-		async function fetchReviews() {
+		async function fetchReviewsAndStats() {
 			setLoading(true);
 			try {
-				const res = await api.get(`/restaurants/${storeId}/reviews`, {
-					params: {
-						sort: 'RATING', // query param
-					},
+				const resReviews = await api.get(`/v1/restaurants/${storeId}/reviews`, {
+					params: { sort: 'RATING' },
 				});
-
-				if (res.data?.data?.content) {
-					const mapped = res.data.data.content.map(mapReviewResponseToCard);
+				if (resReviews?.data?.data?.content) {
+					const mapped = resReviews.data.data.content.map(
+						mapReviewResponseToCard,
+					);
 					setReviews(mapped);
 				} else {
 					setReviews([]);
 				}
+				const resStats = await api.get(
+					`/v1/restaurants/${storeId}/review-statistics`,
+				);
+				console.log('resStats.data', resStats.data); // 서버가 실제 보내는 데이터 확인
+				console.log('resStats.data.data', resStats.data.data); // 우리가 사용할 데이터
+				if (resStats?.data?.success) {
+					setStats(resStats.data.data);
+				}
 			} catch (err) {
 				console.error(err);
 				setReviews([]);
+				setStats({
+					totalReviewCount: 0,
+					overallRating: 0,
+					tooltipRatings: { foodRating: 0, cleanRating: 0, serviceRating: 0 },
+					satisfactionDistribution: { highRange: 0, midRange: 0, lowRange: 0 },
+				});
 			} finally {
 				setLoading(false);
 			}
 		}
-		fetchReviews();
+		fetchReviewsAndStats();
 	}, [storeId]);
-	const store = mockHome.find((s) => s.id === storeId);
 
 	const TABS = [
-		`전체 ${store?.totalNumber}`,
-		`음식 ${store?.foodNumber}`,
-		`서비스 ${store?.serviceNumber}`,
-		`청결 ${store?.cleanNumber}`,
+		`전체 ${stats.totalReviewCount}`,
+		`음식 ${stats.tooltipRatings.foodRating}`,
+		`서비스 ${stats.tooltipRatings.serviceRating}`,
+		`청결 ${stats.tooltipRatings.cleanRating}`,
 	] as const;
 	// 탭 상태
 
 	const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]>(
-		`전체 ${store?.totalNumber}`,
+		TABS[0],
 	);
 
 	// 탭에 맞게 리뷰 필터
 
 	const [currentReviewId, setCurrentReviewId] = useState<number | null>(null);
-	console.log(currentReviewId, loading);
+	console.log(currentReviewId);
 	const reviewRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
 	useEffect(() => {
@@ -156,23 +190,21 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 		return () => observer.disconnect();
 	}, [reviews]);
 	const avgGasimbi = mockReviews[0]?.averagegasimbi ?? 0;
-	const satisfaction = mockReviews[0]?.satisfaction ?? 0;
-	const normal = mockReviews[0]?.normal ?? 0;
-	const bad = mockReviews[0]?.bad ?? 0;
+
 	return (
 		<div className="bg-grey-10">
-			<div className="min-w-[375px] max-w-[480px] overflow-y-auto flex flex-col items-center rounded-md bg-white">
+			<div className="w-[375px] sm:w-[480px] max-w-full overflow-y-auto flex flex-col items-center rounded-md bg-white">
 				{/* 상단: 리뷰 요약 */}
 				<div className="flex justify-center w-full px-11 py-4 items-center ">
-					<div className="flex flex-col items-start max-w-[480px]">
+					<div className="flex flex-col items-start">
 						<div className="flex items-center mb-1 ml-2">
 							<span className="text-grey-80 text-sm">
-								{store?.ratingNumber}
+								{stats.totalReviewCount}
 							</span>
 							<span className="text-grey-70 text-[12px]">개 리뷰 평점</span>
 						</div>
-						<div className="flex items-center gap-4 sm:gap-10 w-full">
-							<div className="flex items-center gap-5 mr-2">
+						<div className="flex items-center gap-6">
+							<div className="flex items-center gap-2 mr-2">
 								<Icon
 									name={'Star'}
 									fill={fillColor}
@@ -181,7 +213,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 									size="xxl"
 								/>
 								<span className="text-3xl text-primary font-bold">
-									{store?.rating?.toFixed(1)}
+									{stats.overallRating.toFixed(1)}
 								</span>
 							</div>
 
@@ -189,17 +221,17 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 								{[
 									{
 										label: '청결',
-										value: store?.cleanrating ?? 0,
+										value: stats.tooltipRatings.cleanRating ?? 0,
 										color: 'bg-green-400',
 									},
 									{
 										label: '음식',
-										value: store?.foodrating ?? 0,
+										value: stats.tooltipRatings.foodRating ?? 0,
 										color: 'bg-blue-400',
 									},
 									{
 										label: '서비스',
-										value: store?.servicerating ?? 0,
+										value: stats.tooltipRatings.serviceRating ?? 0,
 										color: 'bg-orange-400',
 									},
 								].map(({ label, value, color }) => (
@@ -217,13 +249,13 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 					</div>
 				</div>
 				<div className="h-[8px] bg-grey-10 w-full mb-5" />
-				<div className="w-full px-10">
+				<div className="w-full px-4">
 					<span className="text-base font-semibold block text-left mb-3">
 						가격에 비해 만족스럽나요?
 					</span>
 				</div>
 
-				<div className="flex justify-between items-center mb-6 gap-3 sm:gap-10">
+				<div className="flex justify-between items-center mb-6">
 					<div className="flex flex-col items-center justify-center w-20 h-20 rounded-xl bg-gray-100">
 						<span className="text-xs text-gray-500">평균 가심비</span>
 						<span className="text-2xl font-bold text-primary">
@@ -232,9 +264,21 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 					</div>
 					<div className="flex flex-col text-xs text-grey-85 gap-2 flex-1 ml-4">
 						{[
-							{ label: '만족해요', value: satisfaction, range: '100~70' },
-							{ label: '보통이에요', value: normal, range: '69~40' },
-							{ label: '아쉬워요', value: bad, range: '39~0' },
+							{
+								label: '만족해요',
+								value: stats.satisfactionDistribution.highRange,
+								range: '100~70',
+							},
+							{
+								label: '보통이에요',
+								value: stats.satisfactionDistribution.midRange,
+								range: '69~40',
+							},
+							{
+								label: '아쉬워요',
+								value: stats.satisfactionDistribution.lowRange,
+								range: '39~0',
+							},
 						]
 							.sort((a, b) => b.value - a.value)
 							.map(({ label, value, range }, _, arr) => {
@@ -249,7 +293,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 											{range}
 										</span>
 
-										<div className="relative sm:w-[100px] w-[70px] h-[6px] bg-gray-200 rounded-full overflow-hidden ml-2">
+										<div className="relative w-[70px] h-[6px] bg-gray-200 rounded-full overflow-hidden ml-2">
 											<div
 												className={`absolute h-[6px] rounded-full ${
 													isMax ? 'bg-grey-90' : 'bg-grey-50'
@@ -316,7 +360,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
  */
 function Bar({ value, color }: { value: number; color: string }) {
 	return (
-		<div className="relative w-[80px] sm:w-[120px] h-2 bg-gray-200 rounded-full overflow-hidden">
+		<div className="relative w-[80px] h-2 bg-gray-200 rounded-full overflow-hidden">
 			<div
 				className={`absolute h-2 rounded-full ${color}`}
 				style={{ width: `${Math.min((value / 5) * 100, 100)}%` }}

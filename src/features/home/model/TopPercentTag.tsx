@@ -1,26 +1,9 @@
-// TopPercentTag.tsx
 'use client';
 
 import clsx from 'clsx';
 
 import { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
-
-// TopPercentTag.tsx
 
 interface TopPercentTagProps {
 	value: string | number; // "상위 20%" 같은 string

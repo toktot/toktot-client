@@ -10,6 +10,11 @@ import Icon from '@/shared/ui/Icon';
 import { CategoryItem } from './FoodIcon';
 import StoreCardNew from './StoreCardNew';
 
+interface PriceTabsProps {
+	initialPrice?: string;
+	initialFood?: string;
+	onSelect?: (price: string, food: string) => void;
+}
 const priceRanges = [
 	{ label: '1만원대', min: 10000, max: 19999 },
 	{ label: '2~3만원대', min: 20000, max: 39999 },
@@ -18,11 +23,25 @@ const priceRanges = [
 	{ label: '7만원대 이상', min: 70000, max: 1000000 },
 ];
 
-export default function PriceTabs() {
+export default function PriceTabs({
+	initialFood = '',
+	onSelect,
+}: PriceTabsProps) {
 	const { categories } = useCategories();
 
-	const [selectedFood, setSelectedFood] = useState<CategoryItem | null>(null);
+	const [selectedFood, setSelectedFood] = useState<CategoryItem | null>(
+		categories?.find((cat) => cat.name === initialFood) || null,
+	);
 	const [activeTab, setActiveTab] = useState(priceRanges[0]);
+
+	const handleSelect = (
+		food: CategoryItem | null,
+		price: (typeof priceRanges)[0],
+	) => {
+		setSelectedFood(food);
+		setActiveTab(price);
+		if (onSelect) onSelect(price.label, food?.name || '');
+	};
 
 	const filteredStores: Store[] = useMemo(() => {
 		return mockStores.filter((store) => {
@@ -54,7 +73,7 @@ export default function PriceTabs() {
 								className={`flex-shrink-0 relative px-4 py-2 text-sm font-medium
 						${isActive ? 'text-grey-90' : 'text-grey-40'}
 					`}
-								onClick={() => setActiveTab(range)}
+								onClick={() => handleSelect(selectedFood, range)}
 							>
 								{range.label}
 

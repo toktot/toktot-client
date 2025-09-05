@@ -5,7 +5,7 @@ import { DEFAULT_ICON_SIZE, SIZE } from '@/shared/icons/constants';
 import { ICON_MAP, IconName } from '@/shared/icons/iconMap';
 import { TSizeName } from '@/shared/icons/types';
 
-interface IconProps extends SVGProps<SVGSVGElement> {
+export interface IconProps extends SVGProps<SVGSVGElement> {
 	name: IconName;
 	size?: TSizeName;
 }
