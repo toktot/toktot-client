@@ -26,18 +26,16 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 	};
 
 	return (
-		<div className="flex h-full flex-col">
-			{/* TODO: 카테고리 별 리뷰 개수 표시 */}
-			<>
-				<ReviewCategorySelector
-					selectedCategory={selectedCategory}
-					onCategoryChange={handleCategoryChange}
-					className="my-3 px-4"
-				/>
-				<hr className="border-grey-20" />
-			</>
+		<div className="flex h-full flex-col -mx-2">
+			<hr className="border-grey-20" />
+			<ReviewCategorySelector
+				selectedCategory={selectedCategory}
+				onCategoryChange={handleCategoryChange}
+				className="my-3 px-4"
+			/>
+			<hr className="border-grey-20" />
 			{/* 리뷰 리스트 */}
-			<div className="px-4 bg-slate-50 max-h-[30vh] overflow-y-auto [&::-webkit-scrollbar]:hidden -mx-2">
+			<div className="px-4 bg-[#F2FAFE] max-h-[40vh] overflow-y-auto [&::-webkit-scrollbar]:hidden">
 				<hr className="border-grey-20 -mx-4" />
 				{isLoading && <div className="p-4 text-center">로딩 중...</div>}
 				{!isLoading &&
