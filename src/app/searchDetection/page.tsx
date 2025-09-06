@@ -256,6 +256,7 @@ function LocationSearchContent({
 	const handleConfirm = () => {
 		const params = new URLSearchParams();
 		const from = searchParams.get('from');
+		if (query) params.set('q', query);
 
 		console.log('from', from);
 		if (rating) params.set('rating', rating.toString());
@@ -279,9 +280,7 @@ function LocationSearchContent({
 		});
 
 		if (from === 'home') {
-			router.push(`/home?q={query}${params.toString()}`);
-		} else if (from === 'searchBar') {
-			router.push(`/search?q=${query}${params.toString()}`);
+			router.push(`/home?${params.toString()}`);
 		} else {
 			router.push(`/search?${params.toString()}`);
 		}

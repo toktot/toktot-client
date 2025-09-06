@@ -1,15 +1,86 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { mockReviews } from '@/entities/store/model/mockReview';
 import { useParams } from 'next/navigation';
 
+import api from '@/features/home/lib/api';
 import { mockHome } from '@/features/home/model/mockHome';
 
 import Icon from '@/shared/ui/Icon';
 
-import ReviewCard from '../ReviewCard';
+import ReviewCard, { ReviewCardProps } from '../ReviewCard';
+
+interface ReviewResponse {
+	id: number;
+	user: {
+		id: number;
+		nickname: string;
+		profileImageUrl?: string | null;
+		reviewCount: number;
+		averageRating: number;
+	};
+	images: {
+		imageId: string;
+		imageUrl: string;
+		imageOrder: number;
+		isMain: boolean;
+		tooltips: {
+			id: number;
+			type: 'FOOD' | 'SERVICE' | 'CLEAN';
+			rating: number;
+			menuName?: string | null;
+			totalPrice?: number | null;
+			servingSize?: number | null;
+			detailedReview: string;
+		}[];
+	}[];
+	mealTime: string;
+	createdAt: string;
+	satisfactionScore: number;
+	keywords: string[];
+	isBookmarked: boolean;
+	isWriter: boolean;
+}
+
+function mapReviewResponseToCard(review: ReviewResponse) {
+	const text: ReviewCardProps['review']['text'] = {};
+	review.images.forEach((img) => {
+		img.tooltips.forEach((tt) => {
+			const key = tt.type.toLowerCase() as 'food' | 'service' | 'clean';
+			text[key] = [tt.id, tt.rating, tt.detailedReview];
+		});
+	});
+
+	return {
+		id: review.id,
+		auth: {
+			id: review.user.id,
+			nickname: review.user.nickname,
+			profileImageUrl: review.user.profileImageUrl ?? undefined,
+			reviewCount: review.user.reviewCount,
+			averageRating: review.user.averageRating,
+		},
+		rating: review.images[0]?.tooltips[0]?.rating ?? 0,
+		images: review.images.map((img) => ({
+			id: parseInt(img.imageId.slice(0, 8), 16), // 이미지 ID 숫자화
+			imageUrl: img.imageUrl,
+			menus: img.tooltips
+				.filter((tt) => tt.type === 'FOOD')
+				.map((tt) => ({
+					menuName: tt.menuName ?? '',
+					totalPrice: tt.totalPrice ?? 0,
+				})),
+		})),
+		mealTime: review.mealTime,
+		date: review.createdAt,
+		gasimbi: review.satisfactionScore,
+		text,
+		type: '음식',
+		categories: {},
+	};
+}
 
 interface Star {
 	fillColor?: string;
@@ -20,36 +91,88 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 	const params = useParams();
 	const storeId = Number(params.storeId);
 
+	const [reviews, setReviews] = useState<ReviewCardProps['review'][]>([]);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		async function fetchReviews() {
+			setLoading(true);
+			try {
+				const res = await api.get(`/restaurants/${storeId}/reviews`, {
+					params: {
+						sort: 'RATING', // query param
+					},
+				});
+
+				if (res.data?.data?.content) {
+					const mapped = res.data.data.content.map(mapReviewResponseToCard);
+					setReviews(mapped);
+				} else {
+					setReviews([]);
+				}
+			} catch (err) {
+				console.error(err);
+				setReviews([]);
+			} finally {
+				setLoading(false);
+			}
+		}
+		fetchReviews();
+	}, [storeId]);
 	const store = mockHome.find((s) => s.id === storeId);
+
 	const TABS = [
+		`전체 ${store?.totalNumber}`,
 		`음식 ${store?.foodNumber}`,
 		`서비스 ${store?.serviceNumber}`,
 		`청결 ${store?.cleanNumber}`,
 	] as const;
 	// 탭 상태
+
 	const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]>(
-		`음식 ${store?.foodNumber}`,
+		`전체 ${store?.totalNumber}`,
 	);
-	const [st] = selectedTab.split(' ');
 
 	// 탭에 맞게 리뷰 필터
 
-	const filteredReviews = mockReviews.filter((review) => review.type === st);
+	const [currentReviewId, setCurrentReviewId] = useState<number | null>(null);
+	console.log(currentReviewId, loading);
+	const reviewRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries.find((entry) => entry.isIntersecting);
+				if (visible?.target) {
+					const id = Number(visible.target.getAttribute('data-id'));
+					setCurrentReviewId(id);
+				}
+			},
+			{ threshold: 0.6 },
+		);
+		Object.values(reviewRefs.current).forEach((el) => {
+			if (el) observer.observe(el);
+		});
+		return () => observer.disconnect();
+	}, [reviews]);
+	const avgGasimbi = mockReviews[0]?.averagegasimbi ?? 0;
+	const satisfaction = mockReviews[0]?.satisfaction ?? 0;
+	const normal = mockReviews[0]?.normal ?? 0;
+	const bad = mockReviews[0]?.bad ?? 0;
 	return (
 		<div className="bg-grey-10">
-			<div className="max-w-[375px] w-full overflow-y-auto flex flex-col items-center rounded-md bg-white">
+			<div className="min-w-[375px] max-w-[480px] overflow-y-auto flex flex-col items-center rounded-md bg-white">
 				{/* 상단: 리뷰 요약 */}
-				<div className="flex w-full px-11 py-4 items-center justify-between">
-					<div className="flex flex-col items-start">
+				<div className="flex justify-center w-full px-11 py-4 items-center ">
+					<div className="flex flex-col items-start max-w-[480px]">
 						<div className="flex items-center mb-1 ml-2">
 							<span className="text-grey-80 text-sm">
 								{store?.ratingNumber}
 							</span>
 							<span className="text-grey-70 text-[12px]">개 리뷰 평점</span>
 						</div>
-						<div className="flex items-center gap-6">
-							<div className="flex items-center gap-2 mr-2">
+						<div className="flex items-center gap-4 sm:gap-10 w-full">
+							<div className="flex items-center gap-5 mr-2">
 								<Icon
 									name={'Star'}
 									fill={fillColor}
@@ -94,45 +217,95 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 					</div>
 				</div>
 				<div className="h-[8px] bg-grey-10 w-full mb-5" />
-				{/* 탭 영역 */}
+				<div className="w-full px-10">
+					<span className="text-base font-semibold block text-left mb-3">
+						가격에 비해 만족스럽나요?
+					</span>
+				</div>
 
-				<div className="flex gap-2 w-full px-4 mb-4 rounded-md h-full bg-white">
-					{TABS.map((tab) => {
-						const [label, count] = tab.split(' ');
-						const isSelected = selectedTab === tab;
-						return (
-							<button
-								key={tab}
-								className={`px-4 py-2 rounded-full text-sm ${
-									isSelected
-										? 'bg-grey-90 text-white'
-										: 'bg-grey-10 text-grey-70'
-								}`}
-								onClick={() => setSelectedTab(tab)}
+				<div className="flex justify-between items-center mb-6 gap-3 sm:gap-10">
+					<div className="flex flex-col items-center justify-center w-20 h-20 rounded-xl bg-gray-100">
+						<span className="text-xs text-gray-500">평균 가심비</span>
+						<span className="text-2xl font-bold text-primary">
+							{avgGasimbi}점
+						</span>
+					</div>
+					<div className="flex flex-col text-xs text-grey-85 gap-2 flex-1 ml-4">
+						{[
+							{ label: '만족해요', value: satisfaction, range: '100~70' },
+							{ label: '보통이에요', value: normal, range: '69~40' },
+							{ label: '아쉬워요', value: bad, range: '39~0' },
+						]
+							.sort((a, b) => b.value - a.value)
+							.map(({ label, value, range }, _, arr) => {
+								const maxValue = Math.max(...arr.map((item) => item.value));
+								const isMax = value === maxValue;
+								return (
+									<div key={label} className="flex items-center w-full">
+										<span className="ml-2 w-[55px] text-[12px] text-grey-85">
+											{label}
+										</span>
+										<span className="text-[9px] text-grey-50 w-[40px]">
+											{range}
+										</span>
+
+										<div className="relative sm:w-[100px] w-[70px] h-[6px] bg-gray-200 rounded-full overflow-hidden ml-2">
+											<div
+												className={`absolute h-[6px] rounded-full ${
+													isMax ? 'bg-grey-90' : 'bg-grey-50'
+												}`}
+												style={{ width: `${Math.min(value, 100)}%` }}
+											/>
+										</div>
+
+										<span
+											className={`ml-2 font-semibold ${isMax ? 'text-grey-90' : 'text-grey-50'}`}
+										>
+											{value}%
+										</span>
+									</div>
+								);
+							})}
+					</div>
+				</div>
+			</div>
+
+			{/* 탭 영역 */}
+
+			<div className="flex gap-2 w-full px-4 mb-4 rounded-md h-full bg-white overflow-x-auto scrollbar-hide">
+				{TABS.map((tab) => {
+					const [label, count] = tab.split(' ');
+					const isSelected = selectedTab === tab;
+					return (
+						<button
+							key={tab}
+							className={`px-4 py-2 rounded-full text-sm ${
+								isSelected ? 'bg-grey-90 text-white' : 'bg-grey-10 text-grey-70'
+							}`}
+							onClick={() => setSelectedTab(tab)}
+						>
+							<span className="font-medium">{label}</span>
+							<span
+								className={`ml-1 ${isSelected ? 'text-primary-40' : 'text-grey-60'} font-semibold`}
 							>
-								<span className="font-medium">{label}</span>
-								<span
-									className={`ml-1 ${isSelected ? 'text-primary-40' : 'text-grey-60'} font-semibold`}
-								>
-									{count}
-								</span>
-							</button>
-						);
-					})}
-				</div>
+								{count}
+							</span>
+						</button>
+					);
+				})}
+			</div>
 
-				{/* 리뷰 카드 리스트 */}
-				<div className="bg-white rounded-2xl w-full max-w-[375px] p-4 space-y-4 -mt-4">
-					{filteredReviews.length > 0 ? (
-						filteredReviews.map((review) => (
-							<ReviewCard key={review.id} review={review} />
-						))
-					) : (
-						<div className="text-center text-gray-500 text-sm">
-							해당 카테고리에 대한 리뷰가 없습니다.
-						</div>
-					)}
-				</div>
+			{/* 리뷰 카드 리스트 */}
+			<div className="bg-white rounded-2xl w-full max-w-[375px] p-4 space-y-4 -mt-4">
+				{reviews.length > 0 ? (
+					reviews.map((review) => (
+						<ReviewCard key={review.id} review={review} />
+					))
+				) : (
+					<div className="text-center text-gray-500 text-sm">
+						해당 카테고리에 대한 리뷰가 없습니다.
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -143,7 +316,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
  */
 function Bar({ value, color }: { value: number; color: string }) {
 	return (
-		<div className="relative w-[80px] h-2 bg-gray-200 rounded-full overflow-hidden">
+		<div className="relative w-[80px] sm:w-[120px] h-2 bg-gray-200 rounded-full overflow-hidden">
 			<div
 				className={`absolute h-2 rounded-full ${color}`}
 				style={{ width: `${Math.min((value / 5) * 100, 100)}%` }}

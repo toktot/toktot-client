@@ -61,7 +61,7 @@ export default function StoreMenuSection() {
 
 				<div className="mt-2 flex flex-col items-start w-full">
 					{filteredMenu.map((menu, index) => (
-						<div key={menu.id} className="w-full">
+						<div key={menu.id} className="w-[343px] sm:w-[380px]">
 							<MenuInfoCard
 								review={{
 									id: String(menu.id),

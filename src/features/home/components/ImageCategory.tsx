@@ -38,7 +38,7 @@ export default function ImageCategory({ reviews, score }: Props) {
 	return (
 		<div className="flex flex-col gap-4">
 			{reviews.map((review) => {
-				const gasimbiScore = review.auth.gasimbi ?? score; // 개별 리뷰 점수가 없으면 props score 사용
+				const gasimbiScore = review.gasimbi ?? score; // 개별 리뷰 점수가 없으면 props score 사용
 				const style = getGasimbiStyle(gasimbiScore);
 
 				return (
@@ -57,7 +57,9 @@ export default function ImageCategory({ reviews, score }: Props) {
 								)}
 							</div>
 						</div>
-						<div className="mt-2 text-sm text-gray-700">{review.text}</div>
+						<div className="mt-2 text-sm text-gray-700">
+							{review.textString}
+						</div>
 					</div>
 				);
 			})}

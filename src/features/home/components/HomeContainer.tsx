@@ -30,6 +30,16 @@ export default function HomeContainer() {
 
 	const router = useRouter();
 	const [showToast, setShowToast] = useState(false);
+	const [price, setPrice] = useState(searchParams.get('price') || '');
+	const [food, setFood] = useState(searchParams.get('food') || '');
+	console.log(setPrice, setFood);
+
+	const handleMoreClick = () => {
+		const params = new URLSearchParams();
+		if (price) params.set('price', price);
+		if (food) params.set('food', food);
+		router.push(`/goodstore?${params.toString()}`);
+	};
 
 	const handleSearchClick = () => {
 		console.log('검색어', query);
@@ -75,6 +85,28 @@ export default function HomeContainer() {
 			return true;
 		});
 	}, [query, searchParams]);
+
+	const mappedFilteredReviews = filteredReviews.map((r) => {
+		const matchedStore = mockStores.find((store) =>
+			store.storeName.includes(r.placeName),
+		);
+		return {
+			id: r.id,
+			nickname: r.writer || '익명',
+			profileImageUrl: '/images/default-profile.png',
+			reviewCount: r.ratingNumber,
+			averageRating: r.rating,
+			gasimbi: r.gasimbi,
+			image: r.imageUrl,
+			menu: r.mainMenu ? [r.mainMenu] : [],
+			date: r.time || '1분 전',
+			mealTime: r.mealTime || '모름',
+			rating: r.rating,
+			text: r.text,
+			placeName: matchedStore?.storeName,
+		};
+	});
+
 	const mostPopularReview = useMemo(() => {
 		if (mockReviews.length === 0) return [];
 
@@ -92,7 +124,9 @@ export default function HomeContainer() {
 		} else {
 			params.delete('filter');
 		}
-		router.push(`/search?q=${query}&${params.toString()}`);
+		const fromParam = searchParams.get('from') ?? '';
+		params.set('from', fromParam);
+		router.push(`/search?from=&q=${query}&${params.toString()}`);
 	};
 	const handleLocationSaved = () => {
 		setShowToast(true);
@@ -112,27 +146,7 @@ export default function HomeContainer() {
 	const handleToastClose = () => {
 		setShowToast(false);
 	};
-	const mappedReviews = mockHome.map((r) => {
-		const matchedStore = mockStores.find((store) =>
-			store.storeName.includes(r.placeName),
-		);
-		return {
-			id: r.id,
-			nickname: r.writer || '익명',
-			profileImageUrl: '/images/default-profile.png',
-			reviewCount: r.ratingNumber,
-			averageRating: r.rating,
-			gasimbi: r.gasimbi,
-			image: r.imageUrl,
-			menu: r.mainMenu ? [r.mainMenu] : [],
-			date: r.time || '1분 전',
-			mealTime: r.mealTime || '모름',
-			rating: r.rating,
-			text: r.text,
-			placeName: matchedStore?.storeName,
-		};
-		// placeName을 리뷰 텍스트 대신 임시 사용
-	});
+
 	const toNumber = (d?: string) =>
 		d != null ? parseFloat(d) : Number.POSITIVE_INFINITY;
 
@@ -172,9 +186,8 @@ export default function HomeContainer() {
 					{/* 상단 제목 + 더보기 */}
 					<div className="flex items-center justify-between ">
 						<h2 className="text-lg font-semibold text-[18px]">
-							지금 가장 많이 저장된 후기 PICK!
+							똑똣에서 가장 많이 저장된 후기 PICK!
 						</h2>
-						<button className="text-sm text-gray-500">더보기</button>
 					</div>
 					<div className="overflow-x-auto py-2 scrollbar-hide">
 						<div className="inline-flex justify-start">
@@ -190,7 +203,7 @@ export default function HomeContainer() {
 						style={{ WebkitOverflowScrolling: 'touch' }}
 					>
 						<div className="inline-flex gap-4">
-							{mappedReviews.map((review) => (
+							{mappedFilteredReviews.map((review) => (
 								<div
 									key={review.id}
 									className="flex-shrink-0 w-[290px]"
@@ -207,11 +220,13 @@ export default function HomeContainer() {
 						<h2 className="text-[18px] font-semibold">
 							가격도 착하고 맛까지 좋은 가게는?
 						</h2>
-						<button className="text-sm text-gray-500">더보기</button>
 					</div>
 					<PriceTabs />
 					<div className="flex justify-center mt-5">
-						<button className="min-w-[343px] max-w-[430px] w-full border border-grey-40 rounded-3xl text-grey-90 text-center py-2">
+						<button
+							className="min-w-[343px] max-w-[430px] w-full border border-grey-40 rounded-3xl text-grey-90 text-center py-2"
+							onClick={handleMoreClick}
+						>
 							더보기
 						</button>
 					</div>
@@ -223,7 +238,14 @@ export default function HomeContainer() {
 						<h2 className="text-[18px] font-semibold">
 							지금 만나보는 가까운 식당
 						</h2>
-						<button className="text-sm text-gray-500">더보기</button>
+						<button
+							className="text-sm text-gray-500"
+							onClick={() => {
+								router.push(`/search?tab=store`);
+							}}
+						>
+							더보기
+						</button>
 					</div>
 
 					{/* StoreInfoCard 목록 */}

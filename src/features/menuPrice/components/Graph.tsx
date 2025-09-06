@@ -326,10 +326,16 @@ const PriceChart = () => {
 			{/* 가게 리스트 */}
 			{selectedPrice && (
 				<>
-					<span className="text-lg font-semibold text-[20px]">
-						{selectedPrice.toLocaleString()}원인 가게들이에요
-					</span>
-					<span className="text-primary-40 ml-2 text-[20px]">{storeCount}</span>
+					<div className="flex items-center gap-2">
+						<span className="text-lg font-semibold text-[20px]">
+							{selectedPrice.toLocaleString()}원인 가게들이에요
+						</span>
+
+						<span className="rounded-full bg-white w-[31px] h-[21px]  flex items-center justify-center text-primary-40 text-[9px]">
+							{storeCount}개
+						</span>
+					</div>
+
 					<div className="bg-white rounded-xl mt-4">
 						<div className="flex flex-wrap justify-between">
 							{selectedStores.length > 0 ? (

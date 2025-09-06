@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react';
 import { detailCategories } from '@/entities/cataegory/detailCategories';
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
 import clsx from 'clsx';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
+
+import SortDropdown from '../model/SortDropDown';
 
 export type FilterKey = 'distance' | 'rating' | 'goodstore' | 'openrun';
 type FilterItem = {
@@ -35,15 +37,37 @@ interface Props {
 	onChange: (val: number | null) => void;
 	onClick: () => void;
 	onSummaryChange?: (summary: string) => void;
+	onSortChange?: (
+		sort: 'distance' | 'popularity' | 'RATING' | 'satisfaction',
+	) => void;
 }
 
-const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
+const FilterBar: React.FC<Props> = ({
+	value,
+	onChange,
+	onClick,
+	onSortChange,
+}) => {
 	const [filterTags, setFilterTags] = useState<string[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
 	const [displayItems, setDisplayItems] = useState(filterItems);
 	const [isQueryActive, setIsQueryActive] = useState(false);
+	console.log(setIsQueryActive);
+	const [mealTimeState, setMealTimeState] = useState<string | null>(null);
+
+	useEffect(() => {
+		setMealTimeState(searchParams.get('mealTime'));
+	}, [searchParams]);
+
+	const [sortOption, setSortOption] = useState<
+		'distance' | 'popularity' | 'RATING' | 'satisfaction'
+	>('distance');
+	const handleSortSelect = (option: typeof sortOption) => {
+		setSortOption(option);
+		if (onSortChange) onSortChange(option);
+	};
 	const distance = searchParams.get('distance');
 	const rating = Number(searchParams.get('rating') ?? 0);
 	const menu = searchParams.get('menu');
@@ -110,27 +134,43 @@ const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 					}
 					break;
 				case 9:
-					if (mealTime !== undefined) {
-						const selectedLabels = mealOptions
-							.filter((k) =>
-								Array.isArray(mealTime)
-									? mealTime.includes(k.value)
-									: Number(mealTime) === k.value,
-							)
-							.map((k) => k.label);
-						label = selectedLabels.join(',');
+					if (mealTimeState !== null) {
+						const selectedOption = mealOptions.find(
+							(opt) => opt.value === Number(mealTimeState),
+						);
+						if (selectedOption) {
+							label = selectedOption.label;
+							active = true;
+						}
 					}
-					setIsQueryActive(true);
+
 					break;
 			}
 			return { ...item, label, active };
 		});
 		setDisplayItems(updatedItems);
-	}, [distance, maxPrice, menu, minPrice, rating, mealTime, searchParams]);
+	}, [
+		distance,
+		maxPrice,
+		menu,
+		minPrice,
+		rating,
+		mealTime,
+		searchParams,
+		mealTimeState,
+	]);
+	const pathname = usePathname();
 
 	const handleFilterChange = (newFilter: number | null) => {
 		onChange(newFilter);
 		const params = new URLSearchParams(searchParams.toString());
+		if (pathname === '/' || pathname === '/home') {
+			params.set('from', 'home');
+		} else if (pathname.startsWith('/search')) {
+			params.set('from', 'search');
+		} else {
+			params.set('from', searchParams.get('from') ?? '');
+		}
 
 		if (newFilter !== null) {
 			params.set('filter', newFilter.toString());
@@ -141,10 +181,8 @@ const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 					params.set(category.id, raw); // food=1,2 이런식
 				}
 			});
-
-			router.push(
-				`/searchDetection?focus=${newFilter}&rating=${rating}&distance=${distance ?? ''}&meal=${mealTime ?? ''}&maxPrice=${maxPrice}&minPrice=${minPrice}&menu=${menu}${params.toString()}`,
-			);
+			params.set('sort', sortOption);
+			router.push(`/searchDetection?${params.toString()}`);
 		} else {
 			params.delete('filter');
 		}
@@ -155,9 +193,7 @@ const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 		if (rating) tags.push(`${Number(rating)}점 이상`);
 		if (menu) tags.push(menu);
 		if (minPrice && maxPrice) {
-			tags.push(
-				`${searchParams.get('minPrice')} ~ ${searchParams.get('maxPrice')}만원`,
-			);
+			tags.push(`${minPrice} ~ ${maxPrice}만원`);
 		}
 		detailCategories.forEach((category) => {
 			const raw = searchParams.get(category.id); // 예: '1,3'
@@ -169,25 +205,38 @@ const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 				tags.push(...selectedLabels);
 			}
 		});
+		console.log('mealTimeState', mealTimeState);
+		if (mealTimeState) {
+			const selectedOption = mealOptions.find(
+				(opt) => opt.value === Number(mealTimeState),
+			);
+			if (selectedOption) tags.push(selectedOption.label);
+		}
 
 		setFilterTags(tags);
-	}, [distance, maxPrice, menu, minPrice, rating, searchParams]);
+	}, [
+		distance,
+		maxPrice,
+		menu,
+		minPrice,
+		rating,
+		searchParams,
+		mealTime,
+		mealTimeState,
+	]);
 
 	return (
-		<div className="flex items-center gap-2">
-			<div className="min-w-[24px] h-[24px] rounded-full bg-grey-20 flex items-center justify-center">
-				<Icon
-					name={'Filter'}
-					className="text-grey-70"
-					size="xs"
-					onClick={onClick}
-				/>
+		<div className="relative flex items-center">
+			{/* 왼쪽 정렬 버튼 */}
+			<div className="shrink-0 mr-2">
+				<SortDropdown value={sortOption} onChange={handleSortSelect} />
 			</div>
 
+			{/* 카테고리 선택 */}
 			<SingleCategorySelect
 				value={value}
 				onChange={handleFilterChange}
-				className="flex-nowrap overflow-x-auto scrollbar-hide"
+				className="flex-nowrap overflow-x-auto scrollbar-hide pr-10"
 			>
 				{displayItems.map((item) => (
 					<SingleCategorySelect.Item
@@ -197,13 +246,28 @@ const FilterBar: React.FC<Props> = ({ value, onChange, onClick }) => {
 							'shrink-0 px-3 py-1 rounded-full',
 							item.active
 								? 'bg-grey-90 text-white'
-								: 'text-grey-60 text-grey-30',
+								: 'border-grey-30 text-grey-60',
 						)}
 					>
 						<div className="flex items-center gap-1">{item.label}</div>
 					</SingleCategorySelect.Item>
 				))}
 			</SingleCategorySelect>
+
+			{/* 오른쪽 고정 필터 아이콘 */}
+			<div className="absolute right-0 z-50">
+				<div
+					className=" flex items-center justify-center"
+					style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
+				>
+					<Icon
+						name="Filter"
+						className="text-grey-70 cursor-pointer"
+						size="s"
+						onClick={onClick}
+					/>
+				</div>
+			</div>
 		</div>
 	);
 };

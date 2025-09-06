@@ -1,13 +1,6 @@
-// GasimbiTag.tsx
 'use client';
 
 import clsx from 'clsx';
-
-// GasimbiTag.tsx
-
-// GasimbiTag.tsx
-
-// GasimbiTag.tsx
 
 interface GasimbiTagProps {
 	value: number;
