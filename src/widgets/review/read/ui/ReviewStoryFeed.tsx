@@ -54,7 +54,7 @@ export function ReviewStoryFeed() {
 	const currentPost = reviews[currentIndex];
 
 	if (!currentPost) {
-		return <div>리뷰를 불러오는 중...</div>;
+		return <div className="relative h-full overflow-hidden bg-black"></div>;
 	}
 
 	return (
@@ -95,8 +95,7 @@ export function ReviewStoryFeed() {
 									)}
 								</AnimatePresence>
 								<ImagePaginator
-									images={currentPost.images}
-									tooltips={currentPost.tooltips}
+									post={currentPost}
 									onTooltipClick={handleTooltipClick}
 									selectTooltip={selectedTooltip}
 									onOpenSheet={() => setIsSheetOpen(true)}

@@ -1,36 +1,40 @@
 'use client';
 
-import { Tooltip, TooltipBox, TooltipMarker } from '@/entities/review';
+import {
+	ReviewView,
+	Tooltip,
+	TooltipBox,
+	TooltipMarker,
+} from '@/entities/review';
 import Image from 'next/image';
 
 import { getTailDirection } from '@/shared/bubble/lib/getTailDirection';
 import { getBubbleTransformFromMarker } from '@/shared/bubble/model/direction';
 import { Bubble } from '@/shared/bubble/ui/Bubble';
-import { ReviewImageId, TooltipId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 
 import { useImagePagination } from '../lib/useImagePagination';
+import { AuthorScoreLabel } from './AuthorScoreLabel';
+import { KeywordScroller } from './KeywordScroller';
 
 interface ImagePaginatorProps {
-	images: { id: ReviewImageId; url: string; tooltipIds: TooltipId[] }[];
-	tooltips: Record<TooltipId, Tooltip>;
+	post: ReviewView;
 	onTooltipClick: (tooltip: Tooltip) => void;
 	selectTooltip: Tooltip | null;
-	onOpenSheet: () => void; // 시트를 여는 함수를 prop으로 받음
+	onOpenSheet: () => void;
 }
 
 export const ImagePaginator = ({
-	images,
-	tooltips,
+	post,
 	onTooltipClick,
 	selectTooltip,
 	onOpenSheet,
 }: ImagePaginatorProps) => {
 	const { currentIndex, goToNext, goToPrevious } = useImagePagination(
-		images.length,
+		post.images.length,
 	);
-	const currentImage = images[currentIndex];
+	const currentImage = post.images[currentIndex];
 
 	const handleTap = (e: React.MouseEvent<HTMLDivElement>) => {
 		if ((e.target as HTMLElement).closest('.tooltip-marker')) {
@@ -66,7 +70,7 @@ export const ImagePaginator = ({
 					}}
 				/>
 				{currentImage.tooltipIds.map((id) => {
-					const tooltip = tooltips[id];
+					const tooltip = post.tooltips[id];
 					if (!tooltip) return null;
 
 					const tooltipDirection = getTailDirection(tooltip.x, tooltip.y);
@@ -102,7 +106,16 @@ export const ImagePaginator = ({
 					);
 				})}
 				<div className="absolute bottom-0 left-0 right-0">
-					<ProgressBar total={images.length} current={currentIndex} />
+					<ProgressBar total={post.images.length} current={currentIndex} />
+				</div>
+				<div className="absolute bottom-[12px] left-0 right-0 px-3">
+					<div className="mb-2">
+						<AuthorScoreLabel
+							nickname={post.author.nickname}
+							score={post.satisfactionScore}
+						/>
+					</div>
+					<KeywordScroller keywords={post.keywords} />
 				</div>
 			</div>
 		</div>
