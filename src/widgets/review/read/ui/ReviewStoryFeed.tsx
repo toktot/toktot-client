@@ -87,7 +87,7 @@ export function ReviewStoryFeed() {
 			</div>
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
-					className="h-full overflow-x-hidden"
+					className="h-full overflow-x-hidden w-full"
 					key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
 					custom={direction}
 					variants={variants}
