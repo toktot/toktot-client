@@ -45,7 +45,7 @@ const Bar = ({
 			/>
 		</div>
 		{rawValue && (
-			<span className="w-fit text-xs text-grey-800 text-right">{rawValue}</span>
+			<span className="w-7 text-xs text-grey-800 text-right">{rawValue}</span>
 		)}
 	</div>
 );
