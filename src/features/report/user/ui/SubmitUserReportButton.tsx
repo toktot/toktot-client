@@ -26,7 +26,6 @@ export const SubmitUserReportButton = () => {
 	const handleConfirm = async () => {
 		const success = await submit();
 		if (success) {
-			// TODO: 신고 완료 페이지로 이동하거나, 이전 페이지로 돌아가기
 			toast.success('신고가 접수되었습니다.');
 			router.back();
 		}
