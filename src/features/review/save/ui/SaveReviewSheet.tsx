@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 
 import { AddFolderInput } from '@/features/review-folder/ui/AddFolderInput';
 
-import PrimaryButton from '@/shared/components/PrimaryButton';
 import { ReviewFolderId, ReviewId } from '@/shared/model/types';
 
 interface SaveReviewSheetProps {
@@ -86,8 +85,8 @@ export const SaveReviewSheet = ({
 		<div className="flex h-full flex-col p-4">
 			<div className="mx-auto mb-3 h-1 w-6 rounded-full bg-grey-30" />
 			<h2 className="text-lg font-bold">저장할 폴더 선택</h2>
-			<div className="my-4 flex flex-grow flex-col overflow-hidden">
-				<ul className="max-h-[40vh] flex-grow overflow-y-auto pr-2">
+			<div className="my-4 flex flex-grow flex-col overflow-hidden max-h-[200px]">
+				<ul className=" flex-grow overflow-y-auto pr-2">
 					{folders.map((folder) => {
 						const isAlreadySaved = folder.reviewIds.includes(reviewId);
 						const isFull =
@@ -112,12 +111,13 @@ export const SaveReviewSheet = ({
 				</div>
 			</div>
 
-			<PrimaryButton
-				text="저장하기"
+			<button
+				className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold"
 				onClick={handleSave}
 				disabled={isSaveButtonDisabled}
-				className="w-full"
-			/>
+			>
+				저장
+			</button>
 		</div>
 	);
 };
