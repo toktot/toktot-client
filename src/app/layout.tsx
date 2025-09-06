@@ -31,9 +31,11 @@ export default function RootLayout({
 						toastOptions={{
 							success: {
 								icon: <Icon name="Success" />,
+								duration: 1500,
 							},
 							error: {
 								icon: <Icon name="Error" />,
+								duration: 1500,
 							},
 						}}
 					/>

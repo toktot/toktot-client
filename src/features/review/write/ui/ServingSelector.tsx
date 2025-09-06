@@ -7,6 +7,7 @@ interface ServingSelectorProps {
 	onChange: (val: number) => void;
 }
 
+//FIXME: 기타 처리 (현재 기타 선택 시 에러 발생 0으로처리되어..)
 const SERVING_OPTIONS = [1, 2, 3, 4, '기타'];
 
 export const ServingSelector = ({ value, onChange }: ServingSelectorProps) => {

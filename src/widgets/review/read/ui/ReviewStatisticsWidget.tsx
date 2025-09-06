@@ -131,6 +131,8 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 	);
 
 	colors[maxKey] = 'bg-grey-90';
+
+	//가중 평균
 	const avgSatisfaction =
 		total === 0
 			? 0

@@ -1,6 +1,7 @@
 'use client';
+'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
 import { mapReviewContentToView } from '@/entities/review/api/mappers';
@@ -8,8 +9,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
+import { SortValue } from '@/features/review/read/api/schema';
 import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
+import { SortBottomSheet } from '@/features/review/sort/ui/SortBottomSheet';
+
+import Icon from '@/shared/ui/Icon';
 
 import { InteractiveReview } from './InteractiveReview';
 import ReviewStore from './ReviewStore';
@@ -35,10 +40,14 @@ const variants = {
 };
 
 export function ReviewStoryFeed() {
-	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed({});
+	const [sort, setSort] = useState<SortValue>(undefined);
+	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed({ sort });
 	const reviews = reviewsData.map(mapReviewContentToView);
 
-	const { page, direction, paginate } = useReviewPagination(0, reviews.length);
+	const { page, direction, paginate, setPage } = useReviewPagination(
+		0,
+		reviews.length,
+	);
 	const currentIndex = page;
 
 	const [showGuide, setShowGuide] = useState(true);
@@ -46,22 +55,39 @@ export function ReviewStoryFeed() {
 	const [selectedTooltip, setSelectedTooltip] = useState<Tooltip | null>(null);
 
 	const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+	const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
-		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : tooltip));
+		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : prev));
 	};
+
+	useEffect(() => {
+		setPage(0);
+	}, [sort, setPage]);
 
 	const currentPost = reviews[currentIndex];
 
+	if (!currentPost && reviews.length === 0) {
+		return <div className="relative h-full overflow-hidden bg-black"></div>;
+	}
 	if (!currentPost) {
-		return <div>리뷰를 불러오는 중...</div>;
+		return null;
 	}
 
 	return (
 		<div className="relative h-full overflow-hidden bg-black">
+			<div className="absolute top-0 left-0  z-20 px-2 flex justify-end items-center">
+				<button
+					onClick={() => setIsSortSheetOpen(true)}
+					className="flex items-center gap-1 text-blalck backdrop-blur-sm py-1 px-[10px] rounded-full bg-white"
+				>
+					<Icon name="Sort" size="xs" />
+					<span className="text-sm font-medium">정렬</span>
+				</button>
+			</div>
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
-					className="h-full overflow-x-hidden"
+					className="h-full overflow-x-hidden w-full"
 					key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
 					custom={direction}
 					variants={variants}
@@ -95,8 +121,7 @@ export function ReviewStoryFeed() {
 									)}
 								</AnimatePresence>
 								<ImagePaginator
-									images={currentPost.images}
-									tooltips={currentPost.tooltips}
+									post={currentPost}
 									onTooltipClick={handleTooltipClick}
 									selectTooltip={selectedTooltip}
 									onOpenSheet={() => setIsSheetOpen(true)}
@@ -124,6 +149,12 @@ export function ReviewStoryFeed() {
 					</div>
 				</motion.div>
 			</AnimatePresence>
+			<SortBottomSheet
+				isOpen={isSortSheetOpen}
+				onOpenChange={setIsSortSheetOpen}
+				currentSort={sort}
+				onSortChange={setSort}
+			/>
 		</div>
 	);
 }

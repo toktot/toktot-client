@@ -64,7 +64,7 @@ export const ReviewDetailItem = ({
 					</span>
 				))}
 			</div>
-			<div className="flex gap-2">
+			<div className="flex gap-2 overflow-x-auto">
 				{review.images.map((image) => (
 					<Image
 						key={image.imageId}
