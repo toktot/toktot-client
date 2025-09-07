@@ -20,7 +20,22 @@ const ReviewStore = ({ storeId, extra }: ReviewStoreInfoProps) => {
 	const { store, isLoading, error } = useStore(storeId);
 
 	if (isLoading) {
-		return <div className="p-4">가게 정보를 불러오는 중...</div>;
+		return (
+			<div className="px-3 py-2 flex justify-between items-center rounded-xl">
+				<div className="flex justify-center items-center gap-3 overflow-hidden">
+					<div className="relative w-9 h-9 text-center rounded flex-shrink-0">
+						<div className="rounded-lg text-[5px] text-grey-50 bg-grey-20 p-1 w-full h-full flex items-center justify-center"></div>
+					</div>
+					<div className="flex-1 self-stretch inline-flex flex-col justify-between min-w-0">
+						<div className="inline-flex justify-start items-center gap-1.5 min-w-0">
+							<div className="justify-center text-sm font-semibold truncate"></div>
+							<div className="justify-center text-xs flex-shrink-0 truncate"></div>
+						</div>
+						<div className="flex items-center gap-1 min-w-0 overflow-hidden"></div>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	if (error) {

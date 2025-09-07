@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 
 import { useReviewImageManager } from '@/entities/review';
-import { useRouter } from 'next/navigation';
+import { StoreData } from '@/entities/store';
 
+import { useStore } from '@/features/review/write/hooks/useStore';
 import ContinueOrNewReviewModal from '@/features/review/write/ui/ContinueOrNewReviewModal';
 
 import { StoreId } from '@/shared/model/types';
@@ -14,17 +15,9 @@ export const SearchVisitedStoreWidget = ({
 }: {
 	restaurantId: StoreId;
 }) => {
-	const router = useRouter();
 	const [showContinueModal, setShowContinueModal] = useState(false);
-	const { initializeImages, clearImages, images } =
-		useReviewImageManager(restaurantId);
-
-	useEffect(() => {
-		const checkExistingSession = async () => {
-			await initializeImages();
-		};
-		checkExistingSession();
-	}, [initializeImages]);
+	const { clearImages, images } = useReviewImageManager(restaurantId);
+	const { store } = useStore(restaurantId);
 
 	useEffect(() => {
 		if (images.length > 0) {
@@ -35,13 +28,23 @@ export const SearchVisitedStoreWidget = ({
 	const handleStartNew = () => {
 		clearImages();
 		setShowContinueModal(false);
-		// FIXME: 임시 라우팅 처리
-		router.push('/review/write/831');
 	};
 
 	const handleContinue = () => {
 		setShowContinueModal(false);
-		router.push('/review/write/831');
+	};
+
+	if (!store) {
+		return <div className="p-4"></div>;
+	}
+
+	const storeDataForDisplay: StoreData & { distance: number } = {
+		id: store.id as StoreId,
+		storeName: store.storeName,
+		address: store.address,
+		storeImageUrl: store.storeImageUrl || '',
+		mainMenu: store.mainMenu,
+		distance: 0,
 	};
 
 	return (
@@ -51,6 +54,7 @@ export const SearchVisitedStoreWidget = ({
 					<ContinueOrNewReviewModal
 						onStartNew={handleStartNew}
 						onContinue={handleContinue}
+						store={storeDataForDisplay}
 					/>
 				)}
 			</div>

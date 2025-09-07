@@ -66,7 +66,7 @@ export const useReviewImageStore = create<
 
 			try {
 				const sessionData = await api.getImageSession(restaurantId);
-				if (sessionData.has_session) {
+				if (sessionData && sessionData.has_session) {
 					const clientImages = mapServerImagesToUploadReviewImages(
 						sessionData.images,
 					);
@@ -78,6 +78,13 @@ export const useReviewImageStore = create<
 							state.mainImageId = null;
 						}
 						state.remainingSlots = sessionData.remaining_slots;
+					});
+				} else {
+					// No session or empty session, clear local state
+					set((state) => {
+						state.images = [];
+						state.mainImageId = null;
+						state.remainingSlots = MAX_IMAGE_COUNT;
 					});
 				}
 			} catch (error) {

@@ -29,7 +29,6 @@ function useDebounce(value: string, delay: number): string {
 	return debouncedValue;
 }
 
-// FIXME: 	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
 export const SelectStoreForReview = () => {
 	const router = useRouter();
 	const {

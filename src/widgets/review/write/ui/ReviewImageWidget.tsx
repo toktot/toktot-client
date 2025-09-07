@@ -69,7 +69,7 @@ export const ReviewImageWidget = ({
 
 	useEffect(() => {
 		initializeImages();
-	}, [initializeImages]);
+	}, []);
 
 	const interactiveImages = buildInteractiveImages(images);
 	const selectedImage = interactiveImages.find(
