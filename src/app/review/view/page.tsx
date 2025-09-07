@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 
@@ -20,7 +22,9 @@ const page = () => {
 			</Header>
 
 			<main className="flex-1">
-				<ReviewStoryFeed />
+				<Suspense fallback={<div></div>}>
+					<ReviewStoryFeed />
+				</Suspense>
 			</main>
 		</AppShell>
 	);
