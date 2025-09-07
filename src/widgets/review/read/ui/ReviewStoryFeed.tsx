@@ -58,7 +58,7 @@ export function ReviewStoryFeed() {
 	const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
 
 	const handleTooltipClick = (tooltip: Tooltip) => {
-		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : prev));
+		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : tooltip));
 	};
 
 	const searchParams = useSearchParams();
