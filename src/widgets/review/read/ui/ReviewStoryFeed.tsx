@@ -12,7 +12,10 @@ import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePagina
 import { SortValue } from '@/features/review/read/api/schema';
 import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
-import { SortBottomSheet } from '@/features/review/sort/ui/SortBottomSheet';
+import {
+	SORT_OPTIONS,
+	SortBottomSheet,
+} from '@/features/review/sort/ui/SortBottomSheet';
 
 import Icon from '@/shared/ui/Icon';
 
@@ -43,6 +46,8 @@ export function ReviewStoryFeed() {
 	const [sort, setSort] = useState<SortValue>(undefined);
 	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed({ sort });
 	const reviews = reviewsData.map(mapReviewContentToView);
+
+	const currentSortOption = SORT_OPTIONS.find((opt) => opt.value === sort);
 
 	const { page, direction, paginate, setPage } = useReviewPagination(
 		0,
@@ -101,7 +106,9 @@ export function ReviewStoryFeed() {
 					className="flex items-center gap-1 text-blalck backdrop-blur-sm py-1 px-[10px] rounded-full bg-white"
 				>
 					<Icon name="Sort" size="xs" />
-					<span className="text-sm font-medium">정렬</span>
+					<span className="text-sm font-medium">
+						{currentSortOption?.label}
+					</span>
 				</button>
 			</div>
 			<AnimatePresence initial={false} custom={direction}>

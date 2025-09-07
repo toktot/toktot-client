@@ -17,7 +17,7 @@ interface SortBottomSheetProps {
 	onSortChange: (sort: SortValue) => void;
 }
 
-const SORT_OPTIONS: { id: string; label: string; value: SortValue }[] = [
+export const SORT_OPTIONS: { id: string; label: string; value: SortValue }[] = [
 	{ id: 'latest', label: '최신순', value: undefined },
 	{ id: 'distance', label: '가까운순(현재 불가)', value: 'DISTANCE' },
 	{ id: 'rating', label: '별점높은순', value: 'RATING' },
