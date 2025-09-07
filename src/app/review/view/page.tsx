@@ -17,7 +17,9 @@ const page = () => {
 					<span className="text-white">위치 표시</span>
 				</Header.Center>
 				<Header.Right>
-					<ReviewOptionsMenu />
+					<Suspense fallback={<div></div>}>
+						<ReviewOptionsMenu />
+					</Suspense>
 				</Header.Right>
 			</Header>
 
