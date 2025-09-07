@@ -1,11 +1,11 @@
 'use client';
-'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
 import { mapReviewContentToView } from '@/entities/review/api/mappers';
 import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
@@ -61,11 +61,32 @@ export function ReviewStoryFeed() {
 		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : prev));
 	};
 
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const pathname = usePathname();
+
+	// Get a new searchParams string by merging the current
+	// searchParams with a provided key/value pair
+	const createQueryString = useCallback(
+		(name: string, value: string) => {
+			const params = new URLSearchParams(searchParams.toString());
+			params.set(name, value);
+
+			return params.toString();
+		},
+		[searchParams],
+	);
+	const currentPost = reviews[currentIndex];
+
 	useEffect(() => {
 		setPage(0);
 	}, [sort, setPage]);
 
-	const currentPost = reviews[currentIndex];
+	useEffect(() => {
+		if (!currentPost?.id) return;
+		router.push(pathname + '?' + createQueryString('reviewId', currentPost.id));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentPost?.id]);
 
 	if (!currentPost && reviews.length === 0) {
 		return <div className="relative h-full overflow-hidden bg-black"></div>;

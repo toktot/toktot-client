@@ -4,8 +4,6 @@ import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { ReviewOptionsMenu } from '@/features/review/read/ui/ReviewOptionsMenu';
 
-import { ReviewId } from '@/shared/model/types';
-
 const page = () => {
 	return (
 		<AppShell showBottomNav={true}>
@@ -17,7 +15,7 @@ const page = () => {
 					<span className="text-white">위치 표시</span>
 				</Header.Center>
 				<Header.Right>
-					<ReviewOptionsMenu reveiwId={'1' as ReviewId} />
+					<ReviewOptionsMenu />
 				</Header.Right>
 			</Header>
 
