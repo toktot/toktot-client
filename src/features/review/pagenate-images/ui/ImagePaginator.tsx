@@ -110,10 +110,7 @@ export const ImagePaginator = ({
 				</div>
 				<div className="absolute bottom-[12px] left-0 right-0 px-3">
 					<div className="mb-2">
-						<AuthorScoreLabel
-							nickname={post.author.nickname}
-							score={post.satisfactionScore}
-						/>
+						<AuthorScoreLabel score={post.satisfactionScore} />
 					</div>
 					<KeywordScroller keywords={post.keywords} />
 				</div>
