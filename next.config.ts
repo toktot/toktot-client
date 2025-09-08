@@ -66,6 +66,14 @@ const nextConfig: NextConfig = {
 				protocol: 'http',
 				hostname: 'tong.visitkorea.or.kr',
 			},
+			{
+				protocol: 'http',
+				hostname: 'img1.kakaocdn.net',
+			},
+			{
+				protocol: 'http',
+				hostname: 'k.kakaocdn.net',
+			},
 		],
 	},
 	// 헤더 설정 추가로 manifest.json 접근 보장
