@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
 import { mapReviewContentToView } from '@/entities/review/api/mappers';
@@ -44,7 +44,9 @@ const variants = {
 
 export function ReviewStoryFeed() {
 	const [sort, setSort] = useState<SortValue>(undefined);
-	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed({ sort });
+	const filters = useMemo(() => ({ sort }), [sort]);
+	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed(filters);
+
 	const reviews = reviewsData.map(mapReviewContentToView);
 
 	const currentSortOption = SORT_OPTIONS.find((opt) => opt.value === sort);

@@ -45,18 +45,14 @@ export const useInfiniteReviewFeed = (filters: ReviewSearchRequest) => {
 	// 	[filters, hasNextPage, isLoading, page], // Include filters in dependencies
 	// );
 
-	// Memoize filters to prevent unnecessary re-renders
-	const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)]);
+	const memoizedFilters = useMemo(() => filters, [filters]);
 
 	useEffect(() => {
 		setReviews([]);
 		setPage(0);
 		setHasNextPage(true);
 
-		// Use a separate async function to avoid dependency issues
 		const initializeReviews = async () => {
-			if (isLoading) return;
-
 			setIsLoading(true);
 			try {
 				const response = await api.searchReviews(memoizedFilters, 0, 10);
@@ -72,7 +68,7 @@ export const useInfiniteReviewFeed = (filters: ReviewSearchRequest) => {
 		};
 
 		initializeReviews();
-	}, [memoizedFilters]); // Only depend on memoized filters
+	}, [memoizedFilters]);
 
 	const fetchNextPage = useCallback(() => {
 		if (isLoading || !hasNextPage) return;

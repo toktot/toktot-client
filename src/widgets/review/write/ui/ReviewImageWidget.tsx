@@ -69,6 +69,7 @@ export const ReviewImageWidget = ({
 
 	useEffect(() => {
 		initializeImages();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const interactiveImages = buildInteractiveImages(images);
