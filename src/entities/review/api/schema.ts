@@ -4,17 +4,18 @@
  */
 import { z } from 'zod';
 
+// 툴팁 스키마
 export const TooltipServerSchema = z.object({
 	id: z.number(),
-	type: z.enum(['FOOD', 'CLEAN', 'SERVICE']), // enum으로 확장 가능
+	type: z.enum(['FOOD', 'CLEAN', 'SERVICE']),
 	rating: z.number(),
 	detailedReview: z.string(),
-
 	totalPrice: z.number().nullish(),
 	menuName: z.string().nullish(),
 	servingSize: z.number().nullish(),
 });
 
+// 리뷰 이미지 스키마
 const ReviewImageServerSchema = z.object({
 	imageId: z.string(),
 	imageOrder: z.number(),
@@ -23,15 +24,16 @@ const ReviewImageServerSchema = z.object({
 	tooltips: z.array(TooltipServerSchema),
 });
 
+// 리뷰 사용자 스키마 (nullable 프로필 이미지)
 const ReviewUserServerSchema = z.object({
 	id: z.number(),
 	nickname: z.string(),
 	reviewCount: z.number(),
 	averageRating: z.number(),
-
 	profileImageUrl: z.string().nullish(),
 });
 
+// 리뷰 전체 스키마
 const ReviewServerSchema = z.object({
 	id: z.number(),
 	author: ReviewUserServerSchema,
@@ -46,6 +48,7 @@ const ReviewServerSchema = z.object({
 	reviewRating: z.number(),
 });
 
+// 페이지 스키마
 export const StoreReviewsPageServerSchema = z.object({
 	content: z.array(ReviewServerSchema),
 	last: z.boolean(),
@@ -58,10 +61,18 @@ export const StoreReviewsPageServerSchema = z.object({
 export type StoreReviewsPageServer = z.infer<
 	typeof StoreReviewsPageServerSchema
 >;
-
-// 서버 스키마를 클라이언트에서 사용할 ReviewView 모델로 변환합니다.
-// export const ReviewClientSchema = ReviewServerSchema.transform(
-// 	mapServerReviewToClientView,
-// );
-
 export type ReviewServer = z.infer<typeof ReviewServerSchema>;
+
+// 리뷰 클라이언트 스키마: 프로필 이미지 기본값 설정
+export const ReviewClientSchema = ReviewServerSchema.transform(
+	(serverData) => ({
+		...serverData,
+		author: {
+			...serverData.author,
+			profileImageUrl:
+				serverData.author.profileImageUrl ?? '/images/avatar_default.png',
+		},
+	}),
+);
+
+export type ReviewClient = z.infer<typeof ReviewClientSchema>;

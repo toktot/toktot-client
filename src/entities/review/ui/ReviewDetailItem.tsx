@@ -5,7 +5,7 @@ import { useRelativeTime } from '@/widgets/review/write/lib/getRelativeTime';
 import { Label } from '@/shared/components/Label';
 import Icon from '@/shared/ui/Icon';
 
-import { ReviewServer } from '../api/schema';
+import { ReviewClient } from '../api/schema';
 import { TooltipCategory } from '../model/tooltip';
 import {
 	RATING_ICON_COLOR_FOR_CATEGORY,
@@ -15,7 +15,7 @@ import { MealTimeDisplay } from './MealTimeDisplay';
 import { RatingStarView } from './RatingStarView';
 
 interface ReviewDetailItemProps {
-	review: ReviewServer;
+	review: ReviewClient;
 	isSelected?: boolean;
 }
 
@@ -37,74 +37,90 @@ export const ReviewDetailItem = ({
 					<h3 className="text-xs font-bold">지금 보고 있는 리뷰</h3>
 				</div>
 			)}
-			{/* 유저 정보 */}
-			<div className="flex items-center justify-between">
-				<div className="flex gap-2">
-					<span className="font-bold">{review.author.nickname}</span>
-					<div className="text-grey-70">
-						<span>평균 {review.author.averageRating.toFixed(1)}</span>
-						<span>({review.author.reviewCount}개)</span>
+			<div className="flex gap-[10px]">
+				<div className="w-10 h-10 relative shrink-0">
+					<Image
+						src={review.author.profileImageUrl}
+						fill
+						sizes="40px"
+						alt={'프로필 이미지'}
+						className="object-cover rounded-full"
+					/>
+				</div>
+				<div>
+					{/* 유저 정보 */}
+					<div className="flex items-center justify-between">
+						<div className="flex gap-2">
+							<span className="font-bold">{review.author.nickname}</span>
+							<div className="text-grey-70">
+								<span>평균 {review.author.averageRating.toFixed(1)}</span>
+								<span>({review.author.reviewCount}개)</span>
+							</div>
+						</div>
+					</div>
+					{/* 리뷰 정보 */}
+					<div className="flex gap-2 items-center text-sm text-grey-60">
+						<RatingStarView value={review.reviewRating} category={'food'} />
+						<MealTimeDisplay mealTime={review.mealTime} />
+						<div>{relativeTime}</div>
+					</div>
+					{/* 키워드 */}
+					<div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden mb-2">
+						{review.keywords.map((keyword) => (
+							<span
+								key={keyword}
+								className="rounded-lg px-2 text-xs bg-white shrink-0"
+							>
+								<Label>{keyword}</Label>
+							</span>
+						))}
+					</div>
+					<div className="flex gap-2 overflow-x-auto">
+						{review.images.map((image) => (
+							<Image
+								key={image.imageId}
+								src={image.imageUrl}
+								width={100}
+								height={100}
+								alt={'리뷰 이미지'}
+								className="rounded-md object-cover w-[100px] h-[100px]"
+							/>
+						))}
+					</div>
+
+					<div>
+						{review.images.flatMap((image) =>
+							image.tooltips.map((tooltip) => {
+								const categoryKey =
+									tooltip.type.toLowerCase() as TooltipCategory;
+								const markerStyle = tooltipMarkerStyleMap[categoryKey];
+								const tooltipCategoryColor =
+									RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
+
+								return (
+									<div key={tooltip.id} className="flex flex-col gap-1 text-xs">
+										<div
+											className={`flex items-center gap-1 rounded-full w-fit px-2 bg-white`}
+										>
+											<Icon
+												name={markerStyle.icon}
+												fill={tooltipCategoryColor}
+												color={tooltipCategoryColor}
+												size={'xs'}
+											/>
+											<span>{tooltip.rating}</span>
+											<span>{tooltip.menuName}</span>
+											<span>
+												{Number(tooltip.totalPrice).toLocaleString()}원
+											</span>
+										</div>
+										<p className="text-sm">{tooltip.detailedReview}</p>
+									</div>
+								);
+							}),
+						)}
 					</div>
 				</div>
-			</div>
-			{/* 리뷰 정보 */}
-			<div className="flex gap-2 items-center text-sm text-grey-60">
-				<RatingStarView value={review.reviewRating} category={'food'} />
-				<MealTimeDisplay mealTime={review.mealTime} />
-				<div>{relativeTime}</div>
-			</div>
-			{/* 키워드 */}
-			<div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden mb-2">
-				{review.keywords.map((keyword) => (
-					<span
-						key={keyword}
-						className="rounded-lg px-2 text-xs bg-white shrink-0"
-					>
-						<Label>{keyword}</Label>
-					</span>
-				))}
-			</div>
-			<div className="flex gap-2 overflow-x-auto">
-				{review.images.map((image) => (
-					<Image
-						key={image.imageId}
-						src={image.imageUrl}
-						width={100}
-						height={100}
-						alt={'리뷰 이미지'}
-						className="rounded-md object-cover w-[100px] h-[100px]"
-					/>
-				))}
-			</div>
-
-			<div>
-				{review.images.flatMap((image) =>
-					image.tooltips.map((tooltip) => {
-						const categoryKey = tooltip.type.toLowerCase() as TooltipCategory;
-						const markerStyle = tooltipMarkerStyleMap[categoryKey];
-						const tooltipCategoryColor =
-							RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
-
-						return (
-							<div key={tooltip.id} className="flex flex-col gap-1 text-xs">
-								<div
-									className={`flex items-center gap-1 rounded-full w-fit px-2 bg-white`}
-								>
-									<Icon
-										name={markerStyle.icon}
-										fill={tooltipCategoryColor}
-										color={tooltipCategoryColor}
-										size={'xs'}
-									/>
-									<span>{tooltip.rating}</span>
-									<span>{tooltip.menuName}</span>
-									<span>{Number(tooltip.totalPrice).toLocaleString()}원</span>
-								</div>
-								<p className="text-sm">{tooltip.detailedReview}</p>
-							</div>
-						);
-					}),
-				)}
 			</div>
 		</div>
 	);

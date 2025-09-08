@@ -31,7 +31,7 @@ const ReviewUser = ({ author }: ReviewUserProps) => {
 					<div className="flex-shrink-0">
 						<Image
 							className="w-9 h-9 rounded-full"
-							src="/images/mockReview.jpg"
+							src={author.profileImageUrl}
 							alt={author.nickname}
 							width={100}
 							height={100}

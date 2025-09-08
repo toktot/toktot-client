@@ -83,6 +83,7 @@ const ReviewContentSchema = z.object({
 	isBookmarked: z.boolean(),
 	isWriter: z.boolean(),
 	satisfactionScore: z.number(),
+
 	mealTime: z.enum(['BREAKFAST', 'LUNCH', 'DINNER']),
 	createdAt: z.string(),
 	keywords: z.array(z.string()),
@@ -125,3 +126,20 @@ export type ReviewSearchResponse = z.infer<
 	typeof ReviewSearchResponseDataSchema
 >;
 export type ReviewContent = z.infer<typeof ReviewContentSchema>;
+
+export const ReviewSearchResponseClientSchema =
+	ReviewSearchResponseDataSchema.transform((data) => ({
+		...data,
+		content: data.content.map((item) => ({
+			...item,
+			author: {
+				...item.author,
+				profileImageUrl:
+					item.author.profileImageUrl ?? '/images/avatar_default.png',
+			},
+		})),
+	}));
+
+export type ReviewSearchResponseClient = z.infer<
+	typeof ReviewSearchResponseClientSchema
+>;
