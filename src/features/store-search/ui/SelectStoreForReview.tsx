@@ -8,6 +8,7 @@ import { AppShell, Header } from '@/widgets/layout';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
+import { useInfiniteScroll } from '@/shared/hooks/useInfiniteScroll';
 import Icon from '@/shared/ui/Icon';
 import Typography from '@/shared/ui/Typography';
 
@@ -22,14 +23,11 @@ function useDebounce(value: string, delay: number): string {
 		const handler = setTimeout(() => {
 			setDebouncedValue(value);
 		}, delay);
-		return () => {
-			clearTimeout(handler);
-		};
+		return () => clearTimeout(handler);
 	}, [value, delay]);
 	return debouncedValue;
 }
 
-// FIXME: 	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
 export const SelectStoreForReview = () => {
 	const router = useRouter();
 	const {
@@ -37,6 +35,7 @@ export const SelectStoreForReview = () => {
 		suggestions,
 		results,
 		isLoading,
+		isEnd,
 		setQuery,
 		fetchSuggestions,
 		searchStores,
@@ -45,6 +44,14 @@ export const SelectStoreForReview = () => {
 	} = useStoreSearch();
 
 	const [view, setView] = useState<'suggestions' | 'results'>('suggestions');
+
+	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
+		isLoading,
+		hasMore: !isEnd,
+		onLoadMore: () => searchStores(false),
+		threshold: 1.0,
+	});
+
 	const debouncedQuery = useDebounce(query, 1000);
 
 	useEffect(() => {
@@ -78,7 +85,7 @@ export const SelectStoreForReview = () => {
 
 	return (
 		<AppShell showBottomNav={false}>
-			<Header>
+			<Header className="bg-white">
 				<Header.Left>
 					<BackButton />
 				</Header.Left>
@@ -137,7 +144,8 @@ export const SelectStoreForReview = () => {
 								/>
 							))
 						)}
-						{isLoading && results.length > 0 && <p>더 많은 결과 로드 중...</p>}
+						{isLoading && results.length > 0 && <p>더 많은 결과 찾는 중...</p>}
+						<div ref={loadMoreRef} className="h-10" />
 					</div>
 				)}
 			</div>

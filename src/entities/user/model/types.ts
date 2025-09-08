@@ -6,5 +6,5 @@ import { UserId } from '@/shared/model/types';
 export interface UserProfile {
 	id: UserId;
 	nickname: string;
-	profileImageUrl: string | null;
+	profileImageUrl: string;
 }

@@ -41,9 +41,10 @@ export type ReviewSearchRequest = z.infer<typeof ReviewSearchRequestSchema>;
 const AuthorSchema = z.object({
 	id: z.number(),
 	nickname: z.string(),
-	profileImageUrl: z.string().nullable(),
 	reviewCount: z.number(),
 	averageRating: z.number(),
+
+	profileImageUrl: z.string().nullish(),
 });
 
 const TooltipSchema = z.object({
@@ -52,10 +53,11 @@ const TooltipSchema = z.object({
 	yPosition: z.number(),
 	type: z.enum(['FOOD', 'SERVICE', 'CLEAN']),
 	rating: z.number(),
-	menuName: z.string().nullable(),
-	totalPrice: z.number().nullable(),
-	servingSize: z.number().nullable(),
 	detailedReview: z.string(),
+
+	menuName: z.string().nullish(),
+	totalPrice: z.number().nullish(),
+	servingSize: z.number().nullish(),
 });
 
 const ImageSchema = z.object({
@@ -69,9 +71,10 @@ const ImageSchema = z.object({
 const RestaurantSchema = z.object({
 	id: z.number(),
 	name: z.string(),
-	representativeMenu: z.string().nullable(),
 	address: z.string(),
-	distanceInKm: z.number().nullable(),
+
+	representativeMenu: z.string().nullish(),
+	distanceInKm: z.number().nullish(),
 });
 
 const ReviewContentSchema = z.object({
@@ -80,7 +83,8 @@ const ReviewContentSchema = z.object({
 	isBookmarked: z.boolean(),
 	isWriter: z.boolean(),
 	satisfactionScore: z.number(),
-	mealTime: z.string(),
+
+	mealTime: z.enum(['BREAKFAST', 'LUNCH', 'DINNER']),
 	createdAt: z.string(),
 	keywords: z.array(z.string()),
 	images: z.array(ImageSchema),
@@ -122,3 +126,20 @@ export type ReviewSearchResponse = z.infer<
 	typeof ReviewSearchResponseDataSchema
 >;
 export type ReviewContent = z.infer<typeof ReviewContentSchema>;
+
+export const ReviewSearchResponseClientSchema =
+	ReviewSearchResponseDataSchema.transform((data) => ({
+		...data,
+		content: data.content.map((item) => ({
+			...item,
+			author: {
+				...item.author,
+				profileImageUrl:
+					item.author.profileImageUrl ?? '/images/avatar_default.png',
+			},
+		})),
+	}));
+
+export type ReviewSearchResponseClient = z.infer<
+	typeof ReviewSearchResponseClientSchema
+>;

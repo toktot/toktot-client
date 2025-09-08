@@ -78,7 +78,8 @@ export function mapReviewContentToView(content: ReviewContent): ReviewView {
 	const author: Author = {
 		id: content.author.id as UserId,
 		nickname: content.author.nickname,
-		profileImageUrl: content.author.profileImageUrl,
+		profileImageUrl:
+			content.author.profileImageUrl ?? '/images/avatar_default.png',
 		reviewCount: content.author.reviewCount,
 		averageRating: content.author.averageRating,
 	};

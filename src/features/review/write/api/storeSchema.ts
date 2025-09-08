@@ -7,14 +7,15 @@ export const StoreServerSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	address: z.string(),
-	is_local_store: z.boolean().nullable(),
-	value_for_money_score: z.number().nullable(),
-	point: z.number().nullable(),
-	business_hours: z.string().nullable(),
-	phone: z.string().nullable(),
-	image: z.string().nullable(),
 	latitude: z.number(),
 	longitude: z.number(),
+
+	is_local_store: z.boolean().nullish(),
+	value_for_money_score: z.number().nullish(),
+	point: z.number().nullish(),
+	business_hours: z.string().nullish(),
+	phone: z.string().nullish(),
+	image: z.string().nullish(),
 });
 
 export const StoreClientSchema = StoreServerSchema.transform((serverData) => ({
@@ -23,6 +24,8 @@ export const StoreClientSchema = StoreServerSchema.transform((serverData) => ({
 	address: serverData.address,
 	storeImageUrl: serverData.image,
 	mainMenu: '메뉴 등록이 필요해요.',
+	latitude: serverData.latitude,
+	longitude: serverData.longitude,
 }));
 
 export type Store = z.infer<typeof StoreClientSchema>;
