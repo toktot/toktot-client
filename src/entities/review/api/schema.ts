@@ -8,10 +8,11 @@ export const TooltipServerSchema = z.object({
 	id: z.number(),
 	type: z.enum(['FOOD', 'CLEAN', 'SERVICE']), // enum으로 확장 가능
 	rating: z.number(),
-	menuName: z.string().nullable(),
-	totalPrice: z.number().nullable(),
-	servingSize: z.number().nullable(),
 	detailedReview: z.string(),
+
+	totalPrice: z.number().nullish(),
+	menuName: z.string().nullish(),
+	servingSize: z.number().nullish(),
 });
 
 const ReviewImageServerSchema = z.object({
@@ -25,9 +26,10 @@ const ReviewImageServerSchema = z.object({
 const ReviewUserServerSchema = z.object({
 	id: z.number(),
 	nickname: z.string(),
-	profileImageUrl: z.string().nullable(),
 	reviewCount: z.number(),
 	averageRating: z.number(),
+
+	profileImageUrl: z.string().nullish(),
 });
 
 const ReviewServerSchema = z.object({
