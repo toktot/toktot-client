@@ -36,7 +36,7 @@ const ContinueOrNewReviewModal = ({
 				initial={{ scale: 0.9, opacity: 0 }}
 				animate={{ scale: 1, opacity: 1 }}
 				exit={{ scale: 0.9, opacity: 0 }}
-				className="bg-white rounded-2xl px-4 py-5 w-full max-w-sm text-center flex flex-col justify-center items-center gap-5"
+				className="bg-white rounded-2xl p-4 w-full max-w-sm text-center flex flex-col justify-center items-center gap-5"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<span className="text-grey-90 text-lg font-semibold">

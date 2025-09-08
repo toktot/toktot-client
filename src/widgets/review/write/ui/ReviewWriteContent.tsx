@@ -22,26 +22,41 @@ import { NextButton } from './NextButton';
 interface ReviewWriteContentProps {
 	storeId: StoreId;
 }
-
 export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 	const [showContinueModal, setShowContinueModal] = useState(false);
-	const { images, clearImages } = useReviewImageManager(storeId);
+	const {
+		clearImages,
+		initializeImages,
+		hasExistingSession,
+		setExistingSessionHandled,
+	} = useReviewImageManager(storeId);
 	const { store } = useStore(storeId);
 	const initialCheckDone = useRef(false);
 
 	useEffect(() => {
-		if (!initialCheckDone.current && images.length > 0) {
+		const checkSession = async () => {
+			if (!initialCheckDone.current) {
+				await initializeImages();
+				initialCheckDone.current = true;
+			}
+		};
+		checkSession();
+	}, [initializeImages]);
+
+	useEffect(() => {
+		if (hasExistingSession) {
 			setShowContinueModal(true);
-			initialCheckDone.current = true;
 		}
-	}, [images]);
+	}, [hasExistingSession]);
 
 	const handleStartNew = () => {
 		clearImages();
+		setExistingSessionHandled();
 		setShowContinueModal(false);
 	};
 
 	const handleContinue = () => {
+		setExistingSessionHandled();
 		setShowContinueModal(false);
 	};
 
@@ -60,7 +75,10 @@ export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 					onStartNew={handleStartNew}
 					onContinue={handleContinue}
 					store={store as StoreData}
-					onClose={() => setShowContinueModal(false)}
+					onClose={() => {
+						setExistingSessionHandled();
+						setShowContinueModal(false);
+					}}
 				/>
 			)}
 			<div className="flex flex-col items-center p-4 gap-9">
