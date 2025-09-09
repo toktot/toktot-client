@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { AppShell, Header } from '@/widgets/layout';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
@@ -28,8 +26,13 @@ function useDebounce(value: string, delay: number): string {
 	return debouncedValue;
 }
 
-export const SelectStoreForReview = () => {
-	const router = useRouter();
+interface SelectStoreForReviewProps {
+	onStoreSelect: (store: Place) => void;
+}
+
+export const SelectStoreForReview = ({
+	onStoreSelect,
+}: SelectStoreForReviewProps) => {
 	const {
 		query,
 		suggestions,
@@ -71,7 +74,7 @@ export const SelectStoreForReview = () => {
 	};
 
 	const handleSelectStore = (store: Place) => {
-		router.push(`/review/write/${store.id}`);
+		onStoreSelect(store);
 	};
 
 	const handleQueryChange = (newQuery: string) => {
