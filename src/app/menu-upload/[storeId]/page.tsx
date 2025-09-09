@@ -50,11 +50,11 @@ const MenuUploadPage = ({ params }: MenuUploadPageProps) => {
 				<MenuImageUploaderWidget />
 				<div className="w-full sticky bottom-4 mt-auto">
 					<button
-						className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold"
+						className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold disabled:bg-grey-50 disabled:text-white disabled:cursor-not-allowed"
 						disabled={isUploading || images.length === 0}
 						onClick={handleSubmit}
 					>
-						등록하기
+						완료
 					</button>
 				</div>
 			</div>
