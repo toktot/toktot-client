@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { AnimatePresence, PanInfo, motion } from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
 
 import { useBottomSheet } from './BottomSheet';
 
@@ -71,7 +72,10 @@ export const PeekableBottomSheetContent = ({
 					role="dialog"
 					aria-modal="true"
 					// viewport 기준 고정 포지셔닝
-					className="fixed bottom-0 max-h-[90vh] left-0 right-0 z-50 rounded-t-2xl bg-white shadow-lg"
+
+					className={twMerge(
+						'fixed bottom-0 max-h-[90vh] left-0 right-0 z-50 rounded-t-2xl bg-white shadow-lg lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[480px]',
+					)}
 					style={
 						mode === 'peek'
 							? { top: 0, height: clampedPeek }
