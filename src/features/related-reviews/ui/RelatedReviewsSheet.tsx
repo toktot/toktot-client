@@ -35,16 +35,18 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 			/>
 			<hr className="border-grey-20" />
 			{/* 리뷰 리스트 */}
-			<div className="px-4 bg-[#F2FAFE] max-h-[40vh] overflow-y-auto [&::-webkit-scrollbar]:hidden">
+			<div className="flex-1 min-h-fit px-4 bg-[#F2FAFE] overflow-y-auto [&::-webkit-scrollbar]:hidden">
 				<hr className="border-grey-20 -mx-4" />
-				{isLoading && <div className="p-4 text-center">로딩 중...</div>}
-				{!isLoading &&
-					reviews.map((review) => (
-						<div key={review.id}>
-							<ReviewDetailItem review={review} />
-							<hr className="border-grey-20 -mx-4" />
-						</div>
-					))}
+				<div className="h-[25vh]">
+					{isLoading && <div className="p-4 text-center">로딩 중...</div>}
+					{!isLoading &&
+						reviews.map((review) => (
+							<div key={review.id}>
+								<ReviewDetailItem review={review} />
+								<hr className="border-grey-20 -mx-4" />
+							</div>
+						))}
+				</div>
 			</div>
 
 			{/* TODO: 무한 스크롤 트리거 추가 */}

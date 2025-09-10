@@ -25,7 +25,7 @@ export const ReviewTooltipSheet = ({ open, onOpenChange, review }: Props) => {
 	return (
 		<BottomSheet open={open} onOpenChange={onOpenChange}>
 			<BottomSheetOverlay className="fixed inset-0 z-40 bg-black/60" />
-			<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[80vh] rounded-t-2xl bg-white shadow-lg px-2 flex flex-col">
+			<BottomSheetContent className="fixed bottom-0 z-50 w-full min-h-[40vh] max-h-[80vh] rounded-t-2xl bg-white shadow-lg px-2 flex flex-col">
 				<div className="mx-auto my-3 h-1 w-6 rounded-full bg-grey-30" />
 
 				<div className="flex-shrink-0">
@@ -34,9 +34,8 @@ export const ReviewTooltipSheet = ({ open, onOpenChange, review }: Props) => {
 					</div>
 					<ReviewStatisticsWidget storeId={review.store.id} />
 				</div>
-				<div className="flex-1 min-h-0">
-					<RelatedReviewsSheet storeId={review.store.id} />
-				</div>
+
+				<RelatedReviewsSheet storeId={review.store.id} />
 			</BottomSheetContent>
 		</BottomSheet>
 	);

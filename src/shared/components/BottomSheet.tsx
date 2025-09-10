@@ -158,7 +158,7 @@ export const BottomSheetContent = ({
 					role="dialog"
 					aria-modal="true"
 					className={twMerge(
-						'fixed bottom-0 left-0 right-0 z-50 lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[480px]',
+						'fixed bottom-0 left-0 right-0 z-50 flex flex-col lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[480px]',
 						className,
 					)}
 					// 애니메이션 설정
