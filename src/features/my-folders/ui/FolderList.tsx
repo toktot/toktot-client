@@ -14,7 +14,16 @@ export const FolderList = () => {
 	}, [fetchFolders]);
 
 	if (isLoading) {
-		return <div className="p-4 text-center">폴더를 불러오는 중...</div>;
+		return (
+			<div className="grid grid-cols-2 gap-4">
+				{Array.from({ length: 4 }).map((_, i) => (
+					<div
+						key={i}
+						className="h-[20vh] w-full rounded-lg bg-grey-200 animate-pulse bg-grey-10"
+					/>
+				))}
+			</div>
+		);
 	}
 
 	if (folders.length === 0) {

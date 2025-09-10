@@ -46,9 +46,9 @@ const MyPage = () => {
 					{ id: 'saved', label: '저장한 리뷰' },
 				]}
 			/>
-			<div className="mt-4">
-				{activeTab === 'saved' && <FolderList />}
+			<div>
 				{activeTab === 'my' && <MyReviewList />}
+				{activeTab === 'saved' && <FolderList />}
 			</div>
 		</AppShell>
 	);
