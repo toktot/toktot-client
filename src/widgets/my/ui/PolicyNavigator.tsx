@@ -36,9 +36,7 @@ const PolicyNavigator: React.FC<PolicyNavigatorProps> = ({
 	];
 
 	return (
-		<div
-			className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}
-		>
+		<div className={`bg-white rounded-lg shadow-sm ${className}`}>
 			{/* 헤더 */}
 			<div className="px-6 py-4 border-b border-gray-100">
 				<h3 className="text-lg font-semibold text-gray-800">정책 및 약관</h3>
@@ -72,7 +70,7 @@ const PolicyNavigator: React.FC<PolicyNavigatorProps> = ({
 
 						{/* 화살표 아이콘 */}
 						<div className="flex-shrink-0 ml-4">
-							<Icon name={'ArrowRight'} />
+							<Icon name={'ArrowRight'} className="text-grey-50" />
 						</div>
 					</Link>
 				))}

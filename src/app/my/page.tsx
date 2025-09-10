@@ -5,11 +5,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 import { AppShell, Header } from '@/widgets/layout';
-import PolicyNavigator from '@/widgets/my/ui/PolicyNavigator';
 
 import { FolderList } from '@/features/my-folders/ui/FolderList';
 import { MyReviewList } from '@/features/my-reviews/ui/MyReviewList';
+import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
+import Icon from '@/shared/ui/Icon';
 import Tab from '@/shared/ui/Tab';
 
 type MyPageTab = 'saved' | 'my';
@@ -20,51 +21,31 @@ const MyPage = () => {
 	return (
 		<AppShell>
 			<Header className="bg-white">
+				<Header.Left>
+					<BackButton />
+				</Header.Left>
 				<Header.Center>마이페이지</Header.Center>
+				<Header.Right>
+					<Link href="/my/setting">
+						<Icon name={'Setting'} />
+					</Link>
+				</Header.Right>
 			</Header>
-			<div className="mt-4">
-				<div className="max-w-4xl mx-auto px-4 py-4 flex-1 flex flex-col">
-					<div className="mb-8">
-						<Link href="/signup">
-							<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-								<button className="text-xl font-semibold text-gray-800 mb-4">
-									회원가입하기
-								</button>
-							</div>
-						</Link>
+			<div className="w-full bg-grey-10">
+				<div className="mx-auto px-4 py-4">
+					<div className="rounded-2xl  text-grey-90 text-sm font-semibold p-4 bg-white flex justify-between items-center cursor-pointer">
+						내 정보
 					</div>
-
-					<div className="mb-8">
-						<Link href="/login">
-							<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-								<button className="text-xl font-semibold text-gray-800 mb-4">
-									로그인하기
-								</button>
-							</div>
-						</Link>
-					</div>
-
-					<div className="mb-8">
-						<Link href="/PasswordFind">
-							<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-								<button className="text-xl font-semibold text-gray-800 mb-4">
-									비밀번호 찾기
-								</button>
-							</div>
-						</Link>
-					</div>
-					<PolicyNavigator className="mb-8" />
 				</div>
-				<Tab<MyPageTab>
-					activeTab={activeTab}
-					onTabChange={setActiveTab}
-					tabs={[
-						{ id: 'my', label: '작성한 리뷰' },
-						{ id: 'saved', label: '저장한 리뷰' },
-					]}
-				/>
 			</div>
-
+			<Tab<MyPageTab>
+				activeTab={activeTab}
+				onTabChange={setActiveTab}
+				tabs={[
+					{ id: 'my', label: '작성한 리뷰' },
+					{ id: 'saved', label: '저장한 리뷰' },
+				]}
+			/>
 			<div className="mt-4">
 				{activeTab === 'saved' && <FolderList />}
 				{activeTab === 'my' && <MyReviewList />}
