@@ -129,7 +129,7 @@ export const ReviewImageWidget = ({
 
 	if (isEditing) {
 		return (
-			<div className="fixed inset-0 z-50 bg-grey-90">
+			<div className="fixed inset-0 z-50 bg-grey-90 lg:w-[480px] lg:mx-auto">
 				{showGuide && (
 					<TooltipGuideOverlay onDismiss={() => setShowGuide(false)} />
 				)}
