@@ -9,14 +9,14 @@ interface AuthorScoreLabelProps {
 const getScoreStyles = (score: number) => {
 	if (score >= 70) {
 		// 70-100: Green
-		return 'bg-sub-green-50 border-[#00C79F]';
+		return 'bg-sub-green-50 border-[#00C79F] opacity-70';
 	}
 	if (score >= 31) {
 		// 31-69: Blue
-		return 'bg-[#3AC8FF] border-primary-40';
+		return 'bg-[#3AC8FF] border-primary-40 opacity-70';
 	}
 	// 0-30: Orange
-	return 'bg-sub-orange-50 border-[#FFB885]';
+	return 'bg-sub-orange-50 border-[#FFB885] opacity-70';
 };
 
 export const AuthorScoreLabel = ({ score }: AuthorScoreLabelProps) => {
