@@ -69,7 +69,8 @@ export const ReviewImageWidget = ({
 
 	useEffect(() => {
 		initializeImages();
-	}, [initializeImages]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const interactiveImages = buildInteractiveImages(images);
 	const selectedImage = interactiveImages.find(
@@ -128,7 +129,7 @@ export const ReviewImageWidget = ({
 
 	if (isEditing) {
 		return (
-			<div className="fixed inset-0 z-50 bg-grey-90">
+			<div className="fixed inset-0 z-50 bg-grey-90 lg:w-[480px] lg:mx-auto">
 				{showGuide && (
 					<TooltipGuideOverlay onDismiss={() => setShowGuide(false)} />
 				)}

@@ -1,10 +1,18 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
 import { KEYWORDS_BY_CATEGORY } from '@/entities/keyword/config/data';
+import { useReviewImageManager } from '@/entities/review';
+import { StoreData } from '@/entities/store';
 
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
 import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelectionWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { useStore } from '@/features/review/write/hooks/useStore';
+import ContinueOrNewReviewModal from '@/features/review/write/ui/ContinueOrNewReviewModal';
 
 import { StoreId } from '@/shared/model/types';
 
@@ -14,8 +22,44 @@ import { NextButton } from './NextButton';
 interface ReviewWriteContentProps {
 	storeId: StoreId;
 }
-
 export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
+	const [showContinueModal, setShowContinueModal] = useState(false);
+	const {
+		clearImages,
+		initializeImages,
+		hasExistingSession,
+		setExistingSessionHandled,
+	} = useReviewImageManager(storeId);
+	const { store } = useStore(storeId);
+	const initialCheckDone = useRef(false);
+
+	useEffect(() => {
+		const checkSession = async () => {
+			if (!initialCheckDone.current) {
+				await initializeImages();
+				initialCheckDone.current = true;
+			}
+		};
+		checkSession();
+	}, [initializeImages]);
+
+	useEffect(() => {
+		if (hasExistingSession) {
+			setShowContinueModal(true);
+		}
+	}, [hasExistingSession]);
+
+	const handleStartNew = () => {
+		clearImages();
+		setExistingSessionHandled();
+		setShowContinueModal(false);
+	};
+
+	const handleContinue = () => {
+		setExistingSessionHandled();
+		setShowContinueModal(false);
+	};
+
 	return (
 		<AppShell showBottomNav={false}>
 			<Header className="bg-white">
@@ -26,6 +70,17 @@ export function ReviewWriteContent({ storeId }: ReviewWriteContentProps) {
 					<span className="leading-[48px]">리뷰 쓰기</span>
 				</Header.Center>
 			</Header>
+			{showContinueModal && store && (
+				<ContinueOrNewReviewModal
+					onStartNew={handleStartNew}
+					onContinue={handleContinue}
+					store={store as StoreData}
+					onClose={() => {
+						setExistingSessionHandled();
+						setShowContinueModal(false);
+					}}
+				/>
+			)}
 			<div className="flex flex-col items-center p-4 gap-9">
 				<VisitedStoreWidget storeId={storeId} />
 				<ReviewImageWidget restaurantId={storeId} />

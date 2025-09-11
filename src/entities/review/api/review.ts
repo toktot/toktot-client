@@ -7,10 +7,14 @@ import type { KyInstance } from 'ky';
 import { ApiResponseSchema } from '@/shared/api/schema';
 import { StoreId } from '@/shared/model/types';
 
-import { ReviewServer, StoreReviewsPageServerSchema } from './schema';
+import {
+	ReviewClient,
+	ReviewClientSchema,
+	StoreReviewsPageServerSchema,
+} from './schema';
 
 export interface GetStoreReviewsResponse {
-	reviews: ReviewServer[];
+	reviews: ReviewClient[];
 	isLastPage: boolean;
 }
 
@@ -58,7 +62,7 @@ export const createReviewApi = (kyInstance: KyInstance) => ({
 		}
 
 		return {
-			reviews: pageData.content,
+			reviews: pageData.content.map((r) => ReviewClientSchema.parse(r)),
 			isLastPage: pageData.last,
 		};
 	},

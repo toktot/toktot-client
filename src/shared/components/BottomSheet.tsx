@@ -1,8 +1,8 @@
 'use client';
 
-import React, {
+import {
 	Children,
-	type ReactNode,
+	ReactNode,
 	cloneElement,
 	createContext,
 	isValidElement,
@@ -16,10 +16,11 @@ import { createPortal } from 'react-dom';
 
 import {
 	AnimatePresence,
-	type HTMLMotionProps,
-	type PanInfo,
+	HTMLMotionProps,
+	PanInfo,
 	motion,
 } from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
 
 interface BottomSheetContextProps {
 	isOpen: boolean;
@@ -124,6 +125,7 @@ interface BottomSheetContentProps extends HTMLMotionProps<'div'> {
 
 export const BottomSheetContent = ({
 	children,
+	className,
 	...props
 }: BottomSheetContentProps) => {
 	const { isOpen, close, contentRef } = useBottomSheet();
@@ -155,6 +157,10 @@ export const BottomSheetContent = ({
 					ref={contentRef}
 					role="dialog"
 					aria-modal="true"
+					className={twMerge(
+						'fixed bottom-0 left-0 right-0 z-50 lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[480px]',
+						className,
+					)}
 					// 애니메이션 설정
 					initial={{ y: '100%' }}
 					animate={{ y: '0%' }}

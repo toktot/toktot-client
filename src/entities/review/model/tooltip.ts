@@ -36,7 +36,7 @@ export interface FoodTooltip extends BaseTooltip {
 	category: 'food';
 	menuName: string;
 	price: number;
-	servings: number;
+	servings: number | null;
 }
 
 export interface ServiceTooltip extends BaseTooltip {

@@ -4,15 +4,16 @@ export const PlaceSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	address: z.string(),
-	distance: z.number().nullable(),
-	main_menus: z.string().nullable(),
-	average_rating: z.number().nullable(),
-	review_count: z.number().nullable(),
-	is_good_price_store: z.boolean().nullable(),
-	is_local_store: z.boolean().nullable(),
-	image: z.string().nullable(),
-	point: z.any().nullable(),
-	percent: z.any().nullable(),
+
+	distance: z.number().nullish(),
+	main_menus: z.string().nullish(),
+	average_rating: z.number().nullish(),
+	review_count: z.number().nullish(),
+	is_good_price_store: z.boolean().nullish(),
+	is_local_store: z.boolean().nullish(),
+	image: z.string().nullish(),
+	point: z.any().nullish(),
+	percent: z.any().nullish(),
 });
 
 export const SearchResponseDataSchema = z.object({

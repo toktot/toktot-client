@@ -6,8 +6,8 @@ import { ApiResponseSchema } from '@/shared/api/schema';
 import {
 	ReviewSearchRequest,
 	ReviewSearchRequestSchema,
-	ReviewSearchResponse,
-	ReviewSearchResponseDataSchema,
+	ReviewSearchResponseClient,
+	ReviewSearchResponseClientSchema,
 } from './schema';
 
 export const createReviewFeedApi = (ky: KyInstance) => ({
@@ -18,7 +18,7 @@ export const createReviewFeedApi = (ky: KyInstance) => ({
 		payload: ReviewSearchRequest,
 		page: number = 0,
 		size: number = 10,
-	): Promise<ReviewSearchResponse> {
+	): Promise<ReviewSearchResponseClient> {
 		const validatedPayload = ReviewSearchRequestSchema.parse(payload);
 
 		const raw = await ky
@@ -31,9 +31,9 @@ export const createReviewFeedApi = (ky: KyInstance) => ({
 			})
 			.json();
 
-		const parsed = ApiResponseSchema(ReviewSearchResponseDataSchema).safeParse(
-			raw,
-		);
+		const parsed = ApiResponseSchema(
+			ReviewSearchResponseClientSchema,
+		).safeParse(raw);
 
 		if (!parsed.success) {
 			throw new ApiError(

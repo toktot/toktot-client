@@ -37,7 +37,7 @@ const TooltipPayloadSchema = z.object({
 	detailed_review: z.string().optional(),
 	menu_name: z.string().optional(),
 	total_price: z.number().optional(),
-	serving_size: z.number().optional(),
+	serving_size: z.number().nullable(),
 });
 
 const ImagePayloadSchema = z.object({

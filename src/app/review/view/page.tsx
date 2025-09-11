@@ -1,10 +1,10 @@
+import { Suspense } from 'react';
+
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { ReviewOptionsMenu } from '@/features/review/read/ui/ReviewOptionsMenu';
-
-import { ReviewId } from '@/shared/model/types';
 
 const page = () => {
 	return (
@@ -17,12 +17,16 @@ const page = () => {
 					<span className="text-white">위치 표시</span>
 				</Header.Center>
 				<Header.Right>
-					<ReviewOptionsMenu reveiwId={'1' as ReviewId} />
+					<Suspense fallback={<div></div>}>
+						<ReviewOptionsMenu />
+					</Suspense>
 				</Header.Right>
 			</Header>
 
 			<main className="flex-1">
-				<ReviewStoryFeed />
+				<Suspense fallback={<div></div>}>
+					<ReviewStoryFeed />
+				</Suspense>
 			</main>
 		</AppShell>
 	);

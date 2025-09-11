@@ -49,10 +49,18 @@ export const buildSubmitPayload = (
 						};
 					}
 					if (tooltip.category === 'service') {
-						return { ...base, type: 'SERVICE' as const };
+						return {
+							...base,
+							type: 'SERVICE' as const,
+							serving_size: null,
+						};
 					}
 					if (tooltip.category === 'clean') {
-						return { ...base, type: 'CLEAN' as const };
+						return {
+							...base,
+							type: 'CLEAN' as const,
+							serving_size: null,
+						};
 					}
 					return undefined;
 				})

@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { AppShell, Header } from '@/widgets/layout';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
+import { useInfiniteScroll } from '@/shared/hooks/useInfiniteScroll';
 import Icon from '@/shared/ui/Icon';
 import Typography from '@/shared/ui/Typography';
 
@@ -22,21 +21,24 @@ function useDebounce(value: string, delay: number): string {
 		const handler = setTimeout(() => {
 			setDebouncedValue(value);
 		}, delay);
-		return () => {
-			clearTimeout(handler);
-		};
+		return () => clearTimeout(handler);
 	}, [value, delay]);
 	return debouncedValue;
 }
 
-// FIXME: 	const visitedStoreData = await getVisitedStoreData(storeId as StoreId);
-export const SelectStoreForReview = () => {
-	const router = useRouter();
+interface SelectStoreForReviewProps {
+	onStoreSelect: (store: Place) => void;
+}
+
+export const SelectStoreForReview = ({
+	onStoreSelect,
+}: SelectStoreForReviewProps) => {
 	const {
 		query,
 		suggestions,
 		results,
 		isLoading,
+		isEnd,
 		setQuery,
 		fetchSuggestions,
 		searchStores,
@@ -45,6 +47,14 @@ export const SelectStoreForReview = () => {
 	} = useStoreSearch();
 
 	const [view, setView] = useState<'suggestions' | 'results'>('suggestions');
+
+	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
+		isLoading,
+		hasMore: !isEnd,
+		onLoadMore: () => searchStores(false),
+		threshold: 1.0,
+	});
+
 	const debouncedQuery = useDebounce(query, 1000);
 
 	useEffect(() => {
@@ -64,7 +74,7 @@ export const SelectStoreForReview = () => {
 	};
 
 	const handleSelectStore = (store: Place) => {
-		router.push(`/review/write/${store.id}`);
+		onStoreSelect(store);
 	};
 
 	const handleQueryChange = (newQuery: string) => {
@@ -78,7 +88,7 @@ export const SelectStoreForReview = () => {
 
 	return (
 		<AppShell showBottomNav={false}>
-			<Header>
+			<Header className="bg-white">
 				<Header.Left>
 					<BackButton />
 				</Header.Left>
@@ -98,7 +108,7 @@ export const SelectStoreForReview = () => {
 				{view === 'suggestions' && query && (
 					<ul className="mt-2 ">
 						<li
-							className="p-3 cursor-pointer hover:bg-grey-50 flex items-center gap-2"
+							className="p-3 cursor-pointer hover:bg-grey-10 flex items-center gap-2"
 							onClick={handleSearchSubmit}
 						>
 							<Icon name="Search" size="xs" />
@@ -107,7 +117,7 @@ export const SelectStoreForReview = () => {
 						{suggestions.map((store) => (
 							<li
 								key={store.id}
-								className="p-3 cursor-pointer hover:bg-grey-50 flex items-center justify-between"
+								className="p-3 cursor-pointer hover:bg-grey-10 flex items-center justify-between"
 								onClick={() => handleSelectStore(store)}
 							>
 								<div className=" flex items-center gap-2">
@@ -137,7 +147,8 @@ export const SelectStoreForReview = () => {
 								/>
 							))
 						)}
-						{isLoading && results.length > 0 && <p>더 많은 결과 로드 중...</p>}
+						{isLoading && results.length > 0 && <p>더 많은 결과 찾는 중...</p>}
+						<div ref={loadMoreRef} className="h-10" />
 					</div>
 				)}
 			</div>

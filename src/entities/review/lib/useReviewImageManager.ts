@@ -23,6 +23,7 @@ interface ReviewImageState {
 	isLoading: boolean;
 	remainingSlots: number | null;
 	restaurantId: number | null;
+	hasExistingSession: boolean; // 추가
 }
 
 interface ReviewImageActions {
@@ -33,6 +34,7 @@ interface ReviewImageActions {
 	clearImages: () => Promise<void>;
 	setMainImage: (id: ReviewImageId) => void;
 	clearAllState: () => void;
+	setExistingSessionHandled: () => void; // 추가
 }
 
 const initialState: ReviewImageState = {
@@ -41,6 +43,7 @@ const initialState: ReviewImageState = {
 	isLoading: false,
 	remainingSlots: null,
 	restaurantId: null,
+	hasExistingSession: false, // 추가
 };
 
 export const useReviewImageStore = create<
@@ -66,18 +69,31 @@ export const useReviewImageStore = create<
 
 			try {
 				const sessionData = await api.getImageSession(restaurantId);
-				if (sessionData.has_session) {
+				if (
+					sessionData &&
+					sessionData.has_session &&
+					sessionData.images.length > 0
+				) {
 					const clientImages = mapServerImagesToUploadReviewImages(
 						sessionData.images,
 					);
 					set((state) => {
 						state.images = clientImages;
+						state.hasExistingSession = true; // 이전 세션이 있음을 표시
 						if (clientImages.length > 0) {
 							state.mainImageId = clientImages[0].id;
 						} else {
 							state.mainImageId = null;
 						}
 						state.remainingSlots = sessionData.remaining_slots;
+					});
+				} else {
+					// No session or empty session, clear local state
+					set((state) => {
+						state.images = [];
+						state.mainImageId = null;
+						state.remainingSlots = MAX_IMAGE_COUNT;
+						state.hasExistingSession = false;
 					});
 				}
 			} catch (error) {
@@ -125,6 +141,8 @@ export const useReviewImageStore = create<
 					if (!state.mainImageId && clientImages.length > 0) {
 						state.mainImageId = clientImages[0].id;
 					}
+					// uploadImages로 추가된 것은 기존 세션이 아님
+					// state.hasExistingSession은 그대로 유지
 				});
 			} catch (error) {
 				console.error('이미지 업로드 실패:', error);
@@ -193,6 +211,10 @@ export const useReviewImageStore = create<
 			set({ mainImageId: id });
 		},
 
+		setExistingSessionHandled: () => {
+			set({ hasExistingSession: false });
+		},
+
 		clearAllState: () => {
 			set(initialState);
 		},
@@ -204,13 +226,14 @@ export const useReviewImageManager = (restaurantId: StoreId) => {
 		images,
 		isLoading,
 		remainingSlots,
-		// totalCount,
+		hasExistingSession,
 		initializeImages,
 		uploadImages,
 		deleteImage,
 		clearImages,
 		setRestaurantId,
 		setMainImage,
+		setExistingSessionHandled,
 		mainImageId,
 	} = useReviewImageStore();
 
@@ -222,12 +245,13 @@ export const useReviewImageManager = (restaurantId: StoreId) => {
 		images,
 		isLoading,
 		remainingSlots,
-		// totalCount,
+		hasExistingSession,
 		initializeImages,
 		uploadImages,
 		deleteImage,
 		clearImages,
 		setMainImage,
+		setExistingSessionHandled,
 		mainImageId,
 	};
 };

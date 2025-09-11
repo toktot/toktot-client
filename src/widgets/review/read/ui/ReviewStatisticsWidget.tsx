@@ -45,7 +45,7 @@ const Bar = ({
 			/>
 		</div>
 		{rawValue && (
-			<span className="w-fit text-xs text-grey-800 text-right">{rawValue}</span>
+			<span className="w-7 text-xs text-grey-800 text-right">{rawValue}</span>
 		)}
 	</div>
 );
@@ -131,6 +131,8 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 	);
 
 	colors[maxKey] = 'bg-grey-90';
+
+	//가중 평균
 	const avgSatisfaction =
 		total === 0
 			? 0
@@ -158,7 +160,7 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 					<Bar
 						valuePercent={distribution.high}
 						barClassName={colors.high}
-						rawValue={`${distribution.high}%`}
+						rawValue={`${distribution.high.toFixed(0)}%`}
 						trackClassName="h-2 bg-grey-20"
 					>
 						<div className="flex gap-1 w-30">
@@ -169,7 +171,7 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 					<Bar
 						valuePercent={distribution.mid}
 						barClassName={colors.mid}
-						rawValue={`${distribution.mid}%`}
+						rawValue={`${distribution.mid.toFixed(0)}%`}
 						trackClassName="h-2 bg-grey-20"
 					>
 						<div className="flex gap-1 w-30">
@@ -180,7 +182,7 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 					<Bar
 						valuePercent={distribution.low}
 						barClassName={colors.low}
-						rawValue={`${distribution.low}%`}
+						rawValue={`${distribution.low.toFixed(0)}%`}
 						trackClassName="h-2 bg-grey-20 "
 					>
 						<div className="flex gap-1 w-30">

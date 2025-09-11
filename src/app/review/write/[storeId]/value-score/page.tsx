@@ -33,7 +33,6 @@ export default function ValueScorePage() {
 		setIsLoading(true);
 		try {
 			const payload = buildSubmitPayload(restaurantId, imageManager.images);
-			console.log('Submitting review payload:', payload);
 
 			const api = createWriteReviewApi(
 				createAuthApi({ getToken: () => getDecryptedToken() ?? undefined }),

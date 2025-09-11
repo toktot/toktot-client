@@ -87,4 +87,10 @@ export { default as ReviewFill } from './review_fill.svg';
 
 export { default as Error } from './error.svg';
 export { default as Success } from './success.svg';
+
 export { default as Avatar } from './Avatar.svg';
+
+export { default as GasimbiHeart } from './gasimbi_heart.svg';
+
+export { default as Setting } from './setting.svg';
+

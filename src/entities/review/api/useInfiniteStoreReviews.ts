@@ -7,10 +7,10 @@ import { StoreId } from '@/shared/model/types';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
 import { createReviewApi } from './review';
-import { ReviewServer } from './schema';
+import { ReviewClient } from './schema';
 
 export const useInfiniteStoreReviews = (storeId: StoreId) => {
-	const [reviews, setReviews] = useState<ReviewServer[]>([]);
+	const [reviews, setReviews] = useState<ReviewClient[]>([]);
 	const [page, setPage] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasNextPage, setHasNextPage] = useState(true);
