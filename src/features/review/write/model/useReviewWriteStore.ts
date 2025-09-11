@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 
 import { FinalReviewData } from '@/widgets/review/write/ui/CreateReviewSheet';
 
+import { exhaustiveCheck } from '@/shared/lib/exhaustiveCheck';
 import { ReviewImageId, TooltipId } from '@/shared/model/types';
 
 type BeginResult =
@@ -131,6 +132,8 @@ export const useReviewWriteStore = create<
 							description: data.detailedText,
 						};
 						break;
+					default:
+						exhaustiveCheck(data.category);
 				}
 
 				if (state.draftTooltipId === id) {
@@ -190,6 +193,8 @@ export const useReviewWriteStore = create<
 					case 'clean':
 						state.tooltips[id] = { ...base, category: 'clean' };
 						break;
+					default:
+						exhaustiveCheck(category);
 				}
 			});
 		},
