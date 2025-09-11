@@ -1,11 +1,16 @@
+'use client';
+
 import { AppShell, Header } from '@/widgets/layout';
 import PolicyNavigator from '@/widgets/my/ui/PolicyNavigator';
 
+import { useAuth } from '@/features/auth/context/AuthProvider';
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
 import Icon from '@/shared/ui/Icon';
 
 const Page = () => {
+	const { logout } = useAuth();
+
 	return (
 		<AppShell>
 			<Header className="bg-white">
@@ -33,7 +38,10 @@ const Page = () => {
 					<PolicyNavigator />
 				</div>
 
-				<button className="underline cursor-pointer text-sub-red-30">
+				<button
+					onClick={logout}
+					className="underline cursor-pointer text-sub-red-30"
+				>
 					로그아웃하기
 				</button>
 			</div>

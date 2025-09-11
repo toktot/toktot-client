@@ -13,6 +13,7 @@ import {
 } from '@/shared/utils/storage';
 
 import { User } from '../../../entities/user/types/auth';
+import { logoutUserApi } from '../api/api';
 import { LoginResponse } from '../components/LoginForm';
 
 interface AuthContextType {
@@ -62,11 +63,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	const logoutHandler = () => {
-		removeToken();
-		removeUser();
-		setUser(null);
-		router.push('/login'); // 로그아웃 후 로그인 페이지로 이동
+	const logoutHandler = async () => {
+		try {
+			await logoutUserApi();
+		} finally {
+			// API 호출 성공 여부와 관계없이 클라이언트에서는 항상 로그아웃 처리
+			removeToken();
+			removeUser();
+			setUser(null);
+			router.push('/login'); // 로그아웃 후 로그인 페이지로 이동
+		}
 	};
 
 	return (
