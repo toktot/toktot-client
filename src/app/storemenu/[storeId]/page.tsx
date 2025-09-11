@@ -48,7 +48,7 @@ export default function StoreDetailPage() {
 
 	useEffect(() => {
 		const token = getDecryptedToken();
-		console.log(token);
+
 		if (!token) {
 			router.replace('login');
 		}
@@ -59,9 +59,9 @@ export default function StoreDetailPage() {
 		const fetchStore = async () => {
 			try {
 				const res = await api.get(`/v1/restaurants/${storeId}`);
-				console.log(res.data);
+
 				const json = res.data;
-				console.log(json);
+
 				if (json.success && json.data) {
 					setStore(json.data);
 				} else {
