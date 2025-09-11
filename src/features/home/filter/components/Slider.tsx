@@ -26,7 +26,7 @@ export default function PriceRangeSlider({
 	}, []);
 	useEffect(() => {
 		onChange?.(minValue, maxValue);
-	});
+	}, [minValue, maxValue]);
 
 	const trackRef = useRef<HTMLDivElement | null>(null);
 

@@ -10,14 +10,17 @@ import PriceTabs from '@/features/home/components/homeStore';
 
 import { getDecryptedToken } from '@/shared/utils/storage';
 
+import { CategoryItem } from './FoodIcon';
+
 export default function GoodstoreClient() {
 	const searchParams = useSearchParams();
 
-	const initialPrice = searchParams.get('price') || '';
+	const initialPrice = Number(searchParams.get('price') || 0);
 	const initialFood = searchParams.get('food') || '';
 
 	const [selectedPrice, setSelectedPrice] = useState(initialPrice);
 	const [selectedFood, setSelectedFood] = useState(initialFood);
+	console.log(setSelectedPrice);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -27,14 +30,13 @@ export default function GoodstoreClient() {
 		}
 	}, [router]);
 
-	const handleFilterSelect = (price: string, food: string) => {
-		setSelectedPrice(price);
-		setSelectedFood(food);
+	const handleFilterSelect = (food: CategoryItem) => {
+		setSelectedFood(food.name);
 	};
 
 	return (
 		<HomeAppShell showBottomNav={true}>
-			<main className="flex flex-col h-screen">
+			<main className="flex flex-col h-screen pb-[80px]">
 				<div className="flex-1 overflow-y-auto scrollbar-hide">
 					<section className="bg-white px-4 py-4">
 						<div className="mt-8 flex items-center justify-between mb-4">

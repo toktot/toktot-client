@@ -42,11 +42,13 @@ export default function StoreDetailPage() {
 	const params = useParams();
 	const router = useRouter();
 
-	const storeId = params.storeId as string;
+	const storeId = Number(params.storeId);
 	const [store, setStore] = useState<StoreData | null>(null);
 	const [selected, setSelected] = useState(false);
+
 	useEffect(() => {
 		const token = getDecryptedToken();
+		console.log(token);
 		if (!token) {
 			router.replace('login');
 		}
@@ -56,9 +58,10 @@ export default function StoreDetailPage() {
 	useEffect(() => {
 		const fetchStore = async () => {
 			try {
-				const res = await api.get(`/v1/restaurants/${storeId}`, {});
-
-				const json = await res.data;
+				const res = await api.get(`/v1/restaurants/${storeId}`);
+				console.log(res.data);
+				const json = res.data;
+				console.log(json);
 				if (json.success && json.data) {
 					setStore(json.data);
 				} else {

@@ -1,33 +1,50 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Store, mockStores } from '@/entities/store/model/mockStore';
+import { useRouter } from 'next/navigation';
 
 import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
 
+import api from '../lib/api';
 import { CategoryItem } from './FoodIcon';
 import StoreCardNew from './StoreCardNew';
 
 interface PriceTabsProps {
-	initialPrice?: string;
+	initialPrice?: number;
 	initialFood?: string;
-	onSelect?: (price: string, food: string) => void;
+	onSelect?: (food: CategoryItem) => void;
+	onChange?: (price: number, food: string) => void;
 }
 const priceRanges = [
-	{ label: '1만원대', min: 10000, max: 19999 },
-	{ label: '2~3만원대', min: 20000, max: 39999 },
-	{ label: '3~5만원대', min: 30000, max: 49999 },
-	{ label: '5~7만원대', min: 50000, max: 69999 },
-	{ label: '7만원대 이상', min: 70000, max: 1000000 },
+	{ label: '만원이하', value: 0 },
+	{ label: '1만원대', value: 10000 },
+	{ label: '2~3만원대', value: 20000 },
+	{ label: '3~5만원대', value: 30000 },
+	{ label: '5~7만원대', value: 50000 },
+	{ label: '7만원대 이상', value: 70000 },
 ];
+interface GoodPriceStore {
+	id: number;
+	name: string;
+	distance: string;
+	main_menus: string;
+	average_rating: number;
+	address: string;
+	review_count: number;
+	is_good_price_store: boolean;
+	is_local_store: boolean;
+	image: string;
+}
 
 export default function PriceTabs({
 	initialFood = '',
 	onSelect,
+	onChange,
 }: PriceTabsProps) {
 	const { categories } = useCategories();
+	const router = useRouter();
 
 	const [selectedFood, setSelectedFood] = useState<CategoryItem | null>(
 		categories?.find((cat) => cat.name === initialFood) || null,
@@ -40,25 +57,53 @@ export default function PriceTabs({
 	) => {
 		setSelectedFood(food);
 		setActiveTab(price);
-		if (onSelect) onSelect(price.label, food?.name || '');
+		if (onChange) onChange(price.value, food?.name || '');
 	};
+	const [stores, setStores] = useState<GoodPriceStore[]>([]);
+	const [loading, setLoading] = useState(false);
+	console.log(loading);
+	const handleClick = (item: CategoryItem) => {
+		setSelectedFood(item);
+		if (onSelect) onSelect(item);
+		router.push(`/search?q=${encodeURIComponent(item.name)}`);
+	};
+	const fetchStores = async (priceValue: number, foodName: string) => {
+		setLoading(true);
+		try {
+			const response = await api.get('/v1/restaurants/good-price', {
+				params: {
+					priceRange: priceValue || 0,
+					latitude: 33.4996, // 필요에 따라 사용자 위도
+					longitude: 126.5312, // 필요에 따라 사용자 경도
+					page: 0,
+					size: 20,
+				},
+			});
+			const data = response.data;
+			if (data?.data?.content) {
+				let list = data.data.content;
 
-	const filteredStores: Store[] = useMemo(() => {
-		return mockStores.filter((store) => {
-			const firstPrice = store.menuPrices?.[0]?.price;
-			if (!firstPrice) return false;
+				// 음식 선택 시 간단 필터 (백엔드에서 음식 필터를 지원하면 제거 가능)
+				if (foodName) {
+					list = list.filter((store: GoodPriceStore) =>
+						store.main_menus.includes(foodName),
+					);
+				}
 
-			const inPriceRange =
-				firstPrice >= activeTab.min && firstPrice <= activeTab.max;
-			const hasSelectedFood = selectedFood?.name
-				? store.mainMenus?.includes(selectedFood.name)
-				: true;
-
-			return inPriceRange && hasSelectedFood;
-		});
-	}, [activeTab, selectedFood]);
-
+				setStores(list.slice(0, 3)); // 최대 3개만 보여주기
+			}
+		} catch (err) {
+			console.error(err);
+		} finally {
+			setLoading(false);
+		}
+	};
+	useEffect(() => {
+		fetchStores(activeTab.value, selectedFood?.name || '');
+		//근데 가격대에 상관없이 api 주소는
+	}, [activeTab.value, selectedFood?.name]);
 	return (
+		//아 아니에요 그 priceRange로 값 다 다르게 가고 있어요 네 그 parameter로 {}이거 넘겨주면
 		<section>
 			<div className="relative mb-4 overflow-x-auto scrollbar-hide">
 				{/* 기본 선 (전체 w-full, grey-20) */}
@@ -88,14 +133,14 @@ export default function PriceTabs({
 			</div>
 			{/* 탭 버튼 */}
 			{/* 탭 버튼 */}
-			<div className="overflow-x-auto mb-4 justify-start scrollbar-hide">
+			<div className="overflow-x-auto mb-4 justify-start scrollbar-hide justify-center items-center">
 				<div className="inline-flex gap-4 whitespace-nowrap">
 					{categories?.map((cat) => (
 						<div key={cat.id} className="flex flex-col items-center w-[60px]">
 							{/* 네모 + 아이콘 버튼 */}
 							<button
 								className="w-[60px] h-[60px] flex items-center justify-center rounded-xl bg-grey-20"
-								onClick={() => setSelectedFood(cat)}
+								onClick={() => handleClick(cat)}
 							>
 								<Icon name={cat.icon} className="w-10 h-10" />
 							</button>
@@ -111,7 +156,7 @@ export default function PriceTabs({
 
 			{/* 가게 카드들 */}
 			<div className="flex flex-col gap-4 justify-center items-center">
-				{filteredStores.map((store) => (
+				{stores.map((store) => (
 					<StoreCardNew key={store.id} review={store} />
 				))}
 			</div>

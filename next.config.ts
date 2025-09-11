@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
 	 * https://nextjs.org/docs/messages/next-image-unconfigured-host
 	 */
 	images: {
-		domains: ['tong.visitkorea.or.kr'],
+		domains: ['tong.visitkorea.or.kr', 't1.kakaocdn.net', 'img1.kakaocdn.net'],
 		remotePatterns: [
 			{
 				protocol: 'https',

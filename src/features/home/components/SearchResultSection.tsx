@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
-import { Store } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
@@ -12,11 +11,13 @@ import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 import FilterBar from '@/features/home/components/FilterBar';
 import { Review } from '@/features/home/model/mockHome';
 import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
+import Auto from '@/features/searchBar/components/Auto';
 
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';
 import StoreInfoCard from '@/shared/components/StoreCard';
 import Toast from '@/shared/components/Toast';
+import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
@@ -51,12 +52,12 @@ interface BackendReview {
 }
 
 interface BackendPlace {
-	id: number | null;
+	id: number;
 
-	name: string | null;
-	address: string | null;
+	name: string;
+	address: string;
 	distance?: string | null;
-	main_menus?: string[] | null;
+	main_menus?: string | null;
 	average_rating?: number | null;
 	is_good_price_store?: boolean | null;
 	is_local_store?: boolean | null;
@@ -64,6 +65,19 @@ interface BackendPlace {
 	point?: number | null;
 	percent?: string | null;
 	review_count?: number | null;
+}
+interface FrontendPlace {
+	id: number;
+	name: string;
+	address: string;
+	distance: string;
+	mainMenus?: string[];
+	average_rating: number;
+	is_good_price_store: boolean;
+	image: string;
+	valueScore: number;
+	topPercent: string;
+	review_count: number;
 }
 
 function toReview(api: BackendReview): Review {
@@ -82,14 +96,13 @@ function toReview(api: BackendReview): Review {
 		isBookmarked: api.isBookmarked ?? false,
 	};
 }
-function toStore(api: BackendPlace): Store {
+function toStore(api: BackendPlace): FrontendPlace {
 	let parsedMenus: string[] = [];
-
 	if (typeof api.main_menus === 'string') {
 		try {
 			const obj = JSON.parse(api.main_menus);
 			if (obj.firstMenu) {
-				parsedMenus = [obj.firstMenu.trim()]; // ✅ firstMenu만
+				parsedMenus = [obj.firstMenu.trim()];
 			}
 		} catch {
 			parsedMenus = [];
@@ -99,23 +112,23 @@ function toStore(api: BackendPlace): Store {
 	}
 
 	return {
-		id: api.id ?? 0,
-		storeName: api.name ?? 'Unknown Store',
-		address: api.address ?? '',
+		id: api.id,
+		name: api.name,
+		address: api.address,
 		distance: api.distance ?? '0',
-		mainMenus: parsedMenus,
-		rating: api.average_rating ?? 0,
-		isKindStore: api.is_good_price_store ?? false,
-		storeImageUrl: api.image ?? '/images/foodImage1.png',
+		mainMenus: parsedMenus ?? [],
+		average_rating: api.average_rating ?? 0,
+		is_good_price_store: api.is_good_price_store ?? false,
+		image: api.image ?? '/images/foodImage1.png',
 		valueScore: api.point ?? 80,
 		topPercent: api.percent ?? '20',
-		reviewCount: api.review_count ?? 0,
+		review_count: api.review_count ?? 0,
 	};
 }
 
 interface ReviewSearchBody {
 	query: string;
-	page: number;
+	page?: number;
 
 	sort?: string;
 	location?: {
@@ -173,17 +186,29 @@ export default function SearchResultSection() {
 	const [tab, setTab] = useState<'review' | 'store'>(initialTab ?? 'review');
 	const [filter, setFilter] = useState<number | null>(null);
 	const [filterSummary, setFilterSummary] = useState('');
-	const [stores, setStores] = useState<Store[]>([]);
+	const [stores, setStores] = useState<FrontendPlace[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
+	const fetchRef = useRef({ reviews: false, stores: false });
 	const pageRef = useRef(1);
+	const [text, setText] = useState('');
+	const handleSelect = (selectedText: string) => {
+		setInputValue(selectedText);
+		setQuery(selectedText);
+
+		setText('');
+		pageRef.current = 1;
+		setReviews([]);
+		setStores([]);
+		setHasMore(true);
+		setHasMoreReviews(true);
+		router.push(`/search?q=${encodeURIComponent(selectedText)}`);
+	};
 
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [reviewPage, setReviewPage] = useState(1);
+	console.log(reviewPage);
 	const [hasMoreReviews, setHasMoreReviews] = useState(true);
-
-	const fetchReviewCalledRef = useRef(false);
 
 	console.log(filterSummary, loading, error);
 
@@ -217,18 +242,21 @@ export default function SearchResultSection() {
 	const rating = Number(searchParams.get('rating') ?? 0);
 	const mealTime = searchParams.get('mealTime');
 	const menu = searchParams.get('menu');
+	const { location } = useCurrentLocation();
 
 	const fetchReviews = useCallback(async () => {
-		if (!query || fetchReviewCalledRef.current) return;
-		fetchReviewCalledRef.current = true;
+		if (!query || fetchRef.current.reviews) return;
+		fetchRef.current.reviews = true;
 		try {
 			const body: ReviewSearchBody = {
 				query,
-				page: reviewPage,
+
+				sort: sortOption,
 			};
-			const lat = searchParams.get('lat');
-			const lng = searchParams.get('lng');
-			if (lat && lng) {
+
+			if (distance && location?.coords) {
+				const lat = location?.coords.latitude;
+				const lng = location?.coords.longitude;
 				body.location = {
 					latitude: Number(lat),
 					longitude: Number(lng),
@@ -238,25 +266,57 @@ export default function SearchResultSection() {
 			if (rating) {
 				body.rating = { min: rating };
 			}
-			if (mealTime) {
-				body.mealTime = mealTime;
+
+			if (mealTime !== null) {
+				// mealTime은 string이지만 숫자 형태이므로 Number로 변환
+				const mealValue = Number(mealTime);
+
+				// mealOptions에서 value와 매칭되는 항목 찾기
+				const matchedOption = mealOptions.find(
+					(option) => option.value === mealValue,
+				);
+
+				if (matchedOption) {
+					// iconName을 가져와서 대문자로 변환
+					body.mealTime = matchedOption.iconName.toUpperCase();
+				} else {
+					console.warn('잘못된 mealTime 값:', mealTime);
+				}
 			}
 
 			if (menu) {
-				body.localFood = {
-					type: menu,
-					...(searchParams.get('minPrice')
-						? { minPrice: Number(searchParams.get('minPrice')) }
-						: {}),
-					...(searchParams.get('maxPrice')
-						? { maxPrice: Number(searchParams.get('maxPrice')) }
-						: {}),
+				const menuToLocalFoodTypeMap: Record<string, string> = {
+					돔베고기: 'DOMBEGOGI',
+					한식면류: 'meat_noodle_icon',
+					성게미역국: 'sea_urchin_seaweed_icon',
+					고사리해장국: 'bracken_hangover_icon',
+					옥돔: 'red_tilefish_icon',
+					갈치: 'cutlassfish_icon',
+					회: 'raw_fish_icon',
+					빙떡: 'bing_icon',
+					오메기떡: 'OMEGI_RICE_CAKE',
 				};
+
+				const mappedType = menuToLocalFoodTypeMap[menu]; // enum 키 값
+				if (mappedType) {
+					body.localFood = {
+						type: mappedType, // 반드시 enum 키로
+						...(searchParams.get('minPrice')
+							? { minPrice: Number(searchParams.get('minPrice')) }
+							: {}),
+						...(searchParams.get('maxPrice')
+							? { maxPrice: Number(searchParams.get('maxPrice')) }
+							: {}),
+					};
+				} else {
+					console.warn('선택한 메뉴가 enum 매핑에 없습니다:', menu);
+				}
 			}
 			const keywords = searchParams.getAll('keywords');
 			if (keywords.length > 0) {
 				body.keywords = keywords;
 			}
+			console.log('요청 body 확인', body);
 
 			setLoading(true);
 
@@ -267,34 +327,30 @@ export default function SearchResultSection() {
 
 			if (!res.data.data) return;
 			const { content, totalElements } = res.data.data;
-			const mappedReviews: Review[] = content.map(toReview);
-
-			console.log('content', content);
 
 			if (content) {
 				setReviews((prev) => {
-					const newReviews = mappedReviews.filter(
-						(review) => !prev.find((r) => r.id === review.id),
-					);
+					const newReviews = content
+						.map(toReview)
+						.filter((r: Review) => !prev.find((pr) => pr.id === r.id));
 					return [...prev, ...newReviews];
 				});
-				setHasMoreReviews(
-					reviews.length + mappedReviews.length < totalElements,
-				);
+				setHasMoreReviews(reviews.length + content.length < totalElements);
 			}
 		} finally {
 			setLoading(false);
-			fetchReviewCalledRef.current = false;
+			fetchRef.current.reviews = false;
 		}
 	}, [
 		query,
-		reviewPage,
-		distance,
+		sortOption,
 		mealTime,
-		rating,
 		menu,
+		rating,
 		reviews.length,
+		distance,
 		searchParams,
+		location?.coords,
 	]);
 
 	const fetchStores = useCallback(async () => {
@@ -370,26 +426,9 @@ export default function SearchResultSection() {
 			setLoading(false);
 		}
 	}, [query, searchParams, distance, rating, menu, mealTime, sortOption]);
-
 	useEffect(() => {
-		pageRef.current = 1;
-		setStores([]);
-
-		setReviews([]);
-
-		fetchStores();
-		fetchReviews();
-	}, [fetchStores, fetchReviews]);
-
-	useEffect(() => {
-		if (tab === 'review') {
-			fetchReviewCalledRef.current = false;
-			fetchReviews();
-		} else if (tab === 'store') {
-			pageRef.current = 1;
-
-			fetchStores();
-		}
+		if (tab === 'review') fetchReviews();
+		if (tab === 'store') fetchStores();
 	}, [tab, fetchReviews, fetchStores]);
 
 	const handleFilterChange = (newFilter: number | null) => {
@@ -434,6 +473,10 @@ export default function SearchResultSection() {
 
 		setFilterSummary(summaryParts.join(' '));
 	}, [rating, searchParams]);
+	useEffect(() => {
+		if (tab === 'review') fetchReviews();
+		if (tab === 'store') fetchStores();
+	}, [tab, fetchReviews, fetchStores]);
 
 	return (
 		<HomeAppShell showBottomNav={true}>
@@ -451,8 +494,13 @@ export default function SearchResultSection() {
 							<div className="min-w-[315px] max-w-[400px] w-full">
 								<SearchBox
 									query={inputValue}
-									onChange={setInputValue}
+									onChange={(val) => {
+										setInputValue(val);
+										setText(val);
+									}}
 									onSearchClick={() => {
+										setQuery(inputValue);
+										setText('');
 										const params = new URLSearchParams(searchParams.toString());
 										params.set('q', inputValue);
 										params.delete('filter');
@@ -466,9 +514,6 @@ export default function SearchResultSection() {
 										setReviewPage(1);
 										setHasMore(true);
 										setHasMoreReviews(true);
-
-										fetchStores();
-										fetchReviews();
 									}}
 									leftIcon={
 										<Icon name="Search" size="s" className="text-grey-50" />
@@ -522,6 +567,7 @@ export default function SearchResultSection() {
 									}
 									onSortChange={(newSort) => setSortOption(newSort)}
 								/>
+								<Auto query={text} onSelect={handleSelect} />
 							</div>
 
 							{priceSummary ? (
@@ -566,15 +612,16 @@ export default function SearchResultSection() {
 									}
 									onSortChange={(newSort) => setSortOption(newSort)}
 								/>
+								<Auto query={text} onSelect={handleSelect} />
 							</div>
 							<div className="mt-4 w-full flex flex-col">
 								{stores
 									.filter((store) => {
 										const queryLower = query.toLowerCase();
-										const nameMatch = store.storeName
+										const nameMatch = store.name
 											.toLowerCase()
 											.includes(queryLower);
-										const menuMatch = store.mainMenus.some((menu) =>
+										const menuMatch = store.mainMenus?.some((menu) =>
 											menu.toLowerCase().includes(queryLower),
 										);
 										return nameMatch || menuMatch;

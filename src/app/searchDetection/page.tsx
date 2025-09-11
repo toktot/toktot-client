@@ -131,6 +131,7 @@ function LocationSearchContent({
 	const q = searchParams.get('q') ?? '';
 	const [minPrice, setMinPrice] = useState<number | null>(null);
 	const [maxPrice, setMaxPrice] = useState<number | null>(null);
+	const [isPriceChanged, setIsPriceChanged] = useState(false);
 
 	const [query, setQuery] = useState(q);
 	console.log(setQuery);
@@ -440,10 +441,18 @@ function LocationSearchContent({
 												initialMin={minPrice ?? priceSummary.minPrice}
 												initialMax={maxPrice ?? priceSummary.maxPrice}
 												onChange={(min, max) => {
+													setIsPriceChanged(true);
 													setMinPrice(min);
 													setMaxPrice(max);
 												}}
 											/>
+										)}
+										{isPriceChanged ? (
+											<span>
+												{minPrice} ~ {maxPrice}
+											</span>
+										) : (
+											<span>Nan~Nan</span>
 										)}
 									</div>
 								) : (

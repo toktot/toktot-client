@@ -87,3 +87,4 @@ export { default as ReviewFill } from './review_fill.svg';
 
 export { default as Error } from './error.svg';
 export { default as Success } from './success.svg';
+export { default as Avatar } from './Avatar.svg';
