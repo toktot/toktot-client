@@ -163,7 +163,7 @@ export interface LocalFoodFilter {
 }
 export interface StoreSearchBody {
 	query?: string;
-	page: number;
+	page?: number;
 
 	sort?: string;
 	location?: LocationFilter;
@@ -178,17 +178,17 @@ export default function SearchResultSection() {
 	const router = useRouter();
 	const q = searchParams.get('q') ?? '';
 	const [sortOption, setSortOption] = useState<
-		'distance' | 'popularity' | 'RATING' | 'satisfaction'
-	>('distance');
+		'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION'
+	>('DISTANCE');
 	const [inputValue, setInputValue] = useState(q);
 	const [query, setQuery] = useState(q);
 	const initialTab = searchParams.get('tab') as 'review' | 'store' | null;
 	const [tab, setTab] = useState<'review' | 'store'>(initialTab ?? 'review');
 	const [filter, setFilter] = useState<number | null>(null);
-	const [filterSummary, setFilterSummary] = useState('');
+	const [, setFilterSummary] = useState('');
 	const [stores, setStores] = useState<FrontendPlace[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const [, setLoading] = useState(true);
+
 	const fetchRef = useRef({ reviews: false, stores: false });
 	const pageRef = useRef(1);
 	const [text, setText] = useState('');
@@ -206,18 +206,16 @@ export default function SearchResultSection() {
 	};
 
 	const [reviews, setReviews] = useState<Review[]>([]);
-	const [reviewPage, setReviewPage] = useState(1);
-	console.log(reviewPage);
-	const [hasMoreReviews, setHasMoreReviews] = useState(true);
+	const [, setReviewPage] = useState(1);
 
-	console.log(filterSummary, loading, error);
+	const [, setHasMoreReviews] = useState(true);
 
 	const handleReset = () => {
 		setQuery('');
 		setInputValue('');
 	};
-	const [hasMore, setHasMore] = useState(true);
-	console.log(setError, hasMoreReviews, hasMore);
+	const [, setHasMore] = useState(true);
+
 	useEffect(() => {
 		const token = getDecryptedToken();
 		if (!token) {
@@ -257,10 +255,11 @@ export default function SearchResultSection() {
 			if (distance && location?.coords) {
 				const lat = location?.coords.latitude;
 				const lng = location?.coords.longitude;
+				const radius = parseInt(distance, 10) || 1000;
 				body.location = {
 					latitude: Number(lat),
 					longitude: Number(lng),
-					radius: Number(distance) || 1000,
+					radius,
 				};
 			}
 			if (rating) {
@@ -286,14 +285,14 @@ export default function SearchResultSection() {
 
 			if (menu) {
 				const menuToLocalFoodTypeMap: Record<string, string> = {
-					돔베고기: 'DOMBEGOGI',
-					한식면류: 'meat_noodle_icon',
-					성게미역국: 'sea_urchin_seaweed_icon',
-					고사리해장국: 'bracken_hangover_icon',
-					옥돔: 'red_tilefish_icon',
-					갈치: 'cutlassfish_icon',
-					회: 'raw_fish_icon',
-					빙떡: 'bing_icon',
+					돔베고기: 'DOMBE_MEAT',
+					고기국수: 'MEAT_NOODLE_SOUP',
+					성게미역국: 'SEA_URCHIN_SEAWEED_SOUP',
+					고사리해장국: 'BRACKEN_HANGOVER_SOUP',
+					옥돔구이: 'GRILLED_RED_TILEFISH',
+					갈치구이: 'GRILLED_CUTLASSFISH',
+					회: 'RAW_FISH_MULHOE',
+					빙떡: 'BING_RICE_CAKE',
 					오메기떡: 'OMEGI_RICE_CAKE',
 				};
 
@@ -316,14 +315,15 @@ export default function SearchResultSection() {
 			if (keywords.length > 0) {
 				body.keywords = keywords;
 			}
+
 			console.log('요청 body 확인', body);
+			console.log('request body:', JSON.stringify(body, null, 2));
 
 			setLoading(true);
 
 			console.log('요청 body', body);
 			const res = await api.post('/v1/reviews/search', body);
 			console.log('응답 데이터 :', res.data);
-			console.log('fetchReviews', res);
 
 			if (!res.data.data) return;
 			const { content, totalElements } = res.data.data;
@@ -361,34 +361,65 @@ export default function SearchResultSection() {
 		try {
 			const body: StoreSearchBody = {
 				query,
-				page: pageRef.current,
+
 				sort: sortOption,
 			};
-			const lat = searchParams.get('lat');
-			const lng = searchParams.get('lng');
-			if (lat && lng) {
+			console.log('pageRef.current', pageRef.current);
+			if (distance && location?.coords) {
+				const lat = location?.coords.latitude;
+				const lng = location?.coords.longitude;
+				const radius = parseInt(distance, 10) || 1000;
 				body.location = {
 					latitude: Number(lat),
 					longitude: Number(lng),
-					radius: Number(distance) || 1000,
+					radius,
 				};
 			}
 			if (rating) {
 				body.rating = { min: rating };
 			}
-			if (mealTime) {
-				body.mealTime = mealTime;
+			if (mealTime !== null) {
+				// mealTime은 string이지만 숫자 형태이므로 Number로 변환
+				const mealValue = Number(mealTime);
+
+				// mealOptions에서 value와 매칭되는 항목 찾기
+				const matchedOption = mealOptions.find(
+					(option) => option.value === mealValue,
+				);
+
+				if (matchedOption) {
+					// iconName을 가져와서 대문자로 변환
+					body.mealTime = matchedOption.iconName.toUpperCase();
+				} else {
+					console.warn('잘못된 mealTime 값:', mealTime);
+				}
 			}
 			if (menu) {
-				body.localFood = {
-					type: menu,
-					...(searchParams.get('minPrice')
-						? { minPrice: Number(searchParams.get('minPrice')) }
-						: {}),
-					...(searchParams.get('maxPrice')
-						? { maxPrice: Number(searchParams.get('maxPrice')) }
-						: {}),
+				const menuToLocalFoodTypeMap: Record<string, string> = {
+					돔베고기: 'DOMBE_MEAT',
+					고기국수: 'MEAT_NOODLE_SOUP',
+					성게미역국: 'SEA_URCHIN_SEAWEED_SOUP',
+					고사리해장국: 'BRACKEN_HANGOVER_SOUP',
+					옥돔구이: 'GRILLED_RED_TILEFISH',
+					갈치구이: 'GRILLED_CUTLASSFISH',
+					회: 'RAW_FISH_MULHOE',
+					빙떡: 'BING_RICE_CAKE',
+					오메기떡: 'OMEGI_RICE_CAKE',
 				};
+				const mappedType = menuToLocalFoodTypeMap[menu]; // enum 키 값
+				if (mappedType) {
+					body.localFood = {
+						type: mappedType, // 반드시 enum 키로
+						...(searchParams.get('minPrice')
+							? { minPrice: Number(searchParams.get('minPrice')) }
+							: {}),
+						...(searchParams.get('maxPrice')
+							? { maxPrice: Number(searchParams.get('maxPrice')) }
+							: {}),
+					};
+				} else {
+					console.warn('선택한 메뉴가 enum 매핑에 없습니다:', menu);
+				}
 			}
 
 			const keywords = searchParams.getAll('keywords');
@@ -396,14 +427,25 @@ export default function SearchResultSection() {
 				body.keywords = keywords;
 			}
 			const hasFilter = rating || menu || keywords.length > 0;
+
+			if (!hasFilter) {
+				body.page = pageRef.current;
+			}
 			console.log('요청 body:', body);
 			const endpoint = hasFilter
-				? '/v1/restaurants/search/filter'
+				? '/v1/restaurants/search/filter?page=0'
 				: '/v1/restaurants/search';
-
+			console.log('endpoint', endpoint);
 			const res = await api.post(endpoint, body);
+			console.log('응답데이터', res.data);
 
-			const { places, current_page, is_end } = res.data.data;
+			const data = res.data.data;
+
+			if (!data) {
+				return;
+			}
+			const { places, current_page, is_end } = data;
+			console.log('응답 데이터 :', data);
 			console.log('places', res.data.data.places);
 			console.log('res', places);
 			if (!places || places.length == 0) {
@@ -419,13 +461,22 @@ export default function SearchResultSection() {
 					);
 				});
 
-				pageRef.current = current_page + 1;
 				if (is_end) setHasMore(false);
+				pageRef.current = current_page + 1;
 			}
 		} finally {
 			setLoading(false);
 		}
-	}, [query, searchParams, distance, rating, menu, mealTime, sortOption]);
+	}, [
+		query,
+		searchParams,
+		distance,
+		rating,
+		menu,
+		mealTime,
+		sortOption,
+		location?.coords,
+	]);
 	useEffect(() => {
 		if (tab === 'review') fetchReviews();
 		if (tab === 'store') fetchStores();
@@ -441,11 +492,12 @@ export default function SearchResultSection() {
 		}
 
 		router.push(`/search?${params.toString()}`);
-		pageRef.current = 1;
+
 		setStores([]);
 		setReviews([]);
 		setReviewPage(1);
 		setHasMore(true);
+		pageRef.current = 0;
 		setHasMoreReviews(true);
 
 		fetchStores();

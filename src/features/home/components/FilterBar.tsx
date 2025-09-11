@@ -38,7 +38,7 @@ interface Props {
 	onClick: () => void;
 	onSummaryChange?: (summary: string) => void;
 	onSortChange?: (
-		sort: 'distance' | 'popularity' | 'RATING' | 'satisfaction',
+		sort: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION',
 	) => void;
 }
 
@@ -62,8 +62,8 @@ const FilterBar: React.FC<Props> = ({
 	}, [searchParams]);
 
 	const [sortOption, setSortOption] = useState<
-		'distance' | 'popularity' | 'RATING' | 'satisfaction'
-	>('distance');
+		'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION'
+	>('DISTANCE');
 	const handleSortSelect = (option: typeof sortOption) => {
 		setSortOption(option);
 		if (onSortChange) onSortChange(option);
@@ -94,7 +94,10 @@ const FilterBar: React.FC<Props> = ({
 					}
 					break;
 				case 2:
-					if (menu) label = `${menu} `;
+					if (menu) {
+						label = `${menu} `;
+						active = true;
+					}
 
 					if (minPrice && maxPrice) {
 						label += `${minPrice} ~ ${maxPrice} 만원`;

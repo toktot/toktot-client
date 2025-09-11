@@ -9,7 +9,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import HeaderBox from '@/shared/components/HeaderBox';
 import NearCard from '@/shared/components/NearCard';
 import SearchBox from '@/shared/components/SearchBox';
-import StoreInfoCard from '@/shared/components/StoreCard';
 import Toast from '@/shared/components/Toast';
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
@@ -98,7 +97,7 @@ export default function HomeContainer() {
 
 	const router = useRouter();
 	const [showToast, setShowToast] = useState(false);
-	const [goodPriceStores, setGoodPriceStores] = useState<GoodPriceStore[]>([]);
+	const [, setGoodPriceStores] = useState<GoodPriceStore[]>([]);
 	const [nearbyStores, setNearbyStores] = useState<NearbyStore[]>([]);
 	const {
 		location,
@@ -110,7 +109,6 @@ export default function HomeContainer() {
 	const [popularReviews, setPopularReviews] = useState<PopularReview[]>([]);
 
 	useEffect(() => {
-		console.log('위치 제대로 가져오니', { location, locationError });
 		if (!location || locationError) {
 			setNearbyStores([]);
 			return;
@@ -118,7 +116,6 @@ export default function HomeContainer() {
 
 		const fetchNearbyStores = async () => {
 			try {
-				console.log('지정 좌표로 가까운 ', location.coords);
 				const response = await api.post(
 					'/v1/restaurants/search/filter?page=0',
 					{
@@ -131,7 +128,7 @@ export default function HomeContainer() {
 				);
 
 				let stores: NearbyStore[] = response?.data?.data?.content ?? [];
-				console.log('가까운 식당 API 응답', stores);
+
 				stores = stores.slice(0, 5);
 				setNearbyStores(stores);
 			} catch (error) {
@@ -147,11 +144,7 @@ export default function HomeContainer() {
 		async (priceValue?: number, foodName?: string) => {
 			try {
 				const actualPrice = priceValue || price || 0;
-				console.log('[fetchGoodPriceStores] 호출됨', {
-					priceValue,
-					foodName,
-					actualPrice,
-				});
+
 				const response = await api.get('/v1/restaurants/good-price', {
 					params: {
 						priceRange: actualPrice,
@@ -399,11 +392,7 @@ export default function HomeContainer() {
 							fetchGoodPriceStores(priceValue, foodName);
 						}}
 					/>
-					<div className="flex flex-col gap-4 mt-4">
-						{goodPriceStores.map((store) => (
-							<StoreInfoCard key={store.id} review={store} />
-						))}
-					</div>
+
 					<div className="flex justify-center mt-5">
 						<button
 							className="min-w-[343px] max-w-[430px] w-full border border-grey-40 rounded-3xl text-grey-90 text-center py-2"
