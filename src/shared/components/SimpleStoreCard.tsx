@@ -16,9 +16,9 @@ export interface SimpleStoreProps {
 		valueScore: number;
 		topPercent: string;
 		address: string;
-		mainMenu?: string;
+		mainMenu?: string | null;
 		rating: number;
-		distance?: string;
+		distance?: string | null;
 	};
 }
 

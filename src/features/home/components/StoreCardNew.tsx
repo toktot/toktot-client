@@ -1,31 +1,48 @@
 'use client';
 
-import { Store } from '@/entities/store/model/mockStore';
 import StoreCategoryTag from '@/entities/storeCard/components/StoreCategoryTag';
 import Image from 'next/image';
-
-import TopPercentTag from '@/features/home/model/TopPercentTag';
+import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 
-import GasimbiTag from '../model/GasimbiCategory';
-
-interface Props {
-	review: Store;
+interface GoodPriceStore {
+	review: {
+		id: number;
+		name: string;
+		distance: string;
+		main_menus: string;
+		average_rating: number;
+		address: string;
+		review_count: number;
+		is_good_price_store: boolean;
+		is_local_store: boolean;
+		image: string;
+	};
 }
 
-export default function StoreCardNew({ review }: Props) {
+export default function StoreCardNew({ review }: GoodPriceStore) {
+	const router = useRouter();
 	return (
 		<div className="min-w-[343px] max-w-[430px] w-full h-[232px] bg-white rounded-xl shadow-md overflow-hidden">
 			{/* 상단 이미지 */}
-			<div className="relative min-w-[343px] max-w-[430px] w-full h-[122px]">
-				<Image
-					src={review.storeImageUrl}
-					alt={`${review.storeName} 이미지`}
-					fill
-					className="object-cover"
-				/>
-				{review.isKindStore && (
+			<div
+				className="relative min-w-[343px] max-w-[430px] w-full h-[122px] justify"
+				onClick={() => router.push(`/storemenu/${review.id}`)}
+			>
+				{review.image ? (
+					<Image
+						src={review.image}
+						alt={`${review.name} 이미지`}
+						fill
+						className="object-cover"
+					/>
+				) : (
+					<div className="min-w-[343px] max-w-[430px] h-[122px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-t-xl">
+						사진을 준비하고 있어요
+					</div>
+				)}
+				{review.is_good_price_store && (
 					<div className="absolute top-2 left-2">
 						<StoreCategoryTag
 							className="text-[9px] px-1 py-0.3"
@@ -40,34 +57,34 @@ export default function StoreCardNew({ review }: Props) {
 				{/* 가게명 + 대표메뉴 */}
 				<div className="flex items-center gap-2">
 					<span className="text-sm font-semibold text-gray-900">
-						{review.storeName}
+						{review.name}
 					</span>
-					{review.mainMenus && (
+					{review.main_menus && (
 						<span className="text-xs text-gray-500 truncate">
-							{review.mainMenus.slice(0, 2).join(', ')}
+							{review.main_menus}
 						</span>
 					)}
 					<Icon name="Star" size="xxs" className="text-yellow-500" />
-					<span className="text-[11px] -ml-1">{review.rating.toFixed(1)}</span>
+					<span className="text-[11px] -ml-1">
+						{review.average_rating.toFixed(1)}
+					</span>
 					<span className="text-grey-90 text-[11px] -ml-1">
-						({review.reviewCount})
+						({review.review_count})
 					</span>
 				</div>
 
 				{/* 메뉴 가격 (첫 번째 메뉴) */}
-				{review.menuPrices?.[0] && (
-					<div className="text-[16px] font-medium text-grey-90">
-						주 메뉴 약 {review.menuPrices[0].price.toLocaleString()}원
-					</div>
-				)}
+				{review.main_menus}
 
 				{/* 태그들 */}
+				{/*
 				<div className="flex items-center gap-1 text-xs mt-1">
 					{review.topPercent && <TopPercentTag value={review.topPercent} />}
 					{review.valueScore !== undefined && (
 						<GasimbiTag value={review.valueScore} />
 					)}
 				</div>
+				*/}
 
 				{/* 주소 + 거리 */}
 				<div className="text-xs text-grey-70 flex items-center mt-1">

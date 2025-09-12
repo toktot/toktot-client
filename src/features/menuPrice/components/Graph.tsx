@@ -343,7 +343,7 @@ const PriceChart = () => {
 									const mappedStore = {
 										id: store.id,
 										storeImageUrl: store.storeImageUrl ?? '/default.png',
-										storeName: store.storeName,
+										name: store.storeName,
 										isKindStore: store.isKindStore ?? false,
 										mainMenus: store.mainMenus ?? [store.mainMenu ?? ''],
 										reviewCount: store.reviewCount ?? 0,

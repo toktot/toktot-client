@@ -2,8 +2,6 @@
 
 import Image from 'next/image';
 
-import TopPercentTag from '@/features/home/model/TopPercentTag';
-
 import SimpleStore, {
 	SimpleStoreProps,
 } from '@/shared/components/SimpleStoreCard';
@@ -11,37 +9,42 @@ import Icon from '@/shared/ui/Icon';
 
 import { getGasimbiStyle } from './ImageCategory';
 
-export interface ReviewProps {
-	review: {
-		id: number;
-		nickname: string;
-		profileImageUrl?: string;
-		reviewCount?: number;
-		averageRating?: number;
-		gasimbi?: number;
-		image: string;
-		menu: string[];
-		date: string;
-		mealTime: string;
-		type?: string;
-		rating: number;
-		text?: string;
-		isKindStore?: boolean;
-		mainMenus?: string[];
-		topPercent?: string;
-		address?: string;
-		popular?: number;
-		placeName?: string;
-	};
+interface Author {
+	id: number;
+	nickname: string;
+	profileImageUrl: string | null;
+	reviewCount: number;
+	averageRating: number;
+}
+
+interface Restaurant {
+	id: number;
+	name: string;
+	representativeMenu: string | null;
+	address: string;
+	distanceInKm: string | null;
+}
+
+export interface PopularReview {
+	id: number;
+	author: Author;
+	isBookmarked: boolean;
+	valueForMoneyScore: number;
+	keywords: string[];
+	imageUrl: string | null; // 이미지 없을 수도 있음
+	restaurant: Restaurant;
+	rating: number | null;
+}
+
+interface PhotoReviewCardProps {
+	review: PopularReview;
 	stores: SimpleStoreProps['review'][];
 }
 
-export default function PhotoReviewCard({ review, stores }: ReviewProps) {
-	const matchedStore = stores.find(
-		(store) => store.storeName === review.placeName,
-	);
+export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
+	const hasImage = !!review.imageUrl;
 
-	const gasimbiStyle = getGasimbiStyle(review.gasimbi);
+	const gasimbiStyle = getGasimbiStyle(review.valueForMoneyScore);
 
 	return (
 		<div
@@ -53,19 +56,27 @@ export default function PhotoReviewCard({ review, stores }: ReviewProps) {
 			{/* 상단 프로필 + 닉네임 + 별점 */}
 			<div className="flex items-center justify-between p-2">
 				<div className="flex items-center gap-2">
-					<div className="relative w-7 h-8 rounded-full overflow-hidden">
-						<Image
-							src={review.profileImageUrl || '/images/default-profile.png'}
-							alt={`${review.nickname} 프로필`}
-							fill
-							className="object-cover"
-						/>
+					<div className="relative w-7 h-8 rounded-full overflow-hidden flex items-center justify-center bg-grey-20">
+						{review.author.profileImageUrl ? (
+							<Image
+								src={review.author.profileImageUrl}
+								alt={`${review.author.nickname} 프로필`}
+								fill
+								className="object-cover"
+							/>
+						) : (
+							<Icon name="Avatar" size="xl" className="text-grey-60" />
+						)}
 					</div>
+
 					<div className="flex flex-col">
-						<span className="text-sm font-semibold">{review.nickname}</span>
+						<span className="text-sm font-semibold">
+							{review.author.nickname}
+						</span>
 						<span className="text-xs text-gray-400">
-							{review.reviewCount || 0}개 · 평균{' '}
-							{review.averageRating?.toFixed(1) || 0} · {review.date}
+							{review.author.reviewCount || 0}개 · 평균{' '}
+							{review.author.averageRating.toFixed(1) || 0}점 ·{' '}
+							{/*{review.date}*/}
 						</span>
 					</div>
 				</div>
@@ -83,61 +94,86 @@ export default function PhotoReviewCard({ review, stores }: ReviewProps) {
 
 			{/* 리뷰 이미지 */}
 			<div className="relative w-[290px] h-[282px]">
-				<Image
-					src={review.image}
-					alt={`${review.nickname} 리뷰 이미지`}
-					fill
-					className="object-cover"
-				/>
-				<div className="absolute bottom-0 w-full p-2">
-					<div className="relative">
-						<p className="text-xs text-white line-clamp-2 pr-10 mr-10">
-							{review.text && review.text.length > 25 ? (
-								<>
-									{review.text.slice(0, 25)}
-									<span className="text-grey-60">...더보기</span>
-								</>
-							) : (
-								review.text
-							)}
-						</p>
-						<Icon
-							name="Bookmark"
-							className="absolute bottom-0 right-0 text-white"
-						/>
+				{hasImage ? (
+					<Image
+						src={review.imageUrl as string}
+						alt={`${review.author.nickname} 리뷰 이미지`}
+						fill
+						className="object-cover"
+					/>
+				) : (
+					<div className="w-full h-[200px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm">
+						사진을 준비하고 있어요
 					</div>
+				)}
+
+				<div className="p-2 relative w-[290px]">
+					<p className="text-xs text-white line-clamp-2 pr-10 mr-10">
+						{/*
+						{review.text && review.text.length > 25 ? (
+							<>
+								{review.keywords.length > 0 ? review.keywords.join(', ') : ''}
+								<span className="text-grey-60">...더보기</span>
+							</>
+						) : (
+							review.text
+						)}
+							*/}
+					</p>
+					<Icon
+						name="Bookmark"
+						className="absolute bottom-5 right-2 text-white"
+					/>
 				</div>
 			</div>
 
 			{/* 설명 및 북마크 */}
 
-			{(review.gasimbi || review.topPercent) && (
+			{(review.valueForMoneyScore || review.keywords.length > 0) && (
 				<div className="flex flex-wrap gap-2 px-2 pb-2 pt-2">
-					{review.gasimbi !== undefined && (
+					{review.valueForMoneyScore !== undefined && (
 						<div
 							className={`inline-flex p-[1.5px] ${
-								review.gasimbi >= 80
+								review.valueForMoneyScore >= 80
 									? 'border border-gradient-to-r from-[#00C79F] to-[#006218] bg-grey-10'
-									: review.gasimbi >= 50
+									: review.valueForMoneyScore >= 50
 										? 'border-2 border-gradient-to-r from-[#006FFF] to-[#3AC8FF] bg-grey-10'
-										: review.gasimbi >= 30
+										: review.valueForMoneyScore >= 30
 											? 'bg-gradient-to-r from-[#FFB885] to-[#FF6600] bg-grey-10'
 											: 'bg-gray-200'
 							} `}
 						>
 							<span className={`text-xs font-medium ${gasimbiStyle.text}`}>
-								{review.nickname}님의 가심비 {review.gasimbi}점
+								{review.author.nickname}님의 가심비 {review.valueForMoneyScore}
+								점
 							</span>
 						</div>
 					)}
-					{review.topPercent && <TopPercentTag value={review.topPercent} />}
 				</div>
 			)}
 
 			{/* SimpleStore 카드 예시 (맨 아래) */}
-			{matchedStore && (
+			{review.restaurant && (
 				<div className="mt-2 bg-grey-10">
-					<SimpleStore review={matchedStore} />
+					<SimpleStore
+						review={{
+							id: review.restaurant.id,
+							storeImageUrl: review.imageUrl as string,
+							storeName: review.restaurant.name,
+							mainMenus: review.restaurant.representativeMenu
+								? [JSON.parse(review.restaurant.representativeMenu).treatMenu]
+								: [],
+							reviewCount: review.author.reviewCount,
+							valueScore: review.valueForMoneyScore,
+							topPercent: '',
+							rating: review.rating ?? 0,
+							mainMenu: review.restaurant.representativeMenu
+								? JSON.parse(review.restaurant.representativeMenu).firstMenu
+								: '',
+							address: review.restaurant.address,
+							distance: review.restaurant.distanceInKm,
+						}}
+					/>
 				</div>
 			)}
 		</div>

@@ -126,14 +126,18 @@ function LocationSearchContent({
 	const avgPrice = priceSummary?.avgPrice ?? 0;
 	const icon = priceSummary?.icon ?? null;
 	const searchParams = useSearchParams();
+	const handleMoreClick = () => {
+		if (!selectedCategoryName) return; // 값 없으면 그냥 종료
+		router.push(`/MenuPrice?q=${encodeURIComponent(selectedCategoryName)}`);
+	};
 
 	const focus = searchParams.get('focus');
 	const q = searchParams.get('q') ?? '';
 	const [minPrice, setMinPrice] = useState<number | null>(null);
 	const [maxPrice, setMaxPrice] = useState<number | null>(null);
+	const [, setIsPriceChanged] = useState(false);
 
 	const [query, setQuery] = useState(q);
-	console.log(setQuery);
 
 	const router = useRouter();
 	const { radius, setRadius } = useRadius();
@@ -212,18 +216,17 @@ function LocationSearchContent({
 		// 거리
 		const menuParam = searchParams.get('menu');
 		if (menuParam) {
-			console.log(categories);
 			const decodedMenu = menuParam.split('q=')[0];
-			console.log('URL menuParam:', decodedMenu); // URL에서 들어오는 값 확인
+
 			const matchedCategory = categories?.find(
 				(c) => c.name.split(' ').pop() === decodedMenu,
 			);
-			console.log(matchedCategory);
+
 			if (matchedCategory) setSelectCategory(matchedCategory.id ?? null);
 		}
 
 		const minPriceParam = searchParams.get('minPrice');
-		console.log(minPriceParam);
+
 		if (minPriceParam) setMinPrice(Number(minPriceParam));
 
 		const maxPriceParam = searchParams.get('maxPrice');
@@ -258,10 +261,8 @@ function LocationSearchContent({
 		const from = searchParams.get('from');
 		if (query) params.set('q', query);
 
-		console.log('from', from);
 		if (rating) params.set('rating', rating.toString());
 		if (radius) params.set('distance', radius.toString());
-		console.log(radius);
 
 		if (selectedCategories.length)
 			params.set('mood', selectedCategories.join(','));
@@ -320,7 +321,7 @@ function LocationSearchContent({
 					className="
     fixed bottom-0 left-0 right-0 mx-auto
     z-50 bg-white max-h-[50vh] p-4 overflow-y-auto
-    w-full min-w-[375px] lg:w-[480px]
+    w-full min-w-[375px] lg:w-[480px] pb-[80px]
   "
 				>
 					{/* 검색 범위 */}
@@ -427,24 +428,31 @@ function LocationSearchContent({
 												</span>
 												<span className="text-grey-70 text-sm">원</span>
 											</div>
-											<button className="text-[12px] text-grey-60 mr-4">
+											<button
+												className="text-[12px] text-grey-60 mr-4"
+												onClick={handleMoreClick}
+											>
 												더보기
 											</button>
 										</div>
 
-										{avgPrice !== null && avgPrice > 0 && (
-											<PriceRangeSlider
-												min={priceSummary.minPrice}
-												avg={priceSummary.avgPrice}
-												max={priceSummary.maxPrice}
-												initialMin={minPrice ?? priceSummary.minPrice}
-												initialMax={maxPrice ?? priceSummary.maxPrice}
-												onChange={(min, max) => {
-													setMinPrice(min);
-													setMaxPrice(max);
-												}}
-											/>
-										)}
+										{priceSummary &&
+											priceSummary.minPrice > 0 &&
+											avgPrice !== null &&
+											avgPrice > 0 && (
+												<PriceRangeSlider
+													min={priceSummary.minPrice}
+													avg={priceSummary.avgPrice}
+													max={priceSummary.maxPrice}
+													initialMin={minPrice ?? priceSummary.minPrice}
+													initialMax={maxPrice ?? priceSummary.maxPrice}
+													onChange={(min, max) => {
+														setIsPriceChanged(true);
+														setMinPrice(min);
+														setMaxPrice(max);
+													}}
+												/>
+											)}
 									</div>
 								) : (
 									<div className="mt-4 text-grey-60 text-sm">

@@ -4,9 +4,9 @@ import PrimaryButton from '@/shared/components/PrimaryButton';
 import Icon from '@/shared/ui/Icon';
 
 interface SortDropdownProps {
-	value: 'distance' | 'popularity' | 'RATING' | 'satisfaction';
+	value: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION';
 	onChange: (
-		option: 'distance' | 'popularity' | 'RATING' | 'satisfaction',
+		option: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION',
 	) => void;
 }
 
@@ -15,13 +15,13 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
 	const [selectedOption, setSelectedOption] = useState(value);
 
 	const options: {
-		value: 'distance' | 'popularity' | 'RATING' | 'satisfaction';
+		value: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION';
 		label: string;
 	}[] = [
-		{ value: 'distance', label: '가까운 순' },
-		{ value: 'popularity', label: '인기 순' },
+		{ value: 'DISTANCE', label: '가까운 순' },
+		{ value: 'SATISFACTION', label: '최신 순' },
+		{ value: 'POPULARITY', label: '인기 순' },
 		{ value: 'RATING', label: '별점 높은 순' },
-		{ value: 'satisfaction', label: '최신 순' },
 	];
 
 	const handleSelect = (option: typeof selectedOption) => {

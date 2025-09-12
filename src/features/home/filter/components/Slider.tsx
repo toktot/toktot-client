@@ -26,7 +26,7 @@ export default function PriceRangeSlider({
 	}, []);
 	useEffect(() => {
 		onChange?.(minValue, maxValue);
-	});
+	}, [minValue, maxValue]);
 
 	const trackRef = useRef<HTMLDivElement | null>(null);
 
@@ -122,9 +122,11 @@ export default function PriceRangeSlider({
 			</div>
 
 			{/* Selected range */}
-			<div className="text-center mt-4 text-lg font-bold text-black">
-				{`${minValue.toLocaleString()}원 ~ ${maxValue.toLocaleString()}원`}
-			</div>
+			{(minValue !== min || maxValue !== max) && (
+				<div className="text-center mt-4 text-lg font-bold text-black">
+					{`${minValue.toLocaleString()}원 ~ ${maxValue.toLocaleString()}원`}
+				</div>
+			)}
 		</div>
 	);
 }

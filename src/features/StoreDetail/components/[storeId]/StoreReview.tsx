@@ -2,12 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { createReviewApi } from '@/entities/review/api/review';
+import { ReviewStatisticsServer } from '@/entities/review/api/statisticsSchema';
 import { mockReviews } from '@/entities/store/model/mockReview';
+import ky from 'ky';
 import { useParams } from 'next/navigation';
 
-import api from '@/features/home/lib/api';
 import { mockHome } from '@/features/home/model/mockHome';
 
+import { reviewStatisticsApi } from '@/shared/api/reviewStatisticsApi';
+import { StoreId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 
 import ReviewCard, { ReviewCardProps } from '../ReviewCard';
@@ -43,16 +47,9 @@ interface ReviewResponse {
 	isBookmarked: boolean;
 	isWriter: boolean;
 }
-
-function mapReviewResponseToCard(review: ReviewResponse) {
-	const text: ReviewCardProps['review']['text'] = {};
-	review.images.forEach((img) => {
-		img.tooltips.forEach((tt) => {
-			const key = tt.type.toLowerCase() as 'food' | 'service' | 'clean';
-			text[key] = [tt.id, tt.rating, tt.detailedReview];
-		});
-	});
-
+function mapReviewResponseToCard(
+	review: ReviewResponse,
+): ReviewCardProps['review'] {
 	return {
 		id: review.id,
 		auth: {
@@ -62,9 +59,9 @@ function mapReviewResponseToCard(review: ReviewResponse) {
 			reviewCount: review.user.reviewCount,
 			averageRating: review.user.averageRating,
 		},
-		rating: review.images[0]?.tooltips[0]?.rating ?? 0,
+		rating: review.user.averageRating,
 		images: review.images.map((img) => ({
-			id: parseInt(img.imageId.slice(0, 8), 16), // 이미지 ID 숫자화
+			id: parseInt(img.imageId.slice(0, 8), 16),
 			imageUrl: img.imageUrl,
 			menus: img.tooltips
 				.filter((tt) => tt.type === 'FOOD')
@@ -76,7 +73,7 @@ function mapReviewResponseToCard(review: ReviewResponse) {
 		mealTime: review.mealTime,
 		date: review.createdAt,
 		gasimbi: review.satisfactionScore,
-		text,
+		text: {},
 		type: '음식',
 		categories: {},
 	};
@@ -89,37 +86,87 @@ interface Star {
 export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 	// 상단 정보용: mockHome의 첫 번째 데이터 사용 (실제 서비스라면 선택한 가게 정보 사용)
 	const params = useParams();
-	const storeId = Number(params.storeId);
-
+	const storeId = params.storeId as StoreId;
+	const reviewApi = createReviewApi(
+		ky.create({ prefixUrl: process.env.NEXT_PUBLIC_API_URL }),
+	);
 	const [reviews, setReviews] = useState<ReviewCardProps['review'][]>([]);
 	const [loading, setLoading] = useState(false);
+	const [reviewStats, setReviewStats] = useState<ReviewStatisticsServer | null>(
+		null,
+	);
+	const [reviewStatsError, setReviewStatsError] = useState<string | null>(null);
+	const [isReviewStatsLoading, setIsReviewStatsLoading] = useState(true);
+	console.log(reviewStatsError, isReviewStatsLoading);
+	useEffect(() => {
+		const fetchReviewStatistics = async () => {
+			try {
+				setIsReviewStatsLoading(true);
+				setReviewStatsError(null);
+				const data = await reviewStatisticsApi.getReviewStatistics(storeId);
+				console.log(data);
+				setReviewStats(data);
+			} catch (err) {
+				console.error('리뷰 통계 불러오기 실패', err);
+				setReviewStats(null);
+			}
+		};
+		if (storeId) fetchReviewStatistics();
+	}, [storeId]);
 
 	useEffect(() => {
-		async function fetchReviews() {
+		const fetchReviews = async () => {
 			setLoading(true);
 			try {
-				const res = await api.get(`/restaurants/${storeId}/reviews`, {
-					params: {
-						sort: 'RATING', // query param
-					},
-				});
+				if (!storeId) return;
 
-				if (res.data?.data?.content) {
-					const mapped = res.data.data.content.map(mapReviewResponseToCard);
-					setReviews(mapped);
-				} else {
-					setReviews([]);
-				}
+				const page = 0;
+				const size = 10;
+				const sort = 'RATING';
+
+				const { reviews } = await reviewApi.getStoreReviews(
+					storeId,
+					page,
+					size,
+					sort,
+				);
+
+				const mapped = reviews.map((r) =>
+					mapReviewResponseToCard({
+						id: r.id,
+						user: {
+							id: r.author.id,
+							nickname: r.author.nickname,
+							profileImageUrl: r.author.profileImageUrl,
+							reviewCount: r.author.reviewCount,
+							averageRating: r.author.averageRating,
+						},
+						images: r.images.map((img) => ({
+							imageId: img.imageId,
+							imageUrl: img.imageUrl,
+							imageOrder: img.imageOrder,
+							isMain: img.isMain,
+							tooltips: img.tooltips,
+						})),
+						mealTime: r.mealTime,
+						createdAt: r.createdAt,
+						satisfactionScore: r.satisfactionScore,
+						keywords: r.keywords,
+						isBookmarked: r.isBookmarked ?? false,
+						isWriter: r.isWriter,
+					}),
+				);
+				setReviews(mapped);
 			} catch (err) {
 				console.error(err);
 				setReviews([]);
 			} finally {
 				setLoading(false);
 			}
-		}
+		};
 		fetchReviews();
-	}, [storeId]);
-	const store = mockHome.find((s) => s.id === storeId);
+	}, [storeId, reviewApi]);
+	const store = mockHome.find((s) => s.id === Number(storeId));
 
 	const TABS = [
 		`전체 ${store?.totalNumber}`,
@@ -156,9 +203,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 		return () => observer.disconnect();
 	}, [reviews]);
 	const avgGasimbi = mockReviews[0]?.averagegasimbi ?? 0;
-	const satisfaction = mockReviews[0]?.satisfaction ?? 0;
-	const normal = mockReviews[0]?.normal ?? 0;
-	const bad = mockReviews[0]?.bad ?? 0;
+
 	return (
 		<div className="bg-grey-10">
 			<div className="min-w-[375px] max-w-[480px] overflow-y-auto flex flex-col items-center rounded-md bg-white">
@@ -167,7 +212,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 					<div className="flex flex-col items-start max-w-[480px]">
 						<div className="flex items-center mb-1 ml-2">
 							<span className="text-grey-80 text-sm">
-								{store?.ratingNumber}
+								{reviewStats?.totalReviewCount}
 							</span>
 							<span className="text-grey-70 text-[12px]">개 리뷰 평점</span>
 						</div>
@@ -181,7 +226,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 									size="xxl"
 								/>
 								<span className="text-3xl text-primary font-bold">
-									{store?.rating?.toFixed(1)}
+									{reviewStats?.overallRating.toFixed(1)}
 								</span>
 							</div>
 
@@ -189,17 +234,17 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 								{[
 									{
 										label: '청결',
-										value: store?.cleanrating ?? 0,
+										value: reviewStats?.tooltipRatings.cleanRating ?? 0,
 										color: 'bg-green-400',
 									},
 									{
 										label: '음식',
-										value: store?.foodrating ?? 0,
+										value: reviewStats?.tooltipRatings.foodRating ?? 0,
 										color: 'bg-blue-400',
 									},
 									{
 										label: '서비스',
-										value: store?.servicerating ?? 0,
+										value: reviewStats?.tooltipRatings.serviceRating ?? 0,
 										color: 'bg-orange-400',
 									},
 								].map(({ label, value, color }) => (
@@ -232,13 +277,27 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 					</div>
 					<div className="flex flex-col text-xs text-grey-85 gap-2 flex-1 ml-4">
 						{[
-							{ label: '만족해요', value: satisfaction, range: '100~70' },
-							{ label: '보통이에요', value: normal, range: '69~40' },
-							{ label: '아쉬워요', value: bad, range: '39~0' },
+							{
+								label: '만족해요',
+								value: reviewStats?.satisfactionDistribution.highRange,
+								range: '100~70',
+							},
+							{
+								label: '보통이에요',
+								value: reviewStats?.satisfactionDistribution.midRange,
+								range: '69~40',
+							},
+							{
+								label: '아쉬워요',
+								value: reviewStats?.satisfactionDistribution.lowRange,
+								range: '39~0',
+							},
 						]
-							.sort((a, b) => b.value - a.value)
+							.sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
 							.map(({ label, value, range }, _, arr) => {
-								const maxValue = Math.max(...arr.map((item) => item.value));
+								const maxValue = Math.max(
+									...arr.map((item) => item.value ?? 0),
+								);
 								const isMax = value === maxValue;
 								return (
 									<div key={label} className="flex items-center w-full">
@@ -254,7 +313,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 												className={`absolute h-[6px] rounded-full ${
 													isMax ? 'bg-grey-90' : 'bg-grey-50'
 												}`}
-												style={{ width: `${Math.min(value, 100)}%` }}
+												style={{ width: `${Math.min(value ?? 0, 100)}%` }}
 											/>
 										</div>
 
