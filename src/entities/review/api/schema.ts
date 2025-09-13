@@ -72,6 +72,13 @@ export const ReviewClientSchema = ReviewServerSchema.transform(
 			profileImageUrl:
 				serverData.author.profileImageUrl ?? '/images/avatar_default.png',
 		},
+		images: serverData.images.map((image) => ({
+			...image,
+			tooltips: image.tooltips.map((tooltip) => ({
+				...tooltip,
+				type: tooltip.type.toLowerCase(),
+			})),
+		})),
 	}),
 );
 

@@ -14,16 +14,28 @@ interface RelatedReviewsSheetProps {
 	storeId: StoreId;
 }
 
-//TODO: 카테고리 별 리뷰 조회
 export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
-	const [selectedCategory, setSelectedCategory] =
-		useState<TooltipCategory>('food');
+	const [selectedCategory, setSelectedCategory] = useState<
+		TooltipCategory | 'all'
+	>('all');
 
 	const { data: reviews, isLoading } = useInfiniteStoreReviews(storeId);
 
-	const handleCategoryChange = (category: TooltipCategory) => {
+	const handleCategoryChange = (category: TooltipCategory | 'all') => {
 		setSelectedCategory(category);
 	};
+
+	const filteredReviews = !reviews
+		? []
+		: selectedCategory === 'all'
+			? reviews.filter((review) =>
+					review.images.some((image) => image.tooltips.length > 0),
+				)
+			: reviews.filter((review) =>
+					review.images.some((image) =>
+						image.tooltips.some((tooltip) => tooltip.type === selectedCategory),
+					),
+				);
 
 	return (
 		<div className="flex h-full flex-col -mx-2">
@@ -32,6 +44,7 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 				selectedCategory={selectedCategory}
 				onCategoryChange={handleCategoryChange}
 				className="my-3 px-4"
+				showAllOption
 			/>
 			<hr className="border-grey-20" />
 			{/* 리뷰 리스트 */}
@@ -39,10 +52,18 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 				<hr className="border-grey-20 -mx-4" />
 				<div className="h-[25vh]">
 					{isLoading && <div className="p-4 text-center">로딩 중...</div>}
+					{!isLoading && filteredReviews.length === 0 && (
+						<div className="p-4 text-center text-grey-60">
+							표시할 리뷰가 없습니다.
+						</div>
+					)}
 					{!isLoading &&
-						reviews.map((review) => (
+						filteredReviews.map((review) => (
 							<div key={review.id}>
-								<ReviewDetailItem review={review} />
+								<ReviewDetailItem
+									review={review}
+									selectedCategory={selectedCategory}
+								/>
 								<hr className="border-grey-20 -mx-4" />
 							</div>
 						))}

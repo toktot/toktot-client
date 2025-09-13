@@ -1,3 +1,5 @@
+'use client';
+
 import {
 	CATEGORY_LABEL_MAP,
 	CATEGORY_MAP,
@@ -6,35 +8,57 @@ import {
 
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
-const CATEGORY_OPTIONS = Object.entries(CATEGORY_MAP).map(([key, value]) => ({
-	id: Number(key), // 0, 1, 2
-	label: CATEGORY_LABEL_MAP[value as TooltipCategory], // '음식', '서비스', '청결'
-	value: value as TooltipCategory, // 'food', 'service', 'clean'
-}));
+type BaseCategory = TooltipCategory;
+type ExtendedCategory = BaseCategory | 'all';
 
-const CATEGORY_ID_TO_VALUE_MAP = new Map(
-	CATEGORY_OPTIONS.map((opt) => [opt.id, opt.value]),
+const CATEGORY_BASE_OPTIONS = Object.entries(CATEGORY_MAP).map(
+	([key, value]) => ({
+		id: Number(key),
+		label: CATEGORY_LABEL_MAP[value as BaseCategory],
+		value: value as BaseCategory,
+	}),
 );
 
-const CATEGORY_VALUE_TO_ID_MAP = new Map(
-	CATEGORY_OPTIONS.map((opt) => [opt.value, opt.id]),
-);
-
-interface ReviewCategorySelectorProps {
-	selectedCategory: TooltipCategory;
-	onCategoryChange: (category: TooltipCategory) => void;
+// 함수 오버로딩을 위한 타입 정의
+type Props = {
 	className?: string;
-}
+} & (
+	| {
+			showAllOption: true;
+			selectedCategory: ExtendedCategory;
+			onCategoryChange: (category: ExtendedCategory) => void;
+	  }
+	| {
+			showAllOption?: false;
+			selectedCategory: BaseCategory;
+			onCategoryChange: (category: BaseCategory) => void;
+	  }
+);
 
-export const ReviewCategorySelector = ({
-	selectedCategory,
-	onCategoryChange,
-	className,
-}: ReviewCategorySelectorProps) => {
+export function ReviewCategorySelector({ ...props }: Props) {
+	const { className, selectedCategory, onCategoryChange, showAllOption } =
+		props as Props & { showAllOption?: boolean };
+
+	const CATEGORY_OPTIONS = showAllOption
+		? [
+				{ id: -1, label: '전체', value: 'all' as const },
+				...CATEGORY_BASE_OPTIONS,
+			]
+		: CATEGORY_BASE_OPTIONS;
+
+	const CATEGORY_ID_TO_VALUE_MAP = new Map(
+		CATEGORY_OPTIONS.map((opt) => [opt.id, opt.value]),
+	);
+
+	const CATEGORY_VALUE_TO_ID_MAP = new Map(
+		CATEGORY_OPTIONS.map((opt) => [opt.value, opt.id]),
+	);
+
 	const handleCategoryChange = (newCategoryId: number) => {
 		const newCategory = CATEGORY_ID_TO_VALUE_MAP.get(newCategoryId);
 		if (newCategory) {
-			onCategoryChange(newCategory);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			onCategoryChange(newCategory as any);
 		}
 	};
 
@@ -54,4 +78,4 @@ export const ReviewCategorySelector = ({
 			))}
 		</SingleCategorySelect>
 	);
-};
+}
