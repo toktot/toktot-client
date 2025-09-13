@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
 import { mapReviewContentToView } from '@/entities/review/api/mappers';
@@ -71,16 +71,6 @@ export function ReviewStoryFeed() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
-
-	const createQueryString = useCallback(
-		(name: string, value: string) => {
-			const params = new URLSearchParams(searchParams.toString());
-			params.set(name, value);
-
-			return params.toString();
-		},
-		[searchParams],
-	);
 	const currentPost = reviews[currentIndex];
 
 	useEffect(() => {
@@ -89,9 +79,13 @@ export function ReviewStoryFeed() {
 
 	useEffect(() => {
 		if (!currentPost?.id) return;
-		router.push(pathname + '?' + createQueryString('reviewId', currentPost.id));
+		const params = new URLSearchParams(searchParams.toString());
+		params.set('reviewId', currentPost.id);
+		params.set('authorId', String(currentPost.author.id));
+		router.push(pathname + '?' + params.toString());
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentPost?.id]);
+	}, [currentPost?.id, currentPost?.author.id]);
 
 	if (!currentPost && reviews.length === 0) {
 		return <div className="relative h-full overflow-hidden bg-black"></div>;
