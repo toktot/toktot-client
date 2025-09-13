@@ -45,7 +45,12 @@ export default function NearCard({ review }: StoreInfoCardProps) {
 					/>
 				) : (
 					<div className="w-[89px] h-[89px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-xl">
-						사진을 준비하고 있어요
+						<div className="flex flex-col flex items-center">
+							<span className="">
+								<Icon name="KoreanDish" size="xxl"></Icon>
+							</span>
+							<div className="">사진을 준비하고 있어요</div>
+						</div>
 					</div>
 				)}
 

@@ -9,25 +9,36 @@ import Image from 'next/image';
 import Icon, { IconProps } from '@/shared/ui/Icon';
 import StarRating from '@/shared/ui/StarRating';
 
-import CategoryTag from './CategoryTag';
-
+export interface Tooltip {
+	id: number;
+	rating?: number;
+	servingSize?: number;
+	detailedReview?: string;
+	type: 'FOOD' | 'SERVICE' | 'CLEANLINESS';
+	menuName?: string;
+	totalPrice?: number;
+}
+export interface ReviewImage {
+	imageId: string;
+	imageUrl: string;
+	imageOrder: number;
+	isMain: boolean;
+	tooltips: Tooltip[];
+}
 export interface ReviewCardProps {
 	review: {
 		id: number;
-		auth: {
-			id?: number;
+		author: {
+			id: number;
 			nickname: string;
 			profileImageUrl?: string;
 			reviewCount?: number;
 			averageRating?: number;
 		};
-		rating: number;
-		images: {
-			id: number;
-			imageUrl: string;
-			menus: { menuName: string; totalPrice: number }[];
-		}[];
-		mealTime: string;
+		reviewRating: number;
+		images: ReviewImage[];
+		keywords: string[];
+		mealTime: 'BREAKFAST' | 'LUNCH' | 'DINNER';
 		date: string;
 		gasimbi?: number;
 		text?: {
@@ -47,9 +58,8 @@ export interface ReviewCardProps {
 
 const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 	({ review, isCurrent = false }, ref) => {
-		const [rating, setRating] = useState(review.rating ?? 0);
-		const [selected, setSelected] = useState(false);
-		console.log(rating, selected);
+		const [, setRating] = useState(review.reviewRating ?? 0);
+		const [, setSelected] = useState(false);
 
 		const handleClick = () => {
 			setSelected(true);
@@ -60,58 +70,76 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 				ref={ref}
 				data-id={review.id}
 				className={clsx(
-					'rounded-3xl p-4 w-full flex flex-col gap-3',
-					isCurrent ? 'bg-primary-40' : 'bg-white',
+					' flex flex-col pb-[100px] w-full gap-2',
+					isCurrent ? 'bg-primary-10' : 'bg-white',
 				)}
 			>
 				{/* 상단: 프로필 & 시간 */}
 				{isCurrent && (
 					<div className="flex items-center gap-2 mb-2 text-white font-semibold">
-						<Icon name="Checkmark" className="w-4 h-4" />
-						<span>지금 보고 있는 리뷰</span>
+						<Icon name="ReviewCurrent" size="xs" />
+						<span className="text-primary-50 text-[9px]">
+							지금 보고 있는 리뷰
+						</span>
 					</div>
 				)}
 
 				<div className="flex gap-2 items-center justify-between">
 					<div className="flex flex-col">
-						<div className="flex items-center gap-1">
-							<span className="font-semibold text-[12px]">
-								{review.auth.nickname}
+						<div className="flex items-center gap-4">
+							<span>
+								{review.author.profileImageUrl ? (
+									<Image
+										src={review.author.profileImageUrl}
+										alt={`${review.author.nickname} 프로필`}
+										fill
+										className="object-cover"
+									/>
+								) : (
+									<Icon name="Avatar" size="s" className="text-grey-60" />
+								)}
 							</span>
-							<span className="text-grey-70 text-[11px]">
-								평균 ({review.auth.averageRating?.toFixed(1)}점)
-							</span>
-							<span className="text-grey-70 text-[11px]">
-								({review.auth.reviewCount}개)
-							</span>
-						</div>
+							<div className="flex flex-col">
+								<div className="flex flex-wrap -mb-1">
+									<span className="font-semibold text-[12px]">
+										{review.author.nickname}
+									</span>
+									<span className="text-grey-70 text-[11px]">
+										평균 ({review.author.averageRating?.toFixed(1)}점)
+									</span>
+									<span className="text-grey-70 text-[11px]">
+										({review.author.reviewCount}개)
+									</span>
+								</div>
 
-						<div className="flex items-center justify-between mt-2 gap-2">
-							<StarRating
-								value={review.rating}
-								onChange={setRating}
-								className="mb-1"
-								iconSize="xxs"
-							/>
-							<div className="flex items-center text-sm text-grey-50 whitespace-nowrap">
-								{(() => {
-									const meal = mealOptions.find(
-										(r) => r.label === review.mealTime,
-									);
-									if (!meal) return null;
-									return (
-										<div className="flex items-center gap-1">
-											<Icon name={meal.iconName} size="xxs" />
-											<span className="text-grey-60 text-[9px]">
-												{meal.label}
-											</span>
-										</div>
-									);
-								})()}
-								<span>・</span>
-								<span className="text-[9px] text-grey-60">
-									{getTimeAgo(review.date)}
-								</span>
+								<div className="flex items-center justify-between mt-2 gap-2">
+									<StarRating
+										value={review.reviewRating}
+										onChange={setRating}
+										className="mb-1"
+										iconSize="xxs"
+									/>
+									<div className="flex items-center text-sm text-grey-50 whitespace-nowrap">
+										{(() => {
+											const meal = mealOptions.find(
+												(r) => r.iconName === review.mealTime.toLowerCase(),
+											);
+											if (!meal) return null;
+											return (
+												<div className="flex items-center gap-1">
+													<Icon name={meal.iconName} size="xxs" />
+													<span className="text-grey-60 text-[9px]">
+														{meal.label}
+													</span>
+												</div>
+											);
+										})()}
+										<span>・</span>
+										<span className="text-[9px] text-grey-60">
+											{getTimeAgo(review.date)}
+										</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -140,89 +168,96 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 					>
 						가심비 {review.gasimbi ?? 0}점
 					</div>
-					{Object.entries(review.categories ?? {}).map(([catId, ids]) => {
-						const category = detailCategories.find((c) => c.id === catId);
-						if (!category) return null;
+					{review.keywords.map((kw) => {
+						const category = detailCategories.find(
+							(c) =>
+								['food', 'service', 'clean'].includes(c.id) &&
+								c.options.some((o) => o.label === kw),
+						);
 
-						return ids.map((optId: number) => {
-							const option = category.options.find((o) => o.id === optId);
-							if (!option) return null;
-							return (
-								<CategoryTag
-									key={`${catId}-${optId}`}
-									label={category.label}
-									text={option.label}
-								/>
-							);
-						});
+						const iconMap: Record<string, IconProps['name']> = {
+							food: 'Foods',
+							service: 'OrangeService',
+							clean: 'Cleans',
+						};
+						const iconName = category ? iconMap[category.id] : undefined;
+
+						return (
+							<div
+								key={kw}
+								className="flex items-center gap-1 px-2 py-0.5 rounded-xl bg-white text-grey-80 text-[11px]"
+							>
+								{iconName && <Icon name={iconName} size="xxs" />}
+								<span>{kw}</span>
+							</div>
+						);
 					})}
 				</div>
 
 				{/* 리뷰 이미지 */}
-				{review.images.map((image) => (
-					<Image
-						key={image.id}
-						src={image.imageUrl}
-						alt="리뷰 이미지"
-						width={65}
-						height={65}
-						className="rounded-md object-cover w-[65px] h-[65px]"
-					/>
-				))}
+				{review.images && review.images.length > 0 ? (
+					<div className="flex gap-2 flex-wrap">
+						{review.images.map((image) => (
+							<Image
+								key={image.imageId}
+								src={image.imageUrl as string}
+								alt="리뷰 이미지"
+								className="rounded-md object-cover w-[65px] h-[65px]"
+							/>
+						))}
+					</div>
+				) : (
+					<div className="flex flex-col">
+						<span className="">
+							<Icon name="KoreanDish" size="xxl"></Icon>
+						</span>
+						<div className="w-full h-[200px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-md">
+							사진을 준비하고 있어요
+						</div>
+					</div>
+				)}
 
 				{/* 리뷰 텍스트 & 메뉴 */}
-				<div className="flex flex-col gap-1">
-					{Object.entries(review.text ?? {}).map(([key, value]) => {
-						if (!value) return null;
+				<div className="flex flex-col gap-2">
+					{review.images.length > 0 && (
+						<div className="">
+							{review.images.flatMap((img) =>
+								img.tooltips
+									.filter((tt) =>
+										['FOOD', 'SERVICE', 'CLEANLINESS'].includes(tt.type),
+									)
+									.map((tt) => {
+										const iconMap: Record<string, IconProps['name']> = {
+											FOOD: 'Foods',
+											SERVICE: 'OrangeService',
+											CLEANLINESS: 'Cleans',
+										};
+										const iconName = iconMap[tt.type];
 
-						const [ratingValue, texts] = value;
-						const labelToIcon: Record<string, IconProps['name']> = {
-							food: 'Star',
-							service: 'Service',
-							clean: 'Clear',
-						};
-
-						const iconName = labelToIcon[key] ?? 'Star';
-
-						const colorMap: Record<string, { fill: string; border: string }> = {
-							Service: { fill: '#11BB69', border: '#11BB69' },
-							Clear: { fill: '#FF893A', border: '#FF893A' },
-							Star: { fill: '#38DEFF', border: '#38DEFF' },
-						};
-						const { fill } = colorMap[iconName] || {
-							fill: '#999999',
-							border: '#999999',
-						};
-
-						return (
-							<div key={key} className="flex flex-col gap-1">
-								<div className="flex items-start gap-2">
-									<div className="flex items-center rounded-full px-0.5 py-1 gap-1">
-										<Icon name={iconName} size="xxs" color={fill} fill={fill} />
-										<span className="text-[11px] text-grey-90">
-											{ratingValue}
-										</span>
-										{key === 'food' && review.images.length > 0 && (
-											<div className="flex flex-wrap gap-2 ml-5">
-												{review.images.map((img) =>
-													img.menus.map((menu, idx) => (
-														<span
-															key={`${img.id}-${idx}`}
-															className="text-[11px] text-grey-70"
-														>
-															{menu.menuName} -{' '}
-															{menu.totalPrice.toLocaleString()}원
-														</span>
-													)),
-												)}
+										return (
+											<div
+												key={`${img.imageId}-${tt.id}`}
+												className="flex flex-col gap-1 sm:w-[150px] w-[130px]"
+											>
+												<div className="flex gap-1 p-1 rounded-2xl bg-white text-grey-90 text-[11px]">
+													{iconName && <Icon name={iconName} size="xxs" />}
+													{<span>{tt.rating}</span>}
+													{tt.menuName && <span>- {tt.menuName}</span>}
+													{tt.totalPrice && (
+														<span>- {tt.totalPrice.toLocaleString()}원</span>
+													)}
+												</div>
+												{
+													<div className=" text-[12px] text-grey-85">
+														{tt.detailedReview}
+													</div>
+												}
 											</div>
-										)}
-									</div>
-								</div>
-								<div className="text-[12px] text-grey-90 mt-0.5">{texts}</div>
-							</div>
-						);
-					})}
+										);
+									}),
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 		);

@@ -28,12 +28,14 @@ interface StoreData {
 	id: number;
 	name: string;
 	address: string;
+
 	phone: string;
 	image?: string;
 	business_hours?: string;
 	latitude?: number;
 	longitude?: number;
 	point?: number;
+	is_good_price_store?: boolean;
 	value_for_money_score?: number;
 	is_local_store?: boolean;
 }
@@ -137,18 +139,18 @@ export default function StoreDetailPage() {
 								)}
 							</div>
 							<div className="flex items-center gap-1">
-								{store.point !== undefined && (
-									<span className="text-sm font-semibold">
-										<GasimbiCategoryTag value={store.point ?? 80} />
-									</span>
-								)}
-								{store.value_for_money_score !== undefined && (
-									<span className="text-sm font-semibold">
-										<TopPercentTag
-											value={store.value_for_money_score ?? '상위 20%'}
-										/>
-									</span>
-								)}
+								{/*{store.point !== undefined && (*/}
+								<span className="text-sm font-semibold">
+									<GasimbiCategoryTag value={store.point ?? 80} />
+								</span>
+								{/*})}*/}
+								{/*{store.value_for_money_score !== undefined && ( */}
+								<span className="text-sm font-semibold">
+									<TopPercentTag
+										value={store.value_for_money_score ?? '상위 20%'}
+									/>
+								</span>
+								{/*})}*/}
 							</div>
 						</div>
 					</div>

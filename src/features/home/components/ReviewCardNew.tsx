@@ -7,8 +7,6 @@ import SimpleStore, {
 } from '@/shared/components/SimpleStoreCard';
 import Icon from '@/shared/ui/Icon';
 
-import { getGasimbiStyle } from './ImageCategory';
-
 interface Author {
 	id: number;
 	nickname: string;
@@ -43,8 +41,6 @@ interface PhotoReviewCardProps {
 
 export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 	const hasImage = !!review.imageUrl;
-
-	const gasimbiStyle = getGasimbiStyle(review.valueForMoneyScore);
 
 	return (
 		<div
@@ -131,22 +127,34 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 
 			{(review.valueForMoneyScore || review.keywords.length > 0) && (
 				<div className="flex flex-wrap gap-2 px-2 pb-2 pt-2">
+					{/* 가심비 박스 */}
 					{review.valueForMoneyScore !== undefined && (
 						<div
-							className={`inline-flex p-[1.5px] ${
+							className={`px-2 py-1 text-xs font-medium ${
 								review.valueForMoneyScore >= 80
-									? 'border border-gradient-to-r from-[#00C79F] to-[#006218] bg-grey-10'
+									? 'border border-green-600 text-green-600 bg-green-50'
 									: review.valueForMoneyScore >= 50
-										? 'border-2 border-gradient-to-r from-[#006FFF] to-[#3AC8FF] bg-grey-10'
+										? 'border border-blue-500 text-blue-500 bg-blue-50'
 										: review.valueForMoneyScore >= 30
-											? 'bg-gradient-to-r from-[#FFB885] to-[#FF6600] bg-grey-10'
-											: 'bg-gray-200'
-							} `}
+											? 'border border-orange-500 text-orange-500 bg-orange-50'
+											: 'bg-gray-200 text-grey-70'
+							}`}
 						>
-							<span className={`text-xs font-medium ${gasimbiStyle.text}`}>
-								{review.author.nickname}님의 가심비 {review.valueForMoneyScore}
-								점
-							</span>
+							{review.author.nickname}님의 가심비 {review.valueForMoneyScore}점
+						</div>
+					)}
+
+					{/* 키워드 태그들 */}
+					{review.keywords.length > 0 && (
+						<div className="flex flex-wrap gap-2">
+							{review.keywords.map((kw) => (
+								<div
+									key={kw}
+									className="px-2 py-0.5 rounded-md bg-grey-10 text-grey-80 text-[12px]"
+								>
+									{kw}
+								</div>
+							))}
 						</div>
 					)}
 				</div>

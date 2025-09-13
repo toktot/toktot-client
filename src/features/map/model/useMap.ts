@@ -19,14 +19,14 @@ export function useMap(containerId: string, options: MapInitOptions = {}) {
 			if (!container) return;
 
 			const mapOptions = {
-				center: new kakao.maps.LatLng(
+				center: new window.kakao.maps.LatLng(
 					options.center?.lat ?? DEFAULT_CENTER.lat,
 					options.center?.lng ?? DEFAULT_CENTER.lng,
 				),
 				level: options.level ?? DEFAULT_LEVEL,
 			};
 
-			const kakaoMap = new kakao.maps.Map(container, mapOptions);
+			const kakaoMap = new window.kakao.maps.Map(container, mapOptions);
 			setMap(kakaoMap);
 		});
 	}, [containerId, options.center?.lat, options.center?.lng, options.level]);

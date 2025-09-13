@@ -36,6 +36,8 @@ interface GoodPriceStore {
 	is_good_price_store: boolean;
 	is_local_store: boolean;
 	image: string;
+	point: number;
+	percent: number;
 }
 
 export default function PriceTabs({
@@ -84,6 +86,7 @@ export default function PriceTabs({
 				let list = data.data.content;
 
 				// 음식 선택 시 간단 필터 (백엔드에서 음식 필터를 지원하면 제거 가능)
+
 				if (foodName) {
 					list = list.filter((store: GoodPriceStore) =>
 						store.main_menus.includes(foodName),
