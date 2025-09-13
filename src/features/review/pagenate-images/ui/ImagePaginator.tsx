@@ -121,7 +121,7 @@ export const ImagePaginator = ({
 				return (
 					<div
 						key={tooltip.id}
-						className="absolute tooltip-marker z-10"
+						className="absolute tooltip-marker z-4"
 						style={{ left: `${tooltip.x}%`, top: `${tooltip.y}%` }}
 					>
 						<TooltipMarker
