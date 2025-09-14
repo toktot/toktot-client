@@ -118,10 +118,14 @@ export const ReviewDetailItem = ({
 													size={'xs'}
 												/>
 												<span>{tooltip.rating}</span>
-												<span>{tooltip.menuName}</span>
-												<span>
-													{Number(tooltip.totalPrice).toLocaleString()}원
-												</span>
+												{tooltip.type === 'food' && (
+													<>
+														<span>{tooltip.menuName}</span>
+														<span>
+															{Number(tooltip.totalPrice).toLocaleString()}원
+														</span>
+													</>
+												)}
 											</div>
 											<p className="text-sm">{tooltip.detailedReview}</p>
 										</div>

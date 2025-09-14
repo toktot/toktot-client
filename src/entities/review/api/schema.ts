@@ -4,6 +4,8 @@
  */
 import { z } from 'zod';
 
+import { TooltipCategory } from '../model/tooltip';
+
 // 툴팁 스키마
 export const TooltipServerSchema = z.object({
 	id: z.number(),
@@ -76,7 +78,7 @@ export const ReviewClientSchema = ReviewServerSchema.transform(
 			...image,
 			tooltips: image.tooltips.map((tooltip) => ({
 				...tooltip,
-				type: tooltip.type.toLowerCase(),
+				type: tooltip.type.toLowerCase() as TooltipCategory,
 			})),
 		})),
 	}),
