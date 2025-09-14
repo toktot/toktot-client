@@ -6,8 +6,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
-import { useReviewStoryFeedController } from '@/features/review/view-story-feed/model/useReviewStoryFeedController';
 import { SortBottomSheet } from '@/features/review/sort/ui/SortBottomSheet';
+import { useReviewStoryFeedController } from '@/features/review/view-story-feed/model/useReviewStoryFeedController';
+
 import Icon from '@/shared/ui/Icon';
 
 import { InteractiveReview } from './InteractiveReview';
@@ -33,28 +34,28 @@ const variants = {
 };
 
 export function ReviewStoryFeed() {
-  const { states, handlers } = useReviewStoryFeedController();
-  const {
-    reviews,
-    currentPost,
-    currentIndex,
-    direction,
-    showGuide,
-    selectedTooltip,
-    isSheetOpen,
-    isSortSheetOpen,
-    currentSortOption,
-    sort,
-  } = states;
-  const {
-    paginate,
-    fetchNextPage,
-    setShowGuide,
-    handleTooltipClick,
-    setIsSheetOpen,
-    setIsSortSheetOpen,
-    handleSortChange,
-  } = handlers;
+	const { states, handlers } = useReviewStoryFeedController();
+	const {
+		reviews,
+		currentPost,
+		currentIndex,
+		direction,
+		showGuide,
+		selectedTooltip,
+		isSheetOpen,
+		isSortSheetOpen,
+		currentSortOption,
+		sort,
+	} = states;
+	const {
+		paginate,
+		fetchNextPage,
+		setShowGuide,
+		handleTooltipClick,
+		setIsSheetOpen,
+		setIsSortSheetOpen,
+		handleSortChange,
+	} = handlers;
 
 	if (!currentPost && reviews.length === 0) {
 		return <div className="relative h-full overflow-hidden bg-black"></div>;
@@ -71,7 +72,9 @@ export function ReviewStoryFeed() {
 					className="flex items-center gap-1 text-blalck backdrop-blur-sm py-1 px-[10px] rounded-full bg-white"
 				>
 					<Icon name="Sort" size="xs" />
-					<span className="text-sm font-medium">{currentSortOption?.label}</span>
+					<span className="text-sm font-medium">
+						{currentSortOption?.label}
+					</span>
 				</button>
 			</div>
 			<AnimatePresence initial={false} custom={direction}>
@@ -106,7 +109,9 @@ export function ReviewStoryFeed() {
 								isBookmarked={currentPost.isBookmarked}
 							>
 								<AnimatePresence>
-									{showGuide && <InteractionGuide onClose={() => setShowGuide(false)} />}
+									{showGuide && (
+										<InteractionGuide onClose={() => setShowGuide(false)} />
+									)}
 								</AnimatePresence>
 								<ImagePaginator
 									post={currentPost}

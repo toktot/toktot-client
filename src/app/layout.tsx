@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 
 import ClientProviders from '@/features/auth/context/ClientProviders';
 
+import { DevelopmentBanner } from '@/shared/ui/DevelopmentBanner';
 import Icon from '@/shared/ui/Icon';
 
 import { manrope, pretendard } from './font/font';
@@ -25,6 +26,7 @@ export default function RootLayout({
 			>
 				<ClientProviders>
 					{children}
+					<DevelopmentBanner />
 					<Toaster
 						position="bottom-center"
 						reverseOrder={false}
