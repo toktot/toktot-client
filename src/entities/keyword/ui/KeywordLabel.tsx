@@ -4,8 +4,8 @@ interface KeywordLabelProps {
 
 const KeywordLabel = ({ label }: KeywordLabelProps) => {
 	return (
-		<span className="rounded p-1 bg-[#171D29CC] shrink-0 ">
-			<span className="text-grey-10">{label}</span>
+		<span className="text-grey-10 rounded p-1 h-[26px] bg-[#171D29CC] shrink-0">
+			{label}
 		</span>
 	);
 };

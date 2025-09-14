@@ -110,14 +110,16 @@ export const ReviewDetailItem = ({
 											key={tooltip.id}
 											className="flex flex-col gap-1 text-xs"
 										>
-											<div className="flex items-center gap-1 rounded-full w-fit px-2 bg-white">
-												<Icon
-													name={markerStyle.icon}
-													fill={tooltipCategoryColor}
-													color={tooltipCategoryColor}
-													size={'xs'}
-												/>
-												<span>{tooltip.rating}</span>
+											<div className="flex items-center gap-2 rounded-full w-fit px-2 bg-white">
+												<div className="flex">
+													<Icon
+														name={markerStyle.icon}
+														fill={tooltipCategoryColor}
+														color={tooltipCategoryColor}
+														size={'xs'}
+													/>
+													<span>{tooltip.rating}</span>
+												</div>
 												{tooltip.type === 'food' && (
 													<>
 														<span>{tooltip.menuName}</span>

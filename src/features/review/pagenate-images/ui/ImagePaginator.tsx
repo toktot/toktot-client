@@ -152,10 +152,10 @@ export const ImagePaginator = ({
 				<ProgressBar total={post.images.length} current={currentIndex} />
 			</div>
 			<div className="absolute bottom-[12px] left-0 right-0 px-3">
-				<div className="mb-2">
+				<div className="flex gap-[6px] opacity-70 items-center h-[26px]">
 					<AuthorScoreLabel score={post.satisfactionScore} />
+					<KeywordScroller keywords={post.keywords} />
 				</div>
-				<KeywordScroller keywords={post.keywords} />
 			</div>
 		</>
 	);
