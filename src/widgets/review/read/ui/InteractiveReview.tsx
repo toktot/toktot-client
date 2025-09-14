@@ -14,9 +14,11 @@ import Icon from '@/shared/ui/Icon';
 
 export const InteractiveReview = ({
 	reviewId,
+	isBookmarked,
 	children,
 }: {
 	reviewId: ReviewId;
+	isBookmarked: boolean;
 	children: React.ReactNode;
 }) => {
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -34,7 +36,10 @@ export const InteractiveReview = ({
 					className="p-2 rounded-full  text-white flex flex-col items-center gap-1"
 					aria-label="리뷰 저장하기"
 				>
-					<Icon name="Bookmark" />
+					<Icon
+						name={'Bookmark'}
+						className={isBookmarked ? 'fill-white' : ''}
+					/>
 					<span className="text-xs text-grey-30">저장</span>
 				</button>
 			</div>

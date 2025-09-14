@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Tooltip } from '@/entities/review';
-import { mapReviewContentToView } from '@/entities/review/api/mappers';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
 import { SortValue } from '@/features/review/read/api/schema';
-import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
+import { useReviewFeedStore } from '@/features/review/read/hooks/useReviewFeedStore';
 import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
 import {
 	SORT_OPTIONS,
@@ -43,11 +42,12 @@ const variants = {
 };
 
 export function ReviewStoryFeed() {
+	const { reviews, fetchNextPage, setFilters } = useReviewFeedStore();
 	const [sort, setSort] = useState<SortValue>(undefined);
-	const filters = useMemo(() => ({ sort }), [sort]);
-	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed(filters);
 
-	const reviews = reviewsData.map(mapReviewContentToView);
+	useEffect(() => {
+		setFilters({ sort });
+	}, [sort, setFilters]);
 
 	const currentSortOption = SORT_OPTIONS.find((opt) => opt.value === sort);
 
@@ -136,7 +136,10 @@ export function ReviewStoryFeed() {
 				>
 					<div className="relative flex flex-col h-full">
 						<div className="flex-1 relative">
-							<InteractiveReview reviewId={currentPost.id}>
+							<InteractiveReview
+								reviewId={currentPost.id}
+								isBookmarked={currentPost.isBookmarked}
+							>
 								<AnimatePresence>
 									{showGuide && (
 										<InteractionGuide onClose={() => setShowGuide(false)} />
