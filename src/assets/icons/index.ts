@@ -93,4 +93,6 @@ export { default as Avatar } from './Avatar.svg';
 export { default as GasimbiHeart } from './gasimbi_heart.svg';
 
 export { default as Setting } from './setting.svg';
-
+export { default as Foods } from './Foods.svg';
+export { default as Cleans } from './Cleans.svg';
+export { default as OrangeService } from './OrangeService.svg';

@@ -29,14 +29,13 @@ export interface StoreInfoCardProps {
 export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 	const router = useRouter();
 
-	const hasImage = !!review.image;
 	return (
 		<div
 			className="flex flex-row gap-3 p-3 bg-white min-w-[343px] max-w-[430px] h-[105px] cursor-pointer"
 			onClick={() => router.push(`/storemenu/${review.id}`)}
 		>
 			<div className="relative w-[89px] h-[89px]">
-				{hasImage ? (
+				{review.image ? (
 					<Image
 						src={review.image as string}
 						alt={`${review.name} 이미지`}
@@ -44,9 +43,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 						className="object-cover"
 					/>
 				) : (
-					<div className="w-[89px]  h-[89px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-t-xl">
-						사진을 준비하고 있어요
-					</div>
+					<div className="bg-grey-10 rounded-xl w-[89px] h-[89px]"></div>
 				)}
 
 				{review.is_good_price_store && (

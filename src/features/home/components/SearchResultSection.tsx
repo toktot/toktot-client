@@ -119,7 +119,7 @@ function toStore(api: BackendPlace): FrontendPlace {
 		mainMenus: parsedMenus ?? [],
 		average_rating: api.average_rating ?? 0,
 		is_good_price_store: api.is_good_price_store ?? false,
-		image: api.image ?? '/images/foodImage1.png',
+		image: api.image as string,
 		valueScore: api.point ?? 80,
 		topPercent: api.percent ?? '20',
 		review_count: api.review_count ?? 0,

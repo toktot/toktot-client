@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 
+import GasimbiTag from '../model/GasimbiCategory';
+import TopPercentTag from '../model/TopPercentTag';
+
 interface GoodPriceStore {
 	review: {
 		id: number;
@@ -18,6 +21,8 @@ interface GoodPriceStore {
 		is_good_price_store: boolean;
 		is_local_store: boolean;
 		image: string;
+		point: number;
+		percent: number;
 	};
 }
 
@@ -39,7 +44,12 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 					/>
 				) : (
 					<div className="min-w-[343px] max-w-[430px] h-[122px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-t-xl">
-						사진을 준비하고 있어요
+						<div className="flex flex-col flex items-center">
+							<span className="">
+								<Icon name="KoreanDish" size="xxl"></Icon>
+							</span>
+							<div className="">사진을 준비하고 있어요</div>
+						</div>
 					</div>
 				)}
 				{review.is_good_price_store && (
@@ -76,15 +86,10 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 				{/* 메뉴 가격 (첫 번째 메뉴) */}
 				{review.main_menus}
 
-				{/* 태그들 */}
-				{/*
 				<div className="flex items-center gap-1 text-xs mt-1">
-					{review.topPercent && <TopPercentTag value={review.topPercent} />}
-					{review.valueScore !== undefined && (
-						<GasimbiTag value={review.valueScore} />
-					)}
+					{review.percent && <TopPercentTag value={review.percent} />}
+					{review.point !== undefined && <GasimbiTag value={review.point} />}
 				</div>
-				*/}
 
 				{/* 주소 + 거리 */}
 				<div className="text-xs text-grey-70 flex items-center mt-1">

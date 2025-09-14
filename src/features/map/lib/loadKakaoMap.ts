@@ -1,6 +1,8 @@
 export async function loadKakaoMap(): Promise<void> {
 	if (typeof window === 'undefined') return;
-	if (window.kakao) return;
+	if (window.kakao && window.kakao.maps) {
+		return Promise.resolve();
+	}
 
 	return new Promise((resolve) => {
 		const script = document.createElement('script');

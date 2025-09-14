@@ -1,0 +1,13 @@
+<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_7482_20890)">
+<path d="M3.3335 5V9.16667" stroke="#3AC8FF" stroke-width="0.708333" stroke-linejoin="bevel"/>
+<path d="M6.25 0.833008V9.16634" stroke="#3AC8FF" stroke-width="0.708333" stroke-linejoin="bevel"/>
+<path d="M7.9165 0.833008V9.16634" stroke="#3AC8FF" stroke-width="0.708333" stroke-linejoin="bevel"/>
+<ellipse cx="3.33317" cy="2.91634" rx="1.66667" ry="2.08333" fill="#3AC8FF" stroke="#3AC8FF" stroke-width="0.708333"/>
+</g>
+<defs>
+<clipPath id="clip0_7482_20890">
+<rect width="10" height="10" fill="white"/>
+</clipPath>
+</defs>
+</svg>

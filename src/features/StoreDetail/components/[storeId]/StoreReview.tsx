@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { createReviewApi } from '@/entities/review/api/review';
 import { ReviewStatisticsServer } from '@/entities/review/api/statisticsSchema';
 import { mockReviews } from '@/entities/store/model/mockReview';
-import ky from 'ky';
 import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
+import api from '@/features/home/lib/api';
 import { mockHome } from '@/features/home/model/mockHome';
 
 import { reviewStatisticsApi } from '@/shared/api/reviewStatisticsApi';
@@ -16,66 +16,107 @@ import Icon from '@/shared/ui/Icon';
 
 import ReviewCard, { ReviewCardProps } from '../ReviewCard';
 
+export interface Tooltip {
+	id: number;
+	rating?: number;
+	servingSize?: number;
+	detailedReview?: string;
+	type: 'FOOD' | 'SERVICE' | 'CLEANLINESS';
+	menuName?: string;
+	totalPrice?: number;
+}
+export interface ReviewImage {
+	imageId: string;
+	imageUrl: string;
+	imageOrder: number;
+	isMain: boolean;
+	tooltips: Tooltip[];
+}
+
 interface ReviewResponse {
 	id: number;
-	user: {
+	author: {
 		id: number;
 		nickname: string;
 		profileImageUrl?: string | null;
 		reviewCount: number;
 		averageRating: number;
 	};
-	images: {
-		imageId: string;
-		imageUrl: string;
-		imageOrder: number;
-		isMain: boolean;
-		tooltips: {
-			id: number;
-			type: 'FOOD' | 'SERVICE' | 'CLEAN';
-			rating: number;
-			menuName?: string | null;
-			totalPrice?: number | null;
-			servingSize?: number | null;
-			detailedReview: string;
-		}[];
-	}[];
-	mealTime: string;
+	reviewRating: number;
+	images: ReviewImage[];
+	mealTime: 'BREAKFAST' | 'LUNCH' | 'DINNER';
 	createdAt: string;
 	satisfactionScore: number;
 	keywords: string[];
 	isBookmarked: boolean;
 	isWriter: boolean;
 }
-function mapReviewResponseToCard(
-	review: ReviewResponse,
-): ReviewCardProps['review'] {
+
+export interface ReviewCardImage {
+	imageId: string;
+	imageUrl: string;
+	imageOrder: number;
+	isMain: boolean;
+	tooltips: Tooltip[];
+}
+
+export interface ReviewCard {
+	id: number;
+	author: {
+		id: number;
+		nickname: string;
+		profileImageUrl?: string;
+		reviewCount: number;
+		averageRating: number;
+	};
+	reviewRating: number;
+	images: ReviewCardImage[];
+	mealTime: 'BREAKFAST' | 'LUNCH' | 'DINNER';
+	date: string;
+	gasimbi: number;
+	text: Record<string, unknown>;
+	type: string;
+	keywords: string[];
+	categories: Record<string, unknown>;
+	isBookmarked: boolean;
+	isWriter: boolean;
+}
+
+function mapReviewResponseToCard(review: ReviewResponse): ReviewCard {
 	return {
 		id: review.id,
-		auth: {
-			id: review.user.id,
-			nickname: review.user.nickname,
-			profileImageUrl: review.user.profileImageUrl ?? undefined,
-			reviewCount: review.user.reviewCount,
-			averageRating: review.user.averageRating,
+		author: {
+			id: review.author.id,
+			nickname: review.author.nickname,
+			profileImageUrl: review.author.profileImageUrl ?? undefined,
+			reviewCount: review.author.reviewCount,
+			averageRating: review.author.averageRating,
 		},
-		rating: review.user.averageRating,
+		reviewRating: review.reviewRating,
 		images: review.images.map((img) => ({
-			id: parseInt(img.imageId.slice(0, 8), 16),
+			imageId: img.imageId, // string 그대로 사용
 			imageUrl: img.imageUrl,
-			menus: img.tooltips
-				.filter((tt) => tt.type === 'FOOD')
-				.map((tt) => ({
-					menuName: tt.menuName ?? '',
-					totalPrice: tt.totalPrice ?? 0,
-				})),
+			imageOrder: img.imageOrder,
+			isMain: img.isMain,
+			tooltips: img.tooltips.map((tt) => ({
+				id: tt.id,
+				type: tt.type,
+				rating: tt.rating,
+				menuName: tt.menuName,
+				totalPrice: tt.totalPrice,
+				detailedReview: tt.detailedReview,
+				servingSize: tt.servingSize,
+			})),
 		})),
 		mealTime: review.mealTime,
 		date: review.createdAt,
 		gasimbi: review.satisfactionScore,
 		text: {},
+		keywords: review.keywords,
 		type: '음식',
 		categories: {},
+		isBookmarked: review.isBookmarked ?? false,
+		isWriter: review.isWriter,
 	};
 }
 
@@ -86,25 +127,28 @@ interface Star {
 export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 	// 상단 정보용: mockHome의 첫 번째 데이터 사용 (실제 서비스라면 선택한 가게 정보 사용)
 	const params = useParams();
+	const router = useRouter();
 	const storeId = params.storeId as StoreId;
-	const reviewApi = createReviewApi(
-		ky.create({ prefixUrl: process.env.NEXT_PUBLIC_API_URL }),
-	);
+
 	const [reviews, setReviews] = useState<ReviewCardProps['review'][]>([]);
-	const [loading, setLoading] = useState(false);
+	const [, setLoading] = useState(false);
 	const [reviewStats, setReviewStats] = useState<ReviewStatisticsServer | null>(
 		null,
 	);
-	const [reviewStatsError, setReviewStatsError] = useState<string | null>(null);
-	const [isReviewStatsLoading, setIsReviewStatsLoading] = useState(true);
-	console.log(reviewStatsError, isReviewStatsLoading);
+	useEffect(() => {
+		const token = localStorage.getItem('token');
+		if (!token) router.replace('/login');
+	}, [router]);
+	const [, setReviewStatsError] = useState<string | null>(null);
+	const [, setIsReviewStatsLoading] = useState(true);
+
 	useEffect(() => {
 		const fetchReviewStatistics = async () => {
 			try {
 				setIsReviewStatsLoading(true);
 				setReviewStatsError(null);
 				const data = await reviewStatisticsApi.getReviewStatistics(storeId);
-				console.log(data);
+
 				setReviewStats(data);
 			} catch (err) {
 				console.error('리뷰 통계 불러오기 실패', err);
@@ -120,41 +164,16 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 			try {
 				if (!storeId) return;
 
-				const page = 0;
-				const size = 10;
 				const sort = 'RATING';
 
-				const { reviews } = await reviewApi.getStoreReviews(
-					storeId,
-					page,
-					size,
-					sort,
-				);
+				const res = await api.get(`/v1/restaurants/${storeId}/reviews`, {
+					params: { sort },
+				});
+				console.log('API 응답', res.data);
+				const content = res.data.data.content;
 
-				const mapped = reviews.map((r) =>
-					mapReviewResponseToCard({
-						id: r.id,
-						user: {
-							id: r.author.id,
-							nickname: r.author.nickname,
-							profileImageUrl: r.author.profileImageUrl,
-							reviewCount: r.author.reviewCount,
-							averageRating: r.author.averageRating,
-						},
-						images: r.images.map((img) => ({
-							imageId: img.imageId,
-							imageUrl: img.imageUrl,
-							imageOrder: img.imageOrder,
-							isMain: img.isMain,
-							tooltips: img.tooltips,
-						})),
-						mealTime: r.mealTime,
-						createdAt: r.createdAt,
-						satisfactionScore: r.satisfactionScore,
-						keywords: r.keywords,
-						isBookmarked: r.isBookmarked ?? false,
-						isWriter: r.isWriter,
-					}),
+				const mapped: ReviewCard[] = content.map((r: ReviewResponse) =>
+					mapReviewResponseToCard(r),
 				);
 				setReviews(mapped);
 			} catch (err) {
@@ -165,43 +184,71 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 			}
 		};
 		fetchReviews();
-	}, [storeId, reviewApi]);
+	}, [storeId]);
 	const store = mockHome.find((s) => s.id === Number(storeId));
 
 	const TABS = [
-		`전체 ${store?.totalNumber}`,
-		`음식 ${store?.foodNumber}`,
-		`서비스 ${store?.serviceNumber}`,
-		`청결 ${store?.cleanNumber}`,
+		`전체 ${reviewStats?.totalReviewCount ?? 0}`,
+		`음식 ${reviewStats?.totalReviewCount ?? 0}`,
+		`서비스 ${store?.serviceNumber ?? 0}`,
+		`청결 ${store?.cleanNumber ?? 0}`,
 	] as const;
 	// 탭 상태
 
 	const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]>(
-		`전체 ${store?.totalNumber}`,
+		`전체 ${reviewStats?.totalReviewCount ?? 0}`,
 	);
+	// 필터링된 리뷰
+	const filteredReviews = reviews.filter((review) => {
+		if (selectedTab.startsWith('전체')) return true;
+		const tabTypeMap: Record<string, Tooltip['type']> = {
+			음식: 'FOOD',
+			서비스: 'SERVICE',
+			청결: 'CLEANLINESS',
+		};
+		const tabKey = Object.keys(tabTypeMap).find((key) =>
+			selectedTab.startsWith(key),
+		);
+		if (!tabKey) return true;
+
+		const typeToCheck = tabTypeMap[tabKey];
+
+		return review.images.some((img) =>
+			img.tooltips.some((tt) => tt.type === typeToCheck),
+		);
+	});
 
 	// 탭에 맞게 리뷰 필터
 
 	const [currentReviewId, setCurrentReviewId] = useState<number | null>(null);
-	console.log(currentReviewId, loading);
+
 	const reviewRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
 	useEffect(() => {
+		const container = document.querySelector('.overflow-y-auto');
+		if (!container) return;
+
 		const observer = new IntersectionObserver(
 			(entries) => {
-				const visible = entries.find((entry) => entry.isIntersecting);
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 				if (visible?.target) {
 					const id = Number(visible.target.getAttribute('data-id'));
 					setCurrentReviewId(id);
 				}
 			},
-			{ threshold: 0.6 },
+			{
+				root: container, // 👈 스크롤 영역을 root로 지정
+				threshold: 0.6,
+			},
 		);
 		Object.values(reviewRefs.current).forEach((el) => {
 			if (el) observer.observe(el);
 		});
+
 		return () => observer.disconnect();
-	}, [reviews]);
+	}, [filteredReviews]);
 	const avgGasimbi = mockReviews[0]?.averagegasimbi ?? 0;
 
 	return (
@@ -355,10 +402,17 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 			</div>
 
 			{/* 리뷰 카드 리스트 */}
-			<div className="bg-white rounded-2xl w-full max-w-[375px] p-4 space-y-4 -mt-4">
-				{reviews.length > 0 ? (
-					reviews.map((review) => (
-						<ReviewCard key={review.id} review={review} />
+			<div className=" w-full px-2 pb-20">
+				{filteredReviews.length > 0 ? (
+					filteredReviews.map((review) => (
+						<ReviewCard
+							key={review.id}
+							review={review}
+							isCurrent={review.id === currentReviewId}
+							ref={(el) => {
+								reviewRefs.current[review.id] = el;
+							}}
+						/>
 					))
 				) : (
 					<div className="text-center text-gray-500 text-sm">
