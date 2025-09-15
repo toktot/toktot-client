@@ -25,12 +25,12 @@ export const AuthorScoreLabel = ({ score }: AuthorScoreLabelProps) => {
 	return (
 		<div
 			className={clsx(
-				'inline-flex items-center gap-2 px-1 py-0.5 rounded-md border text-white',
+				'flex items-center  gap-[2px] px-[6px] rounded-md border text-white',
 				scoreClasses,
 			)}
 		>
 			<Icon name={'GasimbiHeart'} />
-			<span className="font-semibold text-xs">{'가심비 ' + score + '점'}</span>
+			<span className="font-semibold text-xs leading-none">{score + '점'}</span>
 		</div>
 	);
 };

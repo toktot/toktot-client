@@ -16,8 +16,10 @@ interface AuthApiOptions {
 }
 
 const handleAuthRequired = (loginPath: string, alertMessage: string) => {
-	toast.error(alertMessage);
-	window.location.href = loginPath;
+	toast.error(alertMessage, { duration: 2000 });
+	setTimeout(() => {
+		window.location.href = loginPath;
+	}, 2000);
 };
 
 export const createAuthApi = (opts?: AuthApiOptions) => {

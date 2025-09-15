@@ -8,19 +8,26 @@ import { ConfirmModal } from '@/features/report/ui/ConfirmModal';
 
 import { useBlockUser } from '../model/useBlockUser';
 
-interface BlockUserButtonProps {
+interface BlockPostButtonProps {
 	userId: number;
-	nickname: string;
 	className?: string;
 	onSuccess?: () => void;
 }
 
-export const BlockUserButton = ({
+/**
+ * 게시물을 차단하는 버튼입니다.
+ * 현재 백엔드 이슈로 인해, 실제로는 `userId`를 사용하여 해당 게시물의 작성자를 차단합니다.
+ *
+ * @param {object} props - 컴포넌트 props
+ * @param {number} props.userId - 차단할 사용자의 ID (게시물 작성자)
+ * @param {string} [props.className] - 버튼에 적용될 CSS 클래스
+ * @param {() => void} [props.onSuccess] - 차단 성공 시 호출될 콜백 함수
+ */
+export const BlockPostButton = ({
 	userId,
-	nickname,
 	className,
 	onSuccess,
-}: BlockUserButtonProps) => {
+}: BlockPostButtonProps) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const { blockUser, isLoading } = useBlockUser();
 
@@ -47,7 +54,7 @@ export const BlockUserButton = ({
 					<ConfirmModal
 						onClose={() => setIsModalOpen(false)}
 						onConfirm={handleConfirm}
-						title={`${nickname}님을 차단하시겠습니까?`}
+						title={`해당 게시물을 차단하시겠습니까?`}
 						confirmLabel="차단"
 						cancelLabel="취소"
 					/>

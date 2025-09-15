@@ -1,5 +1,6 @@
 'use client';
 
+import { useReviewFeedStore } from '@/features/review/read/hooks/useReviewFeedStore';
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
 
@@ -117,6 +118,8 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 
 				const mapped = updatedServerFolders.map(mapFolderClientToReviewFolder);
 				set({ folders: mapped, isLoading: false });
+
+        useReviewFeedStore.getState().updateBookmarkStatus(reviewId, true);
 
 				return { success: true };
 			} catch (err: unknown) {

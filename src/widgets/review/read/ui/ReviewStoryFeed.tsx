@@ -1,21 +1,13 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 
-import { Tooltip } from '@/entities/review';
-import { mapReviewContentToView } from '@/entities/review/api/mappers';
 import { AnimatePresence, motion } from 'framer-motion';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
-import { SortValue } from '@/features/review/read/api/schema';
-import { useInfiniteReviewFeed } from '@/features/review/read/hooks/useInfiniteReviewFeed';
-import { useReviewPagination } from '@/features/review/read/lib/useImagePagination';
-import {
-	SORT_OPTIONS,
-	SortBottomSheet,
-} from '@/features/review/sort/ui/SortBottomSheet';
+import { SortBottomSheet } from '@/features/review/sort/ui/SortBottomSheet';
+import { useReviewStoryFeedController } from '@/features/review/view-story-feed/model/useReviewStoryFeedController';
 
 import Icon from '@/shared/ui/Icon';
 
@@ -24,12 +16,11 @@ import ReviewStore from './ReviewStore';
 import { ReviewStoreWithSheet } from './ReviewStoreWithSheet';
 import ReviewUser from './ReviewUser';
 
-// 스와이프 강도를 계산하기 위한 상수
 const SWIPE_CONFIDENCE_THRESHOLD = 10000;
 const swipePower = (offset: number, velocity: number) => {
 	return Math.abs(offset) * velocity;
 };
-// 슬라이드 애니메이션을 위한 variants
+
 const variants = {
 	enter: (direction: number) => ({
 		y: direction > 0 ? '100%' : '-100%',
@@ -43,55 +34,28 @@ const variants = {
 };
 
 export function ReviewStoryFeed() {
-	const [sort, setSort] = useState<SortValue>(undefined);
-	const filters = useMemo(() => ({ sort }), [sort]);
-	const { data: reviewsData, fetchNextPage } = useInfiniteReviewFeed(filters);
-
-	const reviews = reviewsData.map(mapReviewContentToView);
-
-	const currentSortOption = SORT_OPTIONS.find((opt) => opt.value === sort);
-
-	const { page, direction, paginate, setPage } = useReviewPagination(
-		0,
-		reviews.length,
-	);
-	const currentIndex = page;
-
-	const [showGuide, setShowGuide] = useState(true);
-
-	const [selectedTooltip, setSelectedTooltip] = useState<Tooltip | null>(null);
-
-	const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
-	const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
-
-	const handleTooltipClick = (tooltip: Tooltip) => {
-		setSelectedTooltip((prev) => (prev?.id === tooltip.id ? null : tooltip));
-	};
-
-	const searchParams = useSearchParams();
-	const router = useRouter();
-	const pathname = usePathname();
-
-	const createQueryString = useCallback(
-		(name: string, value: string) => {
-			const params = new URLSearchParams(searchParams.toString());
-			params.set(name, value);
-
-			return params.toString();
-		},
-		[searchParams],
-	);
-	const currentPost = reviews[currentIndex];
-
-	useEffect(() => {
-		setPage(0);
-	}, [sort, setPage]);
-
-	useEffect(() => {
-		if (!currentPost?.id) return;
-		router.push(pathname + '?' + createQueryString('reviewId', currentPost.id));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentPost?.id]);
+	const { states, handlers } = useReviewStoryFeedController();
+	const {
+		reviews,
+		currentPost,
+		currentIndex,
+		direction,
+		showGuide,
+		selectedTooltip,
+		isSheetOpen,
+		isSortSheetOpen,
+		currentSortOption,
+		sort,
+	} = states;
+	const {
+		paginate,
+		fetchNextPage,
+		setShowGuide,
+		handleTooltipClick,
+		setIsSheetOpen,
+		setIsSortSheetOpen,
+		handleSortChange,
+	} = handlers;
 
 	if (!currentPost && reviews.length === 0) {
 		return <div className="relative h-full overflow-hidden bg-black"></div>;
@@ -116,7 +80,7 @@ export function ReviewStoryFeed() {
 			<AnimatePresence initial={false} custom={direction}>
 				<motion.div
 					className="h-full overflow-x-hidden w-full"
-					key={page} // page(currentIndex)가 바뀔 때마다 AnimatePresence가 작동합니다.
+					key={currentIndex}
 					custom={direction}
 					variants={variants}
 					initial="enter"
@@ -128,13 +92,11 @@ export function ReviewStoryFeed() {
 					dragElastic={0.05}
 					onDragEnd={(e, { offset, velocity }) => {
 						const swipe = swipePower(offset.y, velocity.y);
-
 						if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
 							paginate(1);
 						} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
 							paginate(-1);
 						}
-
 						if (currentIndex === reviews.length - 2) {
 							fetchNextPage();
 						}
@@ -142,7 +104,10 @@ export function ReviewStoryFeed() {
 				>
 					<div className="relative flex flex-col h-full">
 						<div className="flex-1 relative">
-							<InteractiveReview reviewId={currentPost.id}>
+							<InteractiveReview
+								reviewId={currentPost.id}
+								isBookmarked={currentPost.isBookmarked}
+							>
 								<AnimatePresence>
 									{showGuide && (
 										<InteractionGuide onClose={() => setShowGuide(false)} />
@@ -160,7 +125,6 @@ export function ReviewStoryFeed() {
 							<div className="flex-shrink-0">
 								<ReviewUser author={currentPost.author} />
 							</div>
-
 							<div className="flex gap-2">
 								<div className="bg-grey-90 rounded-xl flex-[4] min-w-0">
 									<ReviewStore storeId={currentPost.store.id} />
@@ -181,7 +145,7 @@ export function ReviewStoryFeed() {
 				isOpen={isSortSheetOpen}
 				onOpenChange={setIsSortSheetOpen}
 				currentSort={sort}
-				onSortChange={setSort}
+				onSortChange={handleSortChange}
 			/>
 		</div>
 	);

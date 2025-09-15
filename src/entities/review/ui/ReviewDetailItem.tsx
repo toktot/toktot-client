@@ -17,11 +17,13 @@ import { RatingStarView } from './RatingStarView';
 interface ReviewDetailItemProps {
 	review: ReviewClient;
 	isSelected?: boolean;
+	selectedCategory?: TooltipCategory | 'all';
 }
 
 export const ReviewDetailItem = ({
 	review,
 	isSelected,
+	selectedCategory = 'all',
 }: ReviewDetailItemProps) => {
 	const relativeTime = useRelativeTime(review.createdAt);
 
@@ -88,36 +90,49 @@ export const ReviewDetailItem = ({
 						))}
 					</div>
 
+					{/* 툴팁 정보 */}
 					<div>
 						{review.images.flatMap((image) =>
-							image.tooltips.map((tooltip) => {
-								const categoryKey =
-									tooltip.type.toLowerCase() as TooltipCategory;
-								const markerStyle = tooltipMarkerStyleMap[categoryKey];
-								const tooltipCategoryColor =
-									RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
+							image.tooltips
+								.filter((tooltip) => {
+									if (selectedCategory === 'all') return true;
+									return tooltip.type.toLowerCase() === selectedCategory;
+								})
+								.map((tooltip) => {
+									const categoryKey =
+										tooltip.type.toLowerCase() as TooltipCategory;
+									const markerStyle = tooltipMarkerStyleMap[categoryKey];
+									const tooltipCategoryColor =
+										RATING_ICON_COLOR_FOR_CATEGORY[categoryKey];
 
-								return (
-									<div key={tooltip.id} className="flex flex-col gap-1 text-xs">
+									return (
 										<div
-											className={`flex items-center gap-1 rounded-full w-fit px-2 bg-white`}
+											key={tooltip.id}
+											className="flex flex-col gap-1 text-xs"
 										>
-											<Icon
-												name={markerStyle.icon}
-												fill={tooltipCategoryColor}
-												color={tooltipCategoryColor}
-												size={'xs'}
-											/>
-											<span>{tooltip.rating}</span>
-											<span>{tooltip.menuName}</span>
-											<span>
-												{Number(tooltip.totalPrice).toLocaleString()}원
-											</span>
+											<div className="flex items-center gap-2 rounded-full w-fit px-2 bg-white">
+												<div className="flex">
+													<Icon
+														name={markerStyle.icon}
+														fill={tooltipCategoryColor}
+														color={tooltipCategoryColor}
+														size={'xs'}
+													/>
+													<span>{tooltip.rating}</span>
+												</div>
+												{tooltip.type === 'food' && (
+													<>
+														<span>{tooltip.menuName}</span>
+														<span>
+															{Number(tooltip.totalPrice).toLocaleString()}원
+														</span>
+													</>
+												)}
+											</div>
+											<p className="text-sm">{tooltip.detailedReview}</p>
 										</div>
-										<p className="text-sm">{tooltip.detailedReview}</p>
-									</div>
-								);
-							}),
+									);
+								}),
 						)}
 					</div>
 				</div>
