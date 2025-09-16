@@ -33,26 +33,32 @@ export default function SearchLocationMap({
 	});
 
 	useEffect(() => {
-		if (!address || !map) return;
+		console.log('[SearchLocationMap] map or coords changed', {
+			map,
+			lat,
+			lng,
+			address,
+		});
+		if (!map) return;
+		const setMapCenter = async () => {
+			let coords = null;
 
-		(async () => {
-			const coords = await geocodeAddress(address);
+			if (lat && lng) {
+				coords = { lat, lng };
+			} else if (address) {
+				coords = await geocodeAddress(address);
+			}
+
 			if (!coords) return;
 
-			const { lat, lng } = coords;
-			const latlng = new window.kakao.maps.LatLng(lat, lng);
+			const latlng = new window.kakao.maps.LatLng(coords.lat, coords.lng);
+			map.setCenter(latlng);
+			setPosition(coords);
+			console.log('[SearchLocationMap] map center set to', coords);
+		};
 
-			map.setCenter(latlng);
-			setPosition({ lat, lng });
-		})();
-	}, [address, map]);
-	useEffect(() => {
-		if (lat && lng && map) {
-			const latlng = new window.kakao.maps.LatLng(lat, lng);
-			map.setCenter(latlng);
-			setPosition({ lat, lng });
-		}
-	}, [lat, lng, map]);
+		setMapCenter();
+	}, [map, address, lat, lng]);
 
 	return (
 		<div className={`relative h-[400px]`}>
