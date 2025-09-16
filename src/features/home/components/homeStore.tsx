@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { useCategories } from '@/shared/hooks/useCategories';
-import Icon from '@/shared/ui/Icon';
 
 import api from '../lib/api';
 import { CategoryItem } from './FoodIcon';
@@ -42,11 +39,10 @@ interface GoodPriceStore {
 
 export default function PriceTabs({
 	initialFood = '',
-	onSelect,
+
 	onChange,
 }: PriceTabsProps) {
 	const { categories } = useCategories();
-	const router = useRouter();
 
 	const [selectedFood, setSelectedFood] = useState<CategoryItem | null>(
 		categories?.find((cat) => cat.name === initialFood) || null,
@@ -64,11 +60,7 @@ export default function PriceTabs({
 	const [stores, setStores] = useState<GoodPriceStore[]>([]);
 	const [loading, setLoading] = useState(false);
 	console.log(loading);
-	const handleClick = (item: CategoryItem) => {
-		setSelectedFood(item);
-		if (onSelect) onSelect(item);
-		router.push(`/search?q=${encodeURIComponent(item.name)}`);
-	};
+
 	const fetchStores = async (priceValue: number, foodName: string) => {
 		setLoading(true);
 		try {
