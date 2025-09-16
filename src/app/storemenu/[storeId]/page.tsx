@@ -96,7 +96,7 @@ export default function StoreDetailPage() {
 	}
 
 	return (
-		<div className="relative min-h-screen flex justify-center">
+		<div className="relative min-h-screen flex justify-center cursor-pointer">
 			<div className="relative w-full h-[300px] max-w-[480px] bg-cover bg-center">
 				{store.image ? (
 					<Image
@@ -159,7 +159,7 @@ export default function StoreDetailPage() {
 
 			<BottomSheet open>
 				<BottomSheetContent
-					className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[480px] bg-white rounded-t-3xl max-h-[65vh] overflow-hidden"
+					className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[480px] bg-white rounded-t-3xl max-h-[65vh] overflow-hidden cursor-pointer"
 					style={{
 						marginTop: '-16px',
 						borderTopLeftRadius: '24px',
@@ -206,7 +206,7 @@ export default function StoreDetailPage() {
 									<button
 										key={t}
 										className={clsx(
-											'pb-2 text-base font-semibold transition-colors',
+											'pb-2 text-base font-semibold transition-colors cursor-pointer',
 											tab === t
 												? 'text-grey-90 border-b-1 border-grey-80'
 												: 'text-grey-40',

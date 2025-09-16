@@ -11,6 +11,8 @@ interface Props {
 	lat?: number;
 	lng?: number;
 	className?: string;
+	isMarkerClicked?: boolean;
+	user?: string | null;
 	onMarkerClick?: () => void;
 }
 
@@ -18,6 +20,8 @@ export default function SearchLocationMap({
 	address,
 	lat,
 	lng,
+	isMarkerClicked,
+	user,
 	onMarkerClick,
 }: Props) {
 	const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
@@ -54,7 +58,13 @@ export default function SearchLocationMap({
 		<div className={`relative h-[400px]`}>
 			<div id="map" className="w-full h-full " />
 			{map && position && (
-				<Marker map={map} position={position} onClick={onMarkerClick} />
+				<Marker
+					map={map}
+					position={position}
+					onClick={onMarkerClick}
+					isMarkerClicked={isMarkerClicked}
+					user={user}
+				/>
 			)}
 		</div>
 	);

@@ -96,3 +96,4 @@ export { default as Setting } from './setting.svg';
 export { default as Foods } from './Foods.svg';
 export { default as Cleans } from './Cleans.svg';
 export { default as OrangeService } from './OrangeService.svg';
+export { default as Googigukso } from './Googigukso.svg';

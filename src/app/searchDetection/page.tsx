@@ -321,7 +321,7 @@ function LocationSearchContent({
 					className="
     fixed bottom-0 left-0 right-0 mx-auto
     z-50 bg-white max-h-[50vh] p-4 overflow-y-auto
-    w-full min-w-[375px] lg:w-[480px] pb-[80px]
+    w-full min-w-[375px] lg:w-[480px] pb-[80px] cursor-pointer
   "
 				>
 					{/* 검색 범위 */}

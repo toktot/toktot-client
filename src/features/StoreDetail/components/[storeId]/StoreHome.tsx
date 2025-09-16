@@ -109,14 +109,14 @@ export default function StoreHome() {
 							<CopyButton text={store.address} />
 						</div>
 						<div className="ml-4" onClick={() => setSelected(true)}>
-							<button className="mb-4 gap-2 w-[310px] sm:w-[380px] inline-flex justify-center items-center py-3 border border-grey-50 text-black text-base font-bold rounded-3xl">
+							<button className="cursor-pointer mb-4 gap-2 w-[310px] sm:w-[380px] inline-flex justify-center items-center py-3 border border-grey-50 text-black text-base font-bold rounded-3xl">
 								길찾기
 							</button>
 						</div>
 					</>
 					{selected && (
 						<BottomSheet open>
-							<BottomSheetContent className="fixed bottom-0 z-50 bg-white rounded-t-3xl w-[310px] sm:w-[400px] left-1/2 transform -translate-x-1/2 overflow-hidden">
+							<BottomSheetContent className="fixed bottom-0 z-50 bg-white rounded-t-3xl w-[310px] sm:w-[400px] left-1/2 transform -translate-x-1/2 overflow-hidden cursor-pointer">
 								<div className="w-5 h-[2px] bg-grey-70 rounded-full mx-auto mt-3" />
 								<div className="flex justify-start px-2">
 									<span className="text-[18px] font-semibold text-black mb-2 ml-2 mt-2">
@@ -145,7 +145,7 @@ export default function StoreHome() {
 									<PrimaryButton
 										text="닫기"
 										onClick={() => setSelected(false)}
-										className="w-[310px] sm:w-[380px] h-[48px] bg-grey-90 text-white mt-5"
+										className="w-[310px] sm:w-[380px] h-[48px] bg-grey-90 text-white mt-5 cursor-pointer"
 									></PrimaryButton>
 									<div className="w-16 h-[1.5px] bg-[#000000] rounded-full mx-auto z-50" />
 									<div className="flex flex-col rounded-2xl items-center justify gap-2 overflow-y-auto mt-2"></div>

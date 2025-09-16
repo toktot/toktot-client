@@ -36,12 +36,15 @@ export default function Search() {
 	};
 	return (
 		<HomeAppShell showBottomNav={true}>
-			<main className="min-h-screen bg-white p-4">
+			<main className="min-h-screen bg-white p-4 cursor-pointer">
 				<HeaderBox onLocationSaved={handleLocationSaved} />
 				<Suspense fallback={<div>로딩 중...</div>}>
 					<div className="flex justify-center items-center gap-1.5 relative p-3 -mt-3 overflow-y-auto">
 						<button onClick={() => router.back()}>
-							<Icon name="ArrowLeft" className="text-grey-70 -ml-3" />
+							<Icon
+								name="ArrowLeft"
+								className="text-grey-70 -ml-3 cursor-pointer"
+							/>
 						</button>
 						<div className="flex justify-center items-center min-w-[315px] max-w-[400px] w-full">
 							<SearchBox
@@ -51,10 +54,18 @@ export default function Search() {
 								}}
 								onSearchClick={() => handleSelect(text)}
 								leftIcon={
-									<Icon name="Search" size="s" className="text-grey-50" />
+									<Icon
+										name="Search"
+										size="s"
+										className="text-grey-50 cursor-pointer"
+									/>
 								}
 								rightIcon={
-									<Icon name="Cancel" size="s" className="text-grey-50" />
+									<Icon
+										name="Cancel"
+										size="s"
+										className="text-grey-50 cursor-pointer"
+									/>
 								}
 								className="w-full min-w-[315px] max-w-[400px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
 								rightIconOnClick={handleReset}

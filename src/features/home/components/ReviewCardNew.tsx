@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import SimpleStore, {
 	SimpleStoreProps,
@@ -41,71 +42,98 @@ interface PhotoReviewCardProps {
 
 export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 	const hasImage = !!review.imageUrl;
-
+	const router = useRouter();
 	return (
 		<div
-			className="w-[290px] bg-white rounded-xl shadow-md overflow-hidden"
+			className="w-[290px] bg-white rounded-xl shadow-md overflow-hidden cursor-pointer"
 			style={{
 				boxShadow: '0 2px 10px rgba(0,0,0,0.15), 0 0 10px rgba(0,0,0,0.1)',
 			}}
 		>
-			{/* 상단 프로필 + 닉네임 + 별점 */}
-			<div className="flex items-center justify-between p-2">
-				<div className="flex items-center gap-2">
-					<div className="relative w-7 h-8 rounded-full overflow-hidden flex items-center justify-center bg-grey-20">
-						{review.author.profileImageUrl ? (
-							<Image
-								src={review.author.profileImageUrl}
-								alt={`${review.author.nickname} 프로필`}
-								fill
-								className="object-cover"
-							/>
-						) : (
-							<Icon name="Avatar" size="xl" className="text-grey-60" />
-						)}
-					</div>
+			<div
+				className=""
+				onClick={() => router.push(`/review/view?reviewId=${review.id}`)}
+			>
+				{/* 상단 프로필 + 닉네임 + 별점 */}
+				<div className="flex items-center justify-between p-2">
+					<div className="flex items-center gap-2">
+						<div className="relative w-7 h-8 rounded-full overflow-hidden flex items-center justify-center bg-grey-20">
+							{review.author.profileImageUrl ? (
+								<Image
+									src={review.author.profileImageUrl}
+									alt={`${review.author.nickname} 프로필`}
+									fill
+									className="object-cover"
+								/>
+							) : (
+								<Icon name="Avatar" size="xl" className="text-grey-60" />
+							)}
+						</div>
 
-					<div className="flex flex-col">
-						<span className="text-sm font-semibold">
-							{review.author.nickname}
-						</span>
-						<span className="text-xs text-gray-400">
-							{review.author.reviewCount || 0}개 · 평균{' '}
-							{review.author.averageRating.toFixed(1) || 0}점 ·{' '}
-							{/*{review.date}*/}
-						</span>
+						<div className="flex flex-col">
+							<span className="text-sm font-semibold">
+								{review.author.nickname}
+							</span>
+							<span className="text-xs text-gray-400">
+								{review.author.reviewCount || 0}개 · 평균{' '}
+								{review.author.averageRating.toFixed(1) || 0}점 ·{' '}
+								{/*{review.date}*/}
+							</span>
+						</div>
+					</div>
+					<div className="flex items-center gap-1">
+						<Icon
+							name={'Star'}
+							fill="#3AC8FF"
+							className="outline-none stroke-0 "
+							color="#3AC8FF"
+							size="xxs"
+						/>
+						<span className="text-sm font-medium">{review.rating}</span>
 					</div>
 				</div>
-				<div className="flex items-center gap-1">
-					<Icon
-						name={'Star'}
-						fill="#3AC8FF"
-						className="outline-none stroke-0 "
-						color="#3AC8FF"
-						size="xxs"
-					/>
-					<span className="text-sm font-medium">{review.rating}</span>
-				</div>
-			</div>
 
-			{/* 리뷰 이미지 */}
-			<div className="relative w-[290px] h-[282px]">
-				{hasImage ? (
-					<Image
-						src={review.imageUrl as string}
-						alt={`${review.author.nickname} 리뷰 이미지`}
-						fill
-						className="object-cover"
-					/>
-				) : (
-					<div className="w-full h-[200px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm">
-						사진을 준비하고 있어요
+				{/* 리뷰 이미지 */}
+				<div className="relative w-[290px] h-[282px]">
+					{hasImage ? (
+						<Image
+							src={review.imageUrl as string}
+							alt={`${review.author.nickname} 리뷰 이미지`}
+							fill
+							className="object-cover"
+						/>
+					) : (
+						<div className="w-full h-[200px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm">
+							사진을 준비하고 있어요
+						</div>
+					)}
+					{(review.valueForMoneyScore || review.keywords.length > 0) && (
+						<div className="absolute bottom-0 left-0 flex flex-wrap gap-2 px-2 pb-2 pt-2">
+							{/* 가심비 박스 */}
+							{review.valueForMoneyScore !== undefined && (
+								<div
+									className={`px-2 py-1 text-xs font-medium rounded-md text-white${
+										review.valueForMoneyScore >= 80
+											? 'border border-green-600 text-white bg-gradient-to-r from-[#00C79F] to-[#59A387]'
+											: review.valueForMoneyScore >= 50
+												? 'border border-blue-500 text-white bg-gradient-to-r from-[#3AC8FF] to-[#3A78FF]'
+												: review.valueForMoneyScore >= 30
+													? 'border border-orange-500 text-white bg-gradient-to-r from-[#FFB885] to-[#FF6600]'
+													: 'bg-gray-200 text-white'
+									}`}
+								>
+									{review.valueForMoneyScore}점
+								</div>
+							)}
+						</div>
+					)}
+
+					<div className="absolute bottom-2 right-2 p-2 bg-[rgba(23,29,41,0.5)] rounded-full flex items-center justify-center">
+						<Icon name="Bookmark" className=" text-white" />
 					</div>
-				)}
-
-				<div className="p-2 relative w-[290px]">
-					<p className="text-xs text-white line-clamp-2 pr-10 mr-10">
-						{/*
+				</div>
+				<p className="text-xs text-white line-clamp-2 pr-10 mr-10">
+					{/*
 						{review.text && review.text.length > 25 ? (
 							<>
 								{review.keywords.length > 0 ? review.keywords.join(', ') : ''}
@@ -115,51 +143,10 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 							review.text
 						)}
 							*/}
-					</p>
-					<Icon
-						name="Bookmark"
-						className="absolute bottom-5 right-2 text-white"
-					/>
-				</div>
+				</p>
+
+				{/* 설명 및 북마크 */}
 			</div>
-
-			{/* 설명 및 북마크 */}
-
-			{(review.valueForMoneyScore || review.keywords.length > 0) && (
-				<div className="flex flex-wrap gap-2 px-2 pb-2 pt-2">
-					{/* 가심비 박스 */}
-					{review.valueForMoneyScore !== undefined && (
-						<div
-							className={`px-2 py-1 text-xs font-medium ${
-								review.valueForMoneyScore >= 80
-									? 'border border-green-600 text-green-600 bg-green-50'
-									: review.valueForMoneyScore >= 50
-										? 'border border-blue-500 text-blue-500 bg-blue-50'
-										: review.valueForMoneyScore >= 30
-											? 'border border-orange-500 text-orange-500 bg-orange-50'
-											: 'bg-gray-200 text-grey-70'
-							}`}
-						>
-							{review.author.nickname}님의 가심비 {review.valueForMoneyScore}점
-						</div>
-					)}
-
-					{/* 키워드 태그들 */}
-					{review.keywords.length > 0 && (
-						<div className="flex flex-wrap gap-2">
-							{review.keywords.map((kw) => (
-								<div
-									key={kw}
-									className="px-2 py-0.5 rounded-md bg-grey-10 text-grey-80 text-[12px]"
-								>
-									{kw}
-								</div>
-							))}
-						</div>
-					)}
-				</div>
-			)}
-
 			{/* SimpleStore 카드 예시 (맨 아래) */}
 			{review.restaurant && (
 				<div className="mt-2 bg-grey-10">

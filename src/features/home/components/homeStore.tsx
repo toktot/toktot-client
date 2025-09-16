@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { useCategories } from '@/shared/hooks/useCategories';
-import Icon from '@/shared/ui/Icon';
 
 import api from '../lib/api';
 import { CategoryItem } from './FoodIcon';
@@ -42,11 +39,10 @@ interface GoodPriceStore {
 
 export default function PriceTabs({
 	initialFood = '',
-	onSelect,
+
 	onChange,
 }: PriceTabsProps) {
 	const { categories } = useCategories();
-	const router = useRouter();
 
 	const [selectedFood, setSelectedFood] = useState<CategoryItem | null>(
 		categories?.find((cat) => cat.name === initialFood) || null,
@@ -64,11 +60,7 @@ export default function PriceTabs({
 	const [stores, setStores] = useState<GoodPriceStore[]>([]);
 	const [loading, setLoading] = useState(false);
 	console.log(loading);
-	const handleClick = (item: CategoryItem) => {
-		setSelectedFood(item);
-		if (onSelect) onSelect(item);
-		router.push(`/search?q=${encodeURIComponent(item.name)}`);
-	};
+
 	const fetchStores = async (priceValue: number, foodName: string) => {
 		setLoading(true);
 		try {
@@ -136,26 +128,6 @@ export default function PriceTabs({
 			</div>
 			{/* 탭 버튼 */}
 			{/* 탭 버튼 */}
-			<div className="overflow-x-auto mb-4 justify-start scrollbar-hide justify-center items-center">
-				<div className="inline-flex gap-4 whitespace-nowrap">
-					{categories?.map((cat) => (
-						<div key={cat.id} className="flex flex-col items-center w-[60px]">
-							{/* 네모 + 아이콘 버튼 */}
-							<button
-								className="w-[60px] h-[60px] flex items-center justify-center rounded-xl bg-grey-20"
-								onClick={() => handleClick(cat)}
-							>
-								<Icon name={cat.icon} className="w-10 h-10" />
-							</button>
-
-							{/* 글자 (버튼 밖, 아래) */}
-							<span className="mt-1 text-xs text-grey-90 text-center">
-								{cat.name}
-							</span>
-						</div>
-					))}
-				</div>
-			</div>
 
 			{/* 가게 카드들 */}
 			<div className="flex flex-col gap-4 justify-center items-center">

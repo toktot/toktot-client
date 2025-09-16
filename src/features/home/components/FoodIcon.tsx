@@ -27,8 +27,8 @@ const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 		router.push(`/search?q=${encodeURIComponent(item.name)}`);
 	};
 	return (
-		<div className="bg-[#F9FAFB] rounded-xl p-4">
-			<h2 className="text-base font-semibold text-gray-800 mb-2">향토음식</h2>
+		<div className="bg-white rounded-3xl p-4 cursor-pointer">
+			<h2 className="text-[18px] font-semibold text-grey-90 mb-2">로컬음식</h2>
 			<div className="grid grid-cols-5 gap-x-1 gap-y-2">
 				{categories?.map((item, idx) => (
 					<button
@@ -37,10 +37,10 @@ const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 						onClick={() => handleClick(item)}
 						className="flex flex-col items-center text-center text-xs text-gray-700"
 					>
-						<div className="bg-white rounded-2xl w-12 h-12 flex items-center justify-center shadow-sm mb-1">
-							<Icon name={item.icon} />
+						<div className=" flex items-center justify-center mb-1">
+							<Icon name={item.icon} size="xxl" />
 						</div>
-						<span>{item.name}</span>
+						<span className="text-[12px] text-grey-60">{item.name}</span>
 					</button>
 				))}
 			</div>

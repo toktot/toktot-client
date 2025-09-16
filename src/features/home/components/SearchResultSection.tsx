@@ -25,8 +25,10 @@ import api from '../lib/api';
 import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
 
-interface BackendReview {
+export interface BackendReview {
 	id: number;
+	authorNickname: string;
+	mainImageUrl: string;
 	author: {
 		id: number;
 		nickname: string;
@@ -81,15 +83,16 @@ interface FrontendPlace {
 }
 
 function toReview(api: BackendReview): Review {
+	console.log('toReview api:', api.authorNickname);
 	return {
 		id: api.id,
-		imageUrl: api.images?.[0]?.thumbnailUrl ?? '',
+		imageUrl: api.mainImageUrl ?? '',
 		placeName: api.restaurant?.name ?? 'Unknown Place',
 		distance: '234m',
 
 		location: api.restaurant?.address ?? '',
 		rating: api.overallRating ?? 0, // 별점 정보 없으므로 기본값
-		writer: api.author?.nickname ?? '익명',
+		writer: api.authorNickname,
 		userProfileImageUrl: api.author?.profileImageUrl ?? '',
 		time: api.createdAt ?? '',
 		keywords: api.keywords ?? [],
@@ -126,7 +129,7 @@ function toStore(api: BackendPlace): FrontendPlace {
 	};
 }
 
-interface ReviewSearchBody {
+export interface ReviewSearchBody {
 	query: string;
 	page?: number;
 
@@ -179,7 +182,7 @@ export default function SearchResultSection() {
 	const q = searchParams.get('q') ?? '';
 	const [sortOption, setSortOption] = useState<
 		'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION'
-	>('DISTANCE');
+	>('POPULARITY');
 	const [inputValue, setInputValue] = useState(q);
 	const [query, setQuery] = useState(q);
 	const initialTab = searchParams.get('tab') as 'review' | 'store' | null;
@@ -215,7 +218,9 @@ export default function SearchResultSection() {
 		setInputValue('');
 	};
 	const [, setHasMore] = useState(true);
-
+	const handleSortChange = (option: typeof sortOption) => {
+		setSortOption(option); // FilterBar에서 변경된 값을 반영
+	};
 	useEffect(() => {
 		const token = getDecryptedToken();
 		if (!token) {
@@ -243,7 +248,7 @@ export default function SearchResultSection() {
 	const { location } = useCurrentLocation();
 
 	const fetchReviews = useCallback(async () => {
-		if (!query || fetchRef.current.reviews) return;
+		if (!query) return;
 		fetchRef.current.reviews = true;
 		try {
 			const body: ReviewSearchBody = {
@@ -253,8 +258,8 @@ export default function SearchResultSection() {
 			};
 
 			if (distance && location?.coords) {
-				const lat = location?.coords.latitude;
-				const lng = location?.coords.longitude;
+				const lat = location?.coords?.latitude ?? 0;
+				const lng = location?.coords?.longitude ?? 0;
 				const radius = parseInt(distance, 10) || 1000;
 				body.location = {
 					latitude: Number(lat),
@@ -316,12 +321,9 @@ export default function SearchResultSection() {
 				body.keywords = keywords;
 			}
 
-			console.log('요청 body 확인', body);
-			console.log('request body:', JSON.stringify(body, null, 2));
-
 			setLoading(true);
 
-			console.log('요청 body', body);
+			console.log('요청 body입니다', body);
 			const res = await api.post('/v1/reviews/search', body);
 			console.log('응답 데이터 :', res.data);
 
@@ -477,10 +479,6 @@ export default function SearchResultSection() {
 		sortOption,
 		location?.coords,
 	]);
-	useEffect(() => {
-		if (tab === 'review') fetchReviews();
-		if (tab === 'store') fetchStores();
-	}, [tab, fetchReviews, fetchStores]);
 
 	const handleFilterChange = (newFilter: number | null) => {
 		setFilter(newFilter);
@@ -528,13 +526,13 @@ export default function SearchResultSection() {
 	useEffect(() => {
 		if (tab === 'review') fetchReviews();
 		if (tab === 'store') fetchStores();
-	}, [tab, fetchReviews, fetchStores]);
+	}, [tab, fetchReviews, fetchStores, query]);
 
 	return (
 		<HomeAppShell showBottomNav={true}>
-			<main className="flex flex-col h-screen">
+			<main className="flex flex-col h-screen cursor-pointer pb-[80px]">
 				<HeaderBox onLocationSaved={handleLocationSaved} />
-				<div className=" bg-white flex-1 overflow-y-auto scrollbar-hide">
+				<div className=" bg-white flex-1 overflow-y-auto scrollbar-hide cursor-pointer">
 					<div className="px-4 py-6">
 						<section className="-mt-3 flex items-center gap-2">
 							<Icon
@@ -557,7 +555,6 @@ export default function SearchResultSection() {
 										params.set('q', inputValue);
 										params.delete('filter');
 										router.push(`/search?${params.toString()}`);
-										setQuery(inputValue);
 										setFilter(null);
 
 										pageRef.current = 1;
@@ -566,6 +563,8 @@ export default function SearchResultSection() {
 										setReviewPage(1);
 										setHasMore(true);
 										setHasMoreReviews(true);
+										if (tab === 'review') fetchReviews();
+										if (tab === 'store') fetchStores();
 									}}
 									leftIcon={
 										<Icon name="Search" size="s" className="text-grey-50" />
@@ -579,9 +578,9 @@ export default function SearchResultSection() {
 							</div>
 						</section>
 						{/* 탭 (리뷰 / 가게명) */}
-						<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40">
+						<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40 cursor-pointer">
 							<button
-								className={`pb-2 text-base font-semibold ${
+								className={`pb-2 text-base font-semibold cursor-pointer ${
 									tab === 'review'
 										? 'text-gray-900 border-b-2 border-gray-900'
 										: 'text-gray-400'
@@ -591,7 +590,7 @@ export default function SearchResultSection() {
 								리뷰
 							</button>
 							<button
-								className={`pb-2 text-base font-semibold ${
+								className={`pb-2 text-base font-semibold cursor-pointer ${
 									tab === 'store'
 										? 'text-gray-900 border-b-2 border-gray-900'
 										: 'text-gray-400'
@@ -617,7 +616,7 @@ export default function SearchResultSection() {
 											`/searchDetection?from=search&q=${encodeURIComponent(query)}`,
 										)
 									}
-									onSortChange={(newSort) => setSortOption(newSort)}
+									onSortChange={handleSortChange}
 								/>
 								<Auto query={text} onSelect={handleSelect} />
 							</div>
@@ -667,30 +666,9 @@ export default function SearchResultSection() {
 								<Auto query={text} onSelect={handleSelect} />
 							</div>
 							<div className="mt-4 w-full flex flex-col">
-								{stores
-									.filter((store) => {
-										const queryLower = query.toLowerCase();
-										const nameMatch = store.name
-											.toLowerCase()
-											.includes(queryLower);
-										const menuMatch = store.mainMenus?.some((menu) =>
-											menu.toLowerCase().includes(queryLower),
-										);
-										return nameMatch || menuMatch;
-									})
-
-									.map((store, index) => (
-										<div
-											key={store.id}
-											className={`w-full ${
-												index < stores.length - 1
-													? 'border-b border-grey-10' // 얇은 회색 선
-													: ''
-											}`}
-										>
-											<StoreInfoCard review={store} />
-										</div>
-									))}
+								{stores.map((store) => (
+									<StoreInfoCard review={store} key={store.id} />
+								))}
 							</div>
 							{showToast && (
 								<Toast

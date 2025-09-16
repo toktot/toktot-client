@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
+import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
 
@@ -40,6 +41,7 @@ interface Props {
 	onSortChange?: (
 		sort: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION',
 	) => void;
+	locationAvailable?: boolean;
 }
 
 const FilterBar: React.FC<Props> = ({
@@ -51,19 +53,70 @@ const FilterBar: React.FC<Props> = ({
 	const [filterTags, setFilterTags] = useState<string[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const JEJU_BOUNDS = {
+		latMin: 33.0,
+		latMax: 33.7,
+		lngMin: 126.0,
+		lngMax: 127.0,
+	};
 
+	const isInJeju = (lat: number, lng: number) =>
+		lat >= JEJU_BOUNDS.latMin &&
+		lat <= JEJU_BOUNDS.latMax &&
+		lng >= JEJU_BOUNDS.lngMin &&
+		lng <= JEJU_BOUNDS.lngMax;
 	const [displayItems, setDisplayItems] = useState(filterItems);
 	const [isQueryActive, setIsQueryActive] = useState(false);
 	console.log(setIsQueryActive);
 	const [mealTimeState, setMealTimeState] = useState<string | null>(null);
-
+	const { location } = useCurrentLocation();
+	const [canUseDistanceSort, setCanUseDistanceSort] = useState(false);
+	const [locationAllowedBrowser, setLocationAllowedBrowser] = useState(false);
 	useEffect(() => {
 		setMealTimeState(searchParams.get('mealTime'));
 	}, [searchParams]);
 
+	useEffect(() => {
+		if (!navigator.geolocation) {
+			console.log('브라우저에서 Geolocation 지원 안함');
+			return;
+		}
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				console.log('위치 허용됨', position.coords);
+				setLocationAllowedBrowser(true);
+			},
+			(error) => {
+				console.log('위치 허용 거부됨', error);
+				setLocationAllowedBrowser(false);
+			},
+		);
+	}, []);
+
+	// 2. 위치가 제주도인지 확인
+	useEffect(() => {
+		if (location?.coords) {
+			const { latitude, longitude } = location.coords;
+			setCanUseDistanceSort(isInJeju(latitude, longitude));
+		} else {
+			setCanUseDistanceSort(false);
+		}
+	}, [location, isInJeju]);
+
+	// 3. sortOption 설정 (브라우저 허용 + 제주도)
+	useEffect(() => {
+		setSortOption(
+			locationAllowedBrowser && canUseDistanceSort
+				? 'DISTANCE'
+				: 'SATISFACTION',
+		);
+	}, [locationAllowedBrowser, canUseDistanceSort]);
+
 	const [sortOption, setSortOption] = useState<
 		'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION'
-	>('DISTANCE');
+	>('SATISFACTION');
+
 	const handleSortSelect = (option: typeof sortOption) => {
 		setSortOption(option);
 		if (onSortChange) onSortChange(option);
@@ -229,17 +282,21 @@ const FilterBar: React.FC<Props> = ({
 	]);
 
 	return (
-		<div className="relative flex items-center">
+		<div className="relative flex items-center cursor-pointer">
 			{/* 왼쪽 정렬 버튼 */}
 			<div className="shrink-0 mr-2">
-				<SortDropdown value={sortOption} onChange={handleSortSelect} />
+				<SortDropdown
+					value={sortOption}
+					onChange={handleSortSelect}
+					locationAvailable={locationAllowedBrowser && canUseDistanceSort}
+				/>
 			</div>
 
 			{/* 카테고리 선택 */}
 			<SingleCategorySelect
 				value={value}
 				onChange={handleFilterChange}
-				className="flex-nowrap overflow-x-auto scrollbar-hide pr-10"
+				className="flex-nowrap overflow-x-auto scrollbar-hide pr-10 cursor-pointer"
 			>
 				{displayItems.map((item) => (
 					<SingleCategorySelect.Item
@@ -258,9 +315,9 @@ const FilterBar: React.FC<Props> = ({
 			</SingleCategorySelect>
 
 			{/* 오른쪽 고정 필터 아이콘 */}
-			<div className="absolute right-0 z-50">
+			<div className="absolute right-0 z-50 cursor-pointer">
 				<div
-					className=" flex items-center justify-center"
+					className=" flex items-center justify-center cursor-pointer"
 					style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
 				>
 					<Icon

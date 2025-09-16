@@ -14,9 +14,10 @@ import Icon from '@/shared/ui/Icon';
 
 interface HeaderBoxProps {
 	onLocationSaved?: () => void;
+	user?: string | null;
 }
 
-const HeaderBox = ({ onLocationSaved }: HeaderBoxProps) => {
+const HeaderBox = ({ onLocationSaved, user }: HeaderBoxProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const handleClose = () => setIsOpen(false);
@@ -64,6 +65,7 @@ const HeaderBox = ({ onLocationSaved }: HeaderBoxProps) => {
 			<LocationSelector
 				onClose={handleClose}
 				onLocationSaved={onLocationSaved}
+				user={user}
 			/>
 		</BottomSheet>
 	);
