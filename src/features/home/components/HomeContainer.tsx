@@ -34,12 +34,30 @@ interface NearbyStore {
 	image: string;
 }
 
-interface Author {
+interface Restaurants {
 	id: number;
-	nickname: string;
-	profileImageUrl: string | null;
-	reviewCount: number;
-	averageRating: number;
+	name: string;
+	representativeMenu: string | null;
+	address: string;
+	distanceInKm: number | null;
+}
+
+interface ContentItem {
+	id: number;
+	mainImageUrl: string;
+	authorProfileImageUrl: string | null;
+	authorNickname: string;
+	createdAt: string;
+	restaurant: Restaurants;
+	isBookmarked: boolean;
+	isWriter: boolean;
+}
+
+interface ApiResponse {
+	success: boolean;
+	data: {
+		content: ContentItem[];
+	};
 }
 
 interface Restaurant {
@@ -48,6 +66,13 @@ interface Restaurant {
 	representativeMenu: string | null;
 	address: string;
 	distanceInKm: string | null;
+}
+interface Author {
+	id: number;
+	nickname: string;
+	profileImageUrl: string | null;
+	reviewCount: number;
+	averageRating: number;
 }
 export interface PopularReview {
 	id: number;
@@ -94,7 +119,7 @@ export default function HomeContainer() {
 
 	const [filter, setFilter] = useState<number | null>(null);
 	const [query, setQuery] = useState('');
-
+	const [user, setUser] = useState<string | null>(null);
 	const router = useRouter();
 	const [showToast, setShowToast] = useState(false);
 	const [, setGoodPriceStores] = useState<GoodPriceStore[]>([]);
@@ -120,8 +145,8 @@ export default function HomeContainer() {
 					'/v1/restaurants/search/filter?page=0',
 					{
 						location: {
-							latitude: location.coords.latitude,
-							longitude: location.coords.longitude,
+							latitude: location.coords?.latitude,
+							longitude: location.coords?.longitude,
 							radius: 1000, // 1km 반경
 						},
 					},
@@ -139,7 +164,19 @@ export default function HomeContainer() {
 		fetchNearbyStores();
 	}, [location, locationError]);
 
-	console.log(setPrice, setFood);
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const response = await api.get<ApiResponse>('/v1/reviews/my');
+				const profile =
+					response.data.data.content[0]?.authorProfileImageUrl ?? null;
+				setUser(profile);
+			} catch (err) {
+				console.error('유저 정보 불러오기 실패', err);
+			}
+		};
+		fetchUser();
+	}, []);
 	const fetchGoodPriceStores = useCallback(
 		async (priceValue?: number, foodName?: string) => {
 			try {
@@ -317,8 +354,8 @@ export default function HomeContainer() {
 	}, [query, searchParams, popularReviews]);
 
 	return (
-		<main className="flex flex-col h-screen">
-			<HeaderBox onLocationSaved={handleLocationSaved} />
+		<main className="flex flex-col h-screen cursor-pointer">
+			<HeaderBox onLocationSaved={handleLocationSaved} user={user} />
 			<div className="flex-1 overflow-y-auto scrollbar-hide pb-[80px] h-auto">
 				<div className="bg-grey-10">
 					<section className="relative mt-2 justify-center flex items-center gap-2 bg-grey-10">
@@ -340,7 +377,27 @@ export default function HomeContainer() {
 						</div>
 					</section>
 					<AlarmBox />
-					<section className="mt-3 px-4">
+					<div className="mt-3 mx-4 rounded-3xl p-4 bg-gradient-to-r from-primary-30 via-primary-20 to-primary-30 relative overflow-hidden">
+						<p className="text-[16px] font-semibold text-grey-90">
+							여러분만의 특별한 <br />
+							제주도 음식을 작성해주세요!
+						</p>
+						<button className="mt-3 px-3 py-1 rounded-full bg-primary-40 text-primary-10 text-[12px] font-semibold">
+							바로 작성하러가기
+						</button>
+
+						{/* 아이콘들 */}
+						<div className="absolute top-3 right-24 transform -rotate-[22.39deg]">
+							<Icon name="DombeGogi" className="w-10 h-10" />
+						</div>
+						<div className="absolute top-5 right-4 transform rotate-[10.81deg]">
+							<Icon name="Googigukso" className="w-10 h-10" />
+						</div>
+						<div className="absolute bottom-3 right-14 transform rotate-[10.81deg]">
+							<Icon name="Bingtteok" className="w-10 h-10" />
+						</div>
+					</div>
+					<section className="mt-3 px-4 cursor-pointer">
 						<CategoryGrid />
 					</section>
 				</div>
@@ -403,25 +460,25 @@ export default function HomeContainer() {
 					</div>
 
 					{/* PhotoReviewCard 목록 */}
+					<div className="mt-8 flex items-center justify-between mb-4">
+						<h2 className="text-[18px] font-semibold">
+							지금 만나보는 가까운 식당
+						</h2>
+						<button
+							className="text-sm text-gray-500"
+							onClick={() => {
+								router.push(`/search?tab=store`);
+							}}
+						>
+							더보기
+						</button>
+					</div>
 					{!locationLoading &&
 						location &&
 						!locationError &&
 						nearbyStores.length > 0 && (
 							<section className="mt-8 flex flex-col">
 								{/* 가격도 착하고 맛까지 좋은 가게 */}
-								<div className="mt-8 flex items-center justify-between mb-4">
-									<h2 className="text-[18px] font-semibold">
-										지금 만나보는 가까운 식당
-									</h2>
-									<button
-										className="text-sm text-gray-500"
-										onClick={() => {
-											router.push(`/search?tab=store`);
-										}}
-									>
-										더보기
-									</button>
-								</div>
 
 								<div className="flex flex-col gap-4">
 									{nearbyStores.map((store) => (

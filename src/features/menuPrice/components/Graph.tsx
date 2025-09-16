@@ -116,7 +116,7 @@ const PriceChart = () => {
 	};
 
 	return (
-		<div className="bg-grey-10 p-4 min-h-screen space-y-3">
+		<div className="bg-grey-10 p-4 min-h-screen space-y-3 cursor-pointer">
 			{/* 헤더 */}
 			<div className="ml-2">
 				{categories

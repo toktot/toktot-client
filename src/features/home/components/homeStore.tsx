@@ -136,26 +136,6 @@ export default function PriceTabs({
 			</div>
 			{/* 탭 버튼 */}
 			{/* 탭 버튼 */}
-			<div className="overflow-x-auto mb-4 justify-start scrollbar-hide justify-center items-center">
-				<div className="inline-flex gap-4 whitespace-nowrap">
-					{categories?.map((cat) => (
-						<div key={cat.id} className="flex flex-col items-center w-[60px]">
-							{/* 네모 + 아이콘 버튼 */}
-							<button
-								className="w-[60px] h-[60px] flex items-center justify-center rounded-xl bg-grey-20"
-								onClick={() => handleClick(cat)}
-							>
-								<Icon name={cat.icon} className="w-10 h-10" />
-							</button>
-
-							{/* 글자 (버튼 밖, 아래) */}
-							<span className="mt-1 text-xs text-grey-90 text-center">
-								{cat.name}
-							</span>
-						</div>
-					))}
-				</div>
-			</div>
 
 			{/* 가게 카드들 */}
 			<div className="flex flex-col gap-4 justify-center items-center">

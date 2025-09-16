@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import Icon from '@/shared/ui/Icon';
@@ -8,12 +8,19 @@ interface SortDropdownProps {
 	onChange: (
 		option: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION',
 	) => void;
+	locationAvailable?: boolean;
 }
 
-const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
+const SortDropdown: React.FC<SortDropdownProps> = ({
+	value,
+	onChange,
+	locationAvailable,
+}) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [selectedOption, setSelectedOption] = useState(value);
-
+	useEffect(() => {
+		setSelectedOption(value);
+	}, [value]);
 	const options: {
 		value: 'DISTANCE' | 'POPULARITY' | 'RATING' | 'SATISFACTION';
 		label: string;
@@ -23,6 +30,9 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
 		{ value: 'POPULARITY', label: '인기 순' },
 		{ value: 'RATING', label: '별점 높은 순' },
 	];
+	const filteredOptions = options.filter(
+		(opt) => opt.value !== 'RATING' || locationAvailable,
+	);
 
 	const handleSelect = (option: typeof selectedOption) => {
 		setSelectedOption(option);
@@ -33,11 +43,11 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
 		<div className="relative">
 			<button
 				onClick={() => setIsOpen((prev) => !prev)}
-				className="flex items-center px-1 py-2 gap-1 rounded-full bg-grey-10"
+				className="flex items-center px-1 py-2 gap-1 rounded-full bg-grey-10 cursor-pointer"
 			>
 				<Icon name="Sort" size="xs" />
 				<span className="text-[14px] font-semibold">
-					{options.find((o) => o.value === selectedOption)?.label}
+					{filteredOptions.find((o) => o.value === selectedOption)?.label || ''}
 				</span>
 			</button>
 
@@ -45,7 +55,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
 				<div className="sm:w-[480px] w-[375px] fixed bottom-0 -ml-4 z-50 bg-white rounded-t-3xl p-4">
 					<div className="w-10 h-[2px] bg-grey-70 rounded-full mx-auto mb-4" />
 
-					{options.map((option) => (
+					{filteredOptions.map((option) => (
 						<button
 							key={option.value}
 							onClick={() => handleSelect(option.value)}

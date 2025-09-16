@@ -67,7 +67,7 @@ function SingleCategorySelectItem({
 			onClick={handleClick}
 			className={twMerge(
 				clsx(
-					'px-3 py-1 text-base rounded-full border transition-all border-grey-30',
+					'px-3 py-1 text-base rounded-full border transition-all border-grey-30 cursor-pointer',
 					isActive ? 'bg-grey-90 text-grey-10 ' : 'text-grey-60',
 					className,
 				),

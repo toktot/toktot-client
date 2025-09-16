@@ -18,11 +18,13 @@ import { useLocation } from './LocationContext';
 interface LocationSelectorProps {
 	onClose?: () => void;
 	onLocationSaved?: () => void;
+	user?: string | null;
 }
 
 export default function LocationSelector({
 	onClose,
 	onLocationSaved,
+	user,
 }: LocationSelectorProps) {
 	const [address, setAddress] = useState('');
 	const [searchAddress, setSearchAddress] = useState('');
@@ -108,7 +110,7 @@ export default function LocationSelector({
 		// ...생략
 		<>
 			<BottomSheetContent
-				className={`fixed bottom-0 min-w-[375px] max-w-[480px] w-full left-1/2 z-50 bg-white rounded-t-2xl flex flex-col py-4 overflow-y-auto
+				className={`fixed bottom-0 min-w-[375px] max-w-[480px] w-full left-1/2 z-50 bg-white rounded-t-2xl flex flex-col py-4 overflow-y-auto cursor-pointer
           ${address.trim() ? 'translate-y-50' : 'translate-y-70'} -translate-x-1/2 transition-transform duration-300 ease-in-out'}`}
 				style={{
 					paddingLeft: 0,
@@ -151,7 +153,11 @@ export default function LocationSelector({
 											setStep('search');
 										}}
 									>
-										<Icon name={'Cancel'} size="m" className="text-grey-50" />
+										<Icon
+											name={'Cancel'}
+											size="m"
+											className="text-grey-50 cursor-pointer"
+										/>
 									</button>
 								</div>
 							</div>
@@ -161,6 +167,8 @@ export default function LocationSelector({
 									lat={latLng?.lat}
 									lng={latLng?.lng}
 									onMarkerClick={() => setIsMarkerClicked(true)}
+									isMarkerClicked={isMarkerClicked}
+									user={user}
 								/>
 							</div>
 
@@ -168,7 +176,7 @@ export default function LocationSelector({
 								<button
 									disabled={!isMarkerClicked}
 									onClick={handleSaveLocation}
-									className=" min-w-[343px] max-w-[450px] w-full py-3 rounded-2xl font-semibold transition-all bg-black text-primary-40"
+									className=" min-w-[343px] cursor-pointer max-w-[450px] w-full py-3 rounded-2xl font-semibold transition-all bg-black text-primary-40"
 								>
 									위치 저장
 								</button>
@@ -190,11 +198,17 @@ export default function LocationSelector({
 									placeholder="주소를 입력하세요"
 									placeholderColor="placeholder-grey-80"
 									leftIcon={
-										address.trim() ? undefined : <Icon name="Search" size="s" />
+										address.trim() ? undefined : (
+											<Icon name="Search" size="s" className="cursor-pointer" />
+										)
 									}
 									rightIcon={
 										address.trim() ? (
-											<Icon name="Search" size="s" className="text-grey-50" />
+											<Icon
+												name="Search"
+												size="s"
+												className="text-grey-50 cursor-pointer"
+											/>
 										) : undefined
 									}
 									className={`w-full min-w-[343px] max-w-[450px] h-[43px] flex items-center bg-grey-10 text-[14px] ${address.trim() ? 'border border-primary-40 text-primary-40' : ''}`}
@@ -211,7 +225,7 @@ export default function LocationSelector({
 								<div className="flex justify-center ml-2">
 									<button
 										disabled={!isSelected}
-										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold
+										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold cursor-pointer
 							${!isSelected ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
 										onClick={goToNextStep}
 									>

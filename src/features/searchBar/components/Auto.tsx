@@ -101,7 +101,7 @@ export default function Auto({ query, onSelect }: Props) {
 	if (!query.trim()) return null;
 
 	return (
-		<div className="absolute -ml-1 bg-white min-w-[343px] sm:w-[450px] mx-auto z-50 mt-2">
+		<div className="absolute -ml-1 bg-white min-w-[343px] sm:w-[450px] mx-auto z-50 mt-2 cursor-pointer">
 			{filteredCategories.map((item) => (
 				<div
 					key={item.id}

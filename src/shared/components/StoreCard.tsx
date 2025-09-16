@@ -31,7 +31,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 
 	return (
 		<div
-			className="flex flex-row gap-3 p-3 bg-white min-w-[343px] max-w-[430px] h-[105px] cursor-pointer"
+			className="flex flex-row gap-3 p-3 bg-white min-w-[343px] max-w-[430px] h-[105px] cursor-pointer mb-2"
 			onClick={() => router.push(`/storemenu/${review.id}`)}
 		>
 			<div className="relative w-[89px] h-[89px]">

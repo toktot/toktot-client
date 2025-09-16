@@ -378,14 +378,14 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 
 			{/* 탭 영역 */}
 
-			<div className="flex gap-2 w-full px-4 mb-4 rounded-md h-full bg-white overflow-x-auto scrollbar-hide">
+			<div className="flex gap-2 w-full px-4 mb-4 rounded-md h-full bg-white overflow-x-auto scrollbar-hide cursor-pointer">
 				{TABS.map((tab) => {
 					const [label, count] = tab.split(' ');
 					const isSelected = selectedTab === tab;
 					return (
 						<button
 							key={tab}
-							className={`px-4 py-2 rounded-full text-sm ${
+							className={`px-4 py-2 rounded-full text-sm cursor-pointer ${
 								isSelected ? 'bg-grey-90 text-white' : 'bg-grey-10 text-grey-70'
 							}`}
 							onClick={() => setSelectedTab(tab)}
