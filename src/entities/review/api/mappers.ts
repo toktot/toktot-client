@@ -88,7 +88,7 @@ export function mapReviewContentToView(content: ReviewContent): ReviewView {
 		id: String(content.restaurant.id) as StoreId,
 		storeName: content.restaurant.name,
 		mainMenu: content.restaurant.representativeMenu ?? '대표 메뉴 정보 없음',
-		address: content.restaurant.address,
+		address: content.restaurant.address ?? '주소 정보 없음',
 	};
 
 	return {

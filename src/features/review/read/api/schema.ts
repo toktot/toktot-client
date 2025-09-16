@@ -71,8 +71,8 @@ const ImageSchema = z.object({
 const RestaurantSchema = z.object({
 	id: z.number(),
 	name: z.string(),
-	address: z.string(),
 
+	address: z.string().nullish(),
 	representativeMenu: z.string().nullish(),
 	distanceInKm: z.number().nullish(),
 });

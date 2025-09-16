@@ -36,13 +36,22 @@ export const StoreSearchResultCard = ({
 			</div>
 
 			<div className="flex-1">
-				<p className="font-semibold">{store.name}</p>
-				<div className="flex items-center text-xs text-grey-60">
-					<Icon name="Star" size="xxs" className="mr-1 text-yellow-400" />
-					<span>{store.average_rating?.toFixed(1) ?? '-'}</span>
-					<span>리뷰 {store.review_count ?? 0}</span>
+				<div className="flex items-center gap-1">
+					<p className="font-semibold">{store.name}</p>
+					<div className="flex items-center text-xs ">
+						<Icon
+							name="Star"
+							size="xxs"
+							className="mr-1 text-primary-40 fill-primary-40"
+						/>
+						<span className="text-grey-90">
+							{store.average_rating?.toFixed(1) ?? '-'}
+						</span>
+						<span className="text-grey-70">({store.review_count ?? 0})</span>
+					</div>
 				</div>
-				<div className="flex items-center text-xs text-grey-60">
+
+				<div className="flex items-center text-xs text-grey-70">
 					<Icon name="Location" size="xxs" className="mr-1 text-grey-50" />
 					<p className="text-xs text-grey-500 mt-1">{store.address}</p>
 					<span className="mx-1">·</span>

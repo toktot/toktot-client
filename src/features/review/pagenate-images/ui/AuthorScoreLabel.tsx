@@ -25,7 +25,7 @@ export const AuthorScoreLabel = ({ score }: AuthorScoreLabelProps) => {
 	return (
 		<div
 			className={clsx(
-				'flex items-center  gap-[2px] px-[6px] rounded-md border text-white',
+				'flex items-center shrink-0 gap-[2px] px-[6px] rounded-md border text-white',
 				scoreClasses,
 			)}
 		>
