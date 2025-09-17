@@ -13,7 +13,7 @@ export const TooltipMarker = ({ tip, onClick }: TooltipMarkerProps) => {
 
 	return (
 		<div
-			className={`absolute w-[28px] h-[28px] rounded-xl flex items-center justify-center ${style.bgColor}`}
+			className={`absolute w-[28px] h-[28px] rounded-xl flex items-center justify-center cursor-pointer ${style.bgColor}`}
 			style={{
 				left: `${tip.x}%`,
 				top: `${tip.y}%`,
