@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import {
 	getDecryptedToken,
 	getUser,
@@ -13,19 +11,19 @@ import {
 } from '@/shared/utils/storage';
 
 import { User } from '../../../entities/user/types/auth';
-import { logoutUserApi } from '../api/api';
+import { deleteUserApi, logoutUserApi } from '../api/api';
 import { LoginResponse } from '../components/LoginForm';
 
 interface AuthContextType {
 	user: User | null;
 	login: (username: string, password: string) => Promise<LoginResponse>;
-	logout: () => void;
+	logout: () => Promise<void>;
+	deleteAccount: () => Promise<void>;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [user, setUser] = useState<User | null>(null);
-	const router = useRouter();
 
 	useEffect(() => {
 		const token = getDecryptedToken();
@@ -64,20 +62,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const logoutHandler = async () => {
-		try {
-			await logoutUserApi();
-		} finally {
-			// API 호출 성공 여부와 관계없이 클라이언트에서는 항상 로그아웃 처리
-			removeToken();
-			removeUser();
-			setUser(null);
-			router.push('/login'); // 로그아웃 후 로그인 페이지로 이동
-		}
+		await logoutUserApi();
+		removeToken();
+		removeUser();
+		setUser(null);
+	};
+
+	const deleteAccountHandler = async () => {
+		await deleteUserApi();
+		removeToken();
+		removeUser();
+		setUser(null);
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ user, login: loginHandler, logout: logoutHandler }}
+			value={{
+				user,
+				login: loginHandler,
+				logout: logoutHandler,
+				deleteAccount: deleteAccountHandler,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>
