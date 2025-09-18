@@ -315,10 +315,17 @@ const FilterBar: React.FC<Props> = ({
 			</SingleCategorySelect>
 
 			{/* 오른쪽 고정 필터 아이콘 */}
-			<div className="absolute right-0 z-50 cursor-pointer">
+			<div className="absolute right-0 z-50 cursor-pointer pointer-events-none">
 				<div
 					className=" flex items-center justify-center cursor-pointer"
-					style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
+					style={{
+						background:
+							'linear-gradient(to left, #FFFFFF 60%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0) 0%)',
+						paddingLeft: '15px',
+
+						paddingTop: '10px',
+						paddingBottom: '10px',
+					}}
 				>
 					<Icon
 						name="Filter"

@@ -226,7 +226,7 @@ export default function LocationSelector({
 									<button
 										disabled={!isSelected}
 										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold cursor-pointer
-							${!isSelected ? 'bg-grey-40 text-primary-40 cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
+							${!isSelected ? 'bg-grey-20 text-white cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
 										onClick={goToNextStep}
 									>
 										다음

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
+import { AppShell } from '@/widgets/layout';
 
 import { useMap } from '@/features/map/model/useMap';
 
@@ -88,9 +88,9 @@ export default function StoreHome() {
 	)},${store.latitude},${store.longitude}`;
 
 	return (
-		<HomeAppShell showBottomNav={true}>
+		<AppShell showBottomNav={true}>
 			<div className="bg-grey-10 flex justify-center px-4 ">
-				<div className="bg-white rounded-3xl shadow w-full max-w-[410px] min-w-[310px] flex flex-col">
+				<div className="bg-white rounded-3xl w-full max-w-[410px] min-w-[310px] mt-5 flex flex-col">
 					<>
 						<div className="flex justify-start px-2">
 							<span className="text-[18px] font-semibold text-black mb-2 ml-2 mt-2">
@@ -103,10 +103,10 @@ export default function StoreHome() {
 						/>
 						<div className="flex items-center mb-2 px-4">
 							<Icon name={'Location'} className="mr-2 w-5 h-5 text-grey-50" />
-							<span className="text-grey-80 text-base text-[12px]">
-								{store.address}
+							<span className="text-grey-85 text-[12px]">{store.address}</span>
+							<span className="text-grey-60 text-[12px]">
+								<CopyButton text={store.address} />
 							</span>
-							<CopyButton text={store.address} />
 						</div>
 						<div className="ml-4" onClick={() => setSelected(true)}>
 							<button className="cursor-pointer mb-4 gap-2 w-[310px] sm:w-[380px] inline-flex justify-center items-center py-3 border border-grey-50 text-black text-base font-bold rounded-3xl">
@@ -155,6 +155,6 @@ export default function StoreHome() {
 					)}
 				</div>
 			</div>
-		</HomeAppShell>
+		</AppShell>
 	);
 }

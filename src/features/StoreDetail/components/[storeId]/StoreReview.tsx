@@ -280,15 +280,16 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 							<div className="flex flex-col text-xs text-gray-500 gap-2 -mt-5">
 								{[
 									{
-										label: '청결',
-										value: reviewStats?.tooltipRatings.cleanRating ?? 0,
-										color: 'bg-green-400',
-									},
-									{
 										label: '음식',
 										value: reviewStats?.tooltipRatings.foodRating ?? 0,
 										color: 'bg-blue-400',
 									},
+									{
+										label: '청결',
+										value: reviewStats?.tooltipRatings.cleanRating ?? 0,
+										color: 'bg-green-400',
+									},
+
 									{
 										label: '서비스',
 										value: reviewStats?.tooltipRatings.serviceRating ?? 0,
@@ -318,7 +319,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 				<div className="flex justify-between items-center mb-6 gap-3 sm:gap-10">
 					<div className="flex flex-col items-center justify-center w-20 h-20 rounded-xl bg-gray-100">
 						<span className="text-xs text-gray-500">평균 가심비</span>
-						<span className="text-2xl font-bold text-primary">
+						<span className="text-2xl font-bold text-primary-40">
 							{avgGasimbi}점
 						</span>
 					</div>
@@ -355,9 +356,9 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 											{range}
 										</span>
 
-										<div className="relative sm:w-[100px] w-[70px] h-[6px] bg-gray-200 rounded-full overflow-hidden ml-2">
+										<div className="relative sm:w-[90px] w-[70px] h-[6px] bg-gray-200 overflow-hidden ml-2">
 											<div
-												className={`absolute h-[6px] rounded-full ${
+												className={`absolute h-[6px] ${
 													isMax ? 'bg-grey-90' : 'bg-grey-50'
 												}`}
 												style={{ width: `${Math.min(value ?? 0, 100)}%` }}
@@ -378,7 +379,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 
 			{/* 탭 영역 */}
 
-			<div className="flex gap-2 w-full px-4 mb-4 rounded-md h-full bg-white overflow-x-auto scrollbar-hide cursor-pointer">
+			<div className="flex items-center gap-2 w-full px-4 mb-4 mt-2 rounded-md h-[53px] bg-white overflow-x-auto scrollbar-hide cursor-pointer">
 				{TABS.map((tab) => {
 					const [label, count] = tab.split(' ');
 					const isSelected = selectedTab === tab;
@@ -429,7 +430,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
  */
 function Bar({ value, color }: { value: number; color: string }) {
 	return (
-		<div className="relative w-[80px] sm:w-[120px] h-2 bg-gray-200 rounded-full overflow-hidden">
+		<div className="relative w-[80px] sm:w-[100px] ml-2 h-2 bg-gray-200 rounded-full overflow-hidden">
 			<div
 				className={`absolute h-2 rounded-full ${color}`}
 				style={{ width: `${Math.min((value / 5) * 100, 100)}%` }}

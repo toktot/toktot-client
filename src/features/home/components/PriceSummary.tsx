@@ -61,16 +61,15 @@ const PriceSummary: React.FC<PriceSummaryProps> = ({
 				/>
 			</div>
 
-			<div className="mt-2 flex justify-between text-xs text-gray-400">
-				<span className="text-grey-90">최저</span>
-				<span className="text-grey-90">평균</span>
-				<span className="text-grey-90">최고</span>
+			<div className=" mt-2 flex justify-between font-semibold text-grey-90 text-[11px]">
+				<span>{formatKRW(minPrice)}원</span>
+				<span>{formatKRW(avgPrice)}원</span>
+				<span>{formatKRW(maxPrice)}원</span>
 			</div>
-
-			<div className="flex justify-between text-grey-70 text-[9px]">
-				<span>{formatKRW(minPrice)}</span>
-				<span>{formatKRW(avgPrice)}</span>
-				<span>{formatKRW(maxPrice)}</span>
+			<div className=" flex justify-between text-[9px]">
+				<span className="text-grey-70">최저</span>
+				<span className="text-grey-70">평균</span>
+				<span className="text-grey-70">최고</span>
 			</div>
 		</div>
 	);

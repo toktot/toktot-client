@@ -53,7 +53,7 @@ const PriceChart = () => {
 	useEffect(() => {
 		setQuery(q);
 	}, [q]);
-
+	const [showGuide, setShowGuide] = useState(true);
 	const selectedStores = useMemo(() => {
 		if (selectedPrice === null) {
 			return [];
@@ -116,7 +116,7 @@ const PriceChart = () => {
 	};
 
 	return (
-		<div className="bg-grey-10 p-4 min-h-screen space-y-3 cursor-pointer">
+		<div className="bg-grey-10 py-4 px-4 min-h-screen space-y-3 cursor-pointer">
 			{/* 헤더 */}
 			<div className="ml-2">
 				{categories
@@ -161,7 +161,7 @@ const PriceChart = () => {
 			</div>
 
 			{/* 차트 */}
-			<div className="bg-white h-[340px] p-4 rounded-xl flex flex-col justify-between">
+			<div className="bg-white h-[340px] p-4 rounded-xl flex flex-col justify-between relative">
 				<div className="flex justify-between items-center">
 					<span className="text-[16px] font-semibold text-[#000000]">
 						가격 비교
@@ -299,7 +299,7 @@ const PriceChart = () => {
 										<div className="text-white text-[9px]">{'가게'}</div>
 										<div className="text-primary-40 text-[9px]">{`${clickedPoint.store}`}</div>
 									</div>
-									<div className="absolute left-1/2-bottom-2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-black transform -translate-x-1/2"></div>
+									<div className="absolute left-1/2 top-full w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-black transform -translate-x-1/2"></div>
 								</div>
 							</foreignObject>
 						)}
@@ -321,14 +321,49 @@ const PriceChart = () => {
 						)}
 					</ScatterChart>
 				</ResponsiveContainer>
+				{showGuide && (
+					<div
+						className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/50 rounded-xl"
+						onClick={() => setShowGuide(false)}
+					>
+						<button
+							className="absolute top-1 right-1 p-1 z-80"
+							onClick={() => setShowGuide(false)}
+						>
+							<Icon name="Cancel" size="xl" className="text-white" />
+						</button>
+						<div className="flex flex-col items-center text-center text-white">
+							<div className="relative flex items-center justify-center">
+								<div className="absolute -left-12 flex space-x-[-20px] opacity-70">
+									<div className="w-[40px] h-[40px] rounded-full bg-cyan-400 opacity-50"></div>
+									<div className="w-[48px] h-[48px] rounded-full bg-cyan-400"></div>
+								</div>
+								<div className="bg-primary-40 rounded-full w-[70px] h-[70px] flex items-center justify-center relative z-10">
+									<span className="text-2xl text-black">{'↔'}</span>
+								</div>
+								<div className="absolute -right-12 flex space-x-[-20px] opacity-70">
+									<div className="w-[48px] h-[48px] rounded-full bg-cyan-400"></div>
+									<div className="w-[40px] h-[40px] rounded-full bg-cyan-400 opacity-50"></div>
+								</div>
+							</div>
+							<p className="text-lg font-medium mt-2">좌우로 이동해</p>
+							<p className="text-lg font-medium">
+								구간별 가격/가게 정보를 확인해보세요
+							</p>
+						</div>
+					</div>
+				)}
 			</div>
 
 			{/* 가게 리스트 */}
 			{selectedPrice && (
 				<>
-					<div className="flex items-center gap-2">
-						<span className="text-lg font-semibold text-[20px]">
-							{selectedPrice.toLocaleString()}원인 가게들이에요
+					<div className=" flex items-center gap-2">
+						<span className=" font-semibold text-[20px]">
+							<span className="text-primary-50">
+								{selectedPrice.toLocaleString()}원
+							</span>
+							인 가게들이에요
 						</span>
 
 						<span className="rounded-full bg-white w-[31px] h-[21px]  flex items-center justify-center text-primary-40 text-[9px]">
@@ -336,7 +371,7 @@ const PriceChart = () => {
 						</span>
 					</div>
 
-					<div className="bg-white rounded-xl mt-4">
+					<div className="bg-white mt-4 -mx-4 min-h-[500px]">
 						<div className="flex flex-wrap justify-between">
 							{selectedStores.length > 0 ? (
 								selectedStores.map((store, idx, arr) => {

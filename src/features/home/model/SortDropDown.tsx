@@ -30,9 +30,11 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
 		{ value: 'POPULARITY', label: '인기 순' },
 		{ value: 'RATING', label: '별점 높은 순' },
 	];
-	const filteredOptions = options.filter(
-		(opt) => opt.value !== 'RATING' || locationAvailable,
-	);
+	const filteredOptions = options.filter((opt) => {
+		if (opt.value === 'DISTANCE') return locationAvailable; // 위치 허용 + 제주도만 DISTANCE 보여줌
+		// 필요하면 RATING도 locationAvailable 조건 걸 수 있음
+		return true;
+	});
 
 	const handleSelect = (option: typeof selectedOption) => {
 		setSelectedOption(option);
@@ -43,7 +45,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
 		<div className="relative">
 			<button
 				onClick={() => setIsOpen((prev) => !prev)}
-				className="flex items-center px-1 py-2 gap-1 rounded-full bg-grey-10 cursor-pointer"
+				className="flex items-center px-2 py-1.5 gap-1 rounded-full bg-grey-10 cursor-pointer"
 			>
 				<Icon name="Sort" size="xs" />
 				<span className="text-[14px] font-semibold">

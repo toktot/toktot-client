@@ -80,9 +80,7 @@ export default function StoreDetailPage() {
 	}, [storeId]);
 
 	const [tab, setTab] = useState<'home' | 'menu' | 'review'>('home');
-	const handleClick = () => {
-		setSelected(true);
-	};
+
 	const handleBack = () => {
 		router.back();
 	};
@@ -96,8 +94,8 @@ export default function StoreDetailPage() {
 	}
 
 	return (
-		<div className="relative min-h-screen flex justify-center cursor-pointer">
-			<div className="relative w-full h-[300px] max-w-[480px] bg-cover bg-center">
+		<div>
+			<div className="relative h-[300px] max-w-[480px] bg-cover bg-center mx-auto">
 				{store.image ? (
 					<Image
 						src={store.image}
@@ -120,17 +118,11 @@ export default function StoreDetailPage() {
 					className="absolute top-3 left-4 transform text-white"
 					onClick={handleBack}
 				/>
-				<Icon
-					name={'Etc'}
-					className="absolute top-2 right-2 transform rotate-90 text-white"
-					onClick={handleClick}
-				/>
+
 				<div className="absolute bottom-4 left-4 text-white">
 					<div className="flex flex-wrap items-center gap-2 mb-4">
 						<div className="abosolute bottom-4 left-4 text-white">
 							<div className="flex items-center gap-2 mb-2">
-								<h1 className="text-[20px] font-bold">{store.name}</h1>
-
 								{store.is_local_store && (
 									<StoreCategoryTag
 										className="text-[9px] px-1 py-0.3"
@@ -141,105 +133,101 @@ export default function StoreDetailPage() {
 							<div className="flex items-center gap-1">
 								{/*{store.point !== undefined && (*/}
 								<span className="text-sm font-semibold">
+									<TopPercentTag
+										value={store.value_for_money_score ?? '상위 20'}
+									/>
+								</span>
+								<span className="text-sm font-semibold">
 									<GasimbiCategoryTag value={store.point ?? 80} />
 								</span>
 								{/*})}*/}
 								{/*{store.value_for_money_score !== undefined && ( */}
-								<span className="text-sm font-semibold">
-									<TopPercentTag
-										value={store.value_for_money_score ?? '상위 20%'}
-									/>
-								</span>
+
 								{/*})}*/}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<BottomSheet open>
-				<BottomSheetContent
-					className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[480px] bg-white rounded-t-3xl max-h-[65vh] overflow-hidden cursor-pointer"
-					style={{
-						marginTop: '-16px',
-						borderTopLeftRadius: '24px',
-						borderTopRightRadius: '24px',
-					}}
-				>
-					<div className="overflow-y-auto max-h-[70vh]">
-						<div className="px-6">
-							<div className=" flex items-center gap-2 mb-2 pt-3">
-								<Icon name={'Location'} className="mr-2 w-5 h-5 text-grey-50" />
-								<span className="text-grey-80 text-base text-[14px]">
-									{store.address}
-								</span>
+			<div className="bg-white w-full max-w-[480px] mx-auto rounded-t-3xl ">
+				<div className="px-4 mt-3">
+					<h1 className="text-[20px] font-bold">{store.name}</h1>
+					<div className="border border-grey-20 rounded-2xl -mx-1 py-1 px-2 mt-2">
+						<div className=" flex items-center gap-2 mb-2 pt-2">
+							<Icon name={'Location'} className="mr-2 w-5 h-5 text-grey-50" />
+							<span className="text-grey-80 text-base text-[14px]">
+								{store.address}
+							</span>
+							<span className="-ml-2">
 								<CopyButton text={store.address} />
-							</div>
-
-							<div className="flex items-center gap-2 mb-2">
-								<Icon name={'Time'} className="mr-2 w-5 h-5 text-grey-50" />
-								<span className="text-green-500 text-[14px] font-semibold">
-									{store.business_hours ? '영업중' : '정보 없음'}
-								</span>
-								<span className="text-grey-80 text-[14px] ml-1">
-									{store.business_hours ?? '-'}까지
-								</span>
-								<button>
-									<Icon
-										name={'ArrowUp'}
-										size="xs"
-										className="text-grey-40 w-5 ml-1"
-									/>
-								</button>
-							</div>
-
-							<div className="flex items-center gap-2 mb-2">
-								<Icon name={'call'} className="mr-2 w-5 h-5 text-grey-50" />
-								<span className="text-grey-80 text-[14px]">
-									{store.phone ?? '정보 없음'}
-								</span>
-								<CopyButton text={store.phone} />
-							</div>
-
-							<div className="flex gap-10 mt-6 border-b border-grey-20">
-								{['home', 'menu', 'review'].map((t) => (
-									<button
-										key={t}
-										className={clsx(
-											'pb-2 text-base font-semibold transition-colors cursor-pointer',
-											tab === t
-												? 'text-grey-90 border-b-1 border-grey-80'
-												: 'text-grey-40',
-										)}
-										onClick={() => setTab(t as typeof tab)}
-									>
-										{t === 'home' ? '홈' : t === 'menu' ? '메뉴' : '리뷰'}
-									</button>
-								))}
-							</div>
+							</span>
 						</div>
 
-						<div>
-							{tab === 'home' && (
-								<div className="bg-grey-10 w-full">
-									<StoreHome />
-								</div>
-							)}
-							{tab === 'menu' && (
-								<div className="text-gray-700">
-									<div className="h-[0.5px] bg-grey-10 w-full" />
-									<StoreMenuSection />
-								</div>
-							)}
-							{tab === 'review' && (
-								<div className="text-gray-700">
-									<StoreReview />
-								</div>
-							)}
+						<div className="flex items-center gap-2 mb-2">
+							<Icon name={'Time'} className="mr-2 w-5 h-5 text-grey-50" />
+							<span className="text-green-500 text-[14px] font-semibold">
+								{store.business_hours ? '영업중' : '정보 없음'}
+							</span>
+							<span className="text-grey-80 text-[14px] ml-1">
+								{store.business_hours ?? '-'}까지
+							</span>
+							<button>
+								<Icon
+									name={'ArrowUp'}
+									size="xs"
+									className="text-grey-40 w-5 ml-1 mb-1"
+								/>
+							</button>
+						</div>
+
+						<div className="flex items-center gap-2 mb-2">
+							<Icon name={'call'} className="mr-2 w-5 h-5 text-grey-50" />
+							<span className="text-grey-80 text-[14px]">
+								{store.phone ?? '정보 없음'}
+							</span>
+							<span className="-ml-2">
+								<CopyButton text={store.phone} />
+							</span>
 						</div>
 					</div>
-				</BottomSheetContent>
-			</BottomSheet>
+					<div className="flex justify-around mt-6 border-b border-grey-20">
+						{['home', 'menu', 'review'].map((t) => (
+							<button
+								key={t}
+								className={clsx(
+									'pb-2 text-base font-semibold transition-colors cursor-pointer inline-block w-[95px] text-center',
+									tab === t
+										? 'text-grey-90 border-b-2 border-w-[100px] border-grey-80'
+										: 'text-grey-40',
+								)}
+								onClick={() => setTab(t as typeof tab)}
+							>
+								{t === 'home' ? '홈' : t === 'menu' ? '메뉴' : '리뷰'}
+							</button>
+						))}
+					</div>
+				</div>
+
+				<div>
+					{tab === 'home' && (
+						<div className="bg-grey-10 w-full">
+							<StoreHome />
+						</div>
+					)}
+					{tab === 'menu' && (
+						<div className="text-gray-700">
+							<div className="h-[0.5px] bg-grey-10 w-full" />
+							<StoreMenuSection />
+						</div>
+					)}
+					{tab === 'review' && (
+						<div className="text-gray-700">
+							<StoreReview />
+						</div>
+					)}
+				</div>
+			</div>
+
 			{selected && (
 				<BottomSheet open>
 					<BottomSheetContent className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl min-h-[40vh] overflow-hidden">

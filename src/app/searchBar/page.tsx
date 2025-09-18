@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
+import { AppShell } from '@/widgets/layout';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import Auto from '@/features/searchBar/components/Auto';
@@ -35,9 +35,12 @@ export default function Search() {
 		setShowToast(false);
 	};
 	return (
-		<HomeAppShell showBottomNav={true}>
-			<main className="min-h-screen bg-white p-4 cursor-pointer">
-				<HeaderBox onLocationSaved={handleLocationSaved} />
+		<AppShell showBottomNav={true}>
+			<main className="min-h-screen bg-white pt-[76px] p-4 cursor-pointer">
+				<HeaderBox
+					onLocationSaved={handleLocationSaved}
+					bgColorClass="bg-white fixed top-0 z-80"
+				/>
 				<Suspense fallback={<div>로딩 중...</div>}>
 					<div className="flex justify-center items-center gap-1.5 relative p-3 -mt-3 overflow-y-auto">
 						<button onClick={() => router.back()}>
@@ -53,6 +56,7 @@ export default function Search() {
 									setText(val);
 								}}
 								onSearchClick={() => handleSelect(text)}
+								placeholder="검색어를 입력해주세요."
 								leftIcon={
 									<Icon
 										name="Search"
@@ -63,11 +67,11 @@ export default function Search() {
 								rightIcon={
 									<Icon
 										name="Cancel"
-										size="s"
+										size="l"
 										className="text-grey-50 cursor-pointer"
 									/>
 								}
-								className="w-full min-w-[315px] max-w-[400px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
+								className="w-full min-w-[315px] max-w-[400px] h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90 placeholder:text-grey-80"
 								rightIconOnClick={handleReset}
 							/>
 						</div>
@@ -91,6 +95,6 @@ export default function Search() {
 					/>
 				)}
 			</main>
-		</HomeAppShell>
+		</AppShell>
 	);
 }
