@@ -19,7 +19,7 @@ const SelectStoreForReviewPage = () => {
 		<AppShell showBottomNav={false}>
 			<Header className="bg-white">
 				<Header.Left>
-					<BackButton />
+					<BackButton className="text-grey-70" />
 				</Header.Left>
 				<Header.Center>리뷰 쓰기</Header.Center>
 			</Header>
