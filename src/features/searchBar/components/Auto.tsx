@@ -101,7 +101,7 @@ export default function Auto({ query, onSelect }: Props) {
 	if (!query.trim()) return null;
 
 	return (
-		<div className="absolute -ml-1 bg-white min-w-[343px] sm:w-[450px] mx-auto z-50 mt-2 cursor-pointer">
+		<div className="absolute -ml-2 bg-white min-w-[343px] sm:w-[480px] mx-auto z-50 mt-2 cursor-pointer">
 			{filteredCategories.map((item) => (
 				<div
 					key={item.id}
@@ -109,13 +109,13 @@ export default function Auto({ query, onSelect }: Props) {
 					className="flex justify-between items-center py-2 -ml-1"
 				>
 					<div className="flex items-center gap-3">
-						<div className="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm">
+						<div className="bg-white rounded-full w-8 h-8 flex items-center justify-center">
 							<Icon name={item.icon} />
 						</div>
 						<p className="text-sm">{highlightMatch(item.name, query)}</p>
 						<span className="text-[12px] text-grey-80 mt-0.5">향토음식</span>
 					</div>
-					<Icon name="ArrowRight" className="text-grey-50 " size="xxs" />
+					<Icon name="ArrowRight" className="text-grey-50 mr-3" size="xs" />
 				</div>
 			))}
 			{places.map((place) => (
@@ -126,12 +126,12 @@ export default function Auto({ query, onSelect }: Props) {
 				>
 					<div className="flex items-center gap-1">
 						<Icon name={'Search'} className="text-grey-70" size="xs" />
-						<p className="text-sm ml-2">
+						<p className="text-sm ml-2 mt-1.5">
 							{highlightMatch(place.place_name, query)}
 						</p>
 					</div>
 
-					<Icon name={'ArrowRight'} className="text-grey-50 " size="xxs" />
+					<Icon name={'ArrowRight'} className="text-grey-50 mr-3" size="xs" />
 				</div>
 			))}
 		</div>

@@ -15,9 +15,14 @@ import Icon from '@/shared/ui/Icon';
 interface HeaderBoxProps {
 	onLocationSaved?: () => void;
 	user?: string | null;
+	bgColorClass?: string;
 }
 
-const HeaderBox = ({ onLocationSaved, user }: HeaderBoxProps) => {
+const HeaderBox = ({
+	onLocationSaved,
+	user,
+	bgColorClass = '',
+}: HeaderBoxProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const handleClose = () => setIsOpen(false);
@@ -26,17 +31,21 @@ const HeaderBox = ({ onLocationSaved, user }: HeaderBoxProps) => {
 
 	return (
 		<BottomSheet open={isOpen} onOpenChange={setIsOpen}>
-			<header className="w-full px-4 py-3 flex items-center justify-between bg-white">
+			<header
+				className={`w-full px-4 py-2 flex items-center justify-between bg-grey-10 ${bgColorClass}`}
+			>
 				<div className=" relative flex items-center text-sm font-medium text-black">
 					<BottomSheetTrigger>
 						<div className="flex items-center" onClick={() => setIsOpen(true)}>
-							<span>{location.address || '위치를 설정해주세요.'}</span>
+							<span className="text-[16px] font-semibold text-grey-90">
+								{location.address || '장소를 설정해주세요.'}
+							</span>
 							<Icon name="ArrowDown" className="ml-1 text-grey-40 w-5" />
 						</div>
 					</BottomSheetTrigger>
 					{!location.address && showTooltip && (
 						<div className="absolute left-1/2 top-full mt-2 w-max -translate-x-1/2 z-10">
-							<div className="relative right-[-47px] px-2 py-1 rounded-[10px] bg-grey-90 text-xs shadow">
+							<div className="relative right-[-47px] px-1 py-1.5 rounded-[10px] bg-grey-90 text-xs shadow">
 								<div className="flex items-center gap-2">
 									<span className="text-primary-40">
 										장소를 입력하면, 가까운 가게가 똑똣!
@@ -56,7 +65,7 @@ const HeaderBox = ({ onLocationSaved, user }: HeaderBoxProps) => {
 					)}
 				</div>
 				<div>
-					<Icon name="Bell" />
+					<Icon name="Bell" className="w-[48px] h-[48px]" />
 				</div>
 			</header>
 

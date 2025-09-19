@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { mockMenu } from '@/entities/store/menu/mockMenu';
 import Link from 'next/link';
 
-import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
+import { AppShell } from '@/widgets/layout';
 
 import Icon from '@/shared/ui/Icon';
 import SingleCategorySelect from '@/shared/ui/SingleCategorySelect';
@@ -46,7 +46,7 @@ export default function StoreMenuSection() {
 	}
 
 	return (
-		<HomeAppShell showBottomNav={true}>
+		<AppShell showBottomNav={true}>
 			<section className="p-4">
 				<SingleCategorySelect
 					value={selectedCategory}
@@ -79,6 +79,6 @@ export default function StoreMenuSection() {
 					))}
 				</div>
 			</section>
-		</HomeAppShell>
+		</AppShell>
 	);
 }

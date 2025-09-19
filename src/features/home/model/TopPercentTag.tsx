@@ -34,13 +34,13 @@ export default function TopPercentTag({
 	return (
 		<div
 			className={clsx(
-				'flex items-center rounded-full px-1 py-1 text-[9px] font-medium gap-1',
+				'flex items-center rounded-md px-1 py-1 text-[9px] font-medium gap-1',
 				wrapperBg,
 				className,
 			)}
 		>
-			<Icon name={iconName} size="xxs" />
-			{value}
+			<Icon name={iconName} size="xs" />
+			<span className="font-semibold text-[11px] ">{value}%</span>
 		</div>
 	);
 }

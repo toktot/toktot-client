@@ -45,9 +45,10 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 	const router = useRouter();
 	return (
 		<div
-			className="w-[290px] bg-white rounded-xl shadow-md overflow-hidden cursor-pointer"
+			className="w-[290px] bg-white rounded-xl overflow-hidden cursor-pointer"
 			style={{
-				boxShadow: '0 2px 10px rgba(0,0,0,0.15), 0 0 10px rgba(0,0,0,0.1)',
+				borderColor: '#F6F9FB',
+				boxShadow: '0 0 6px rgba(208, 214, 225, 0.3)',
 			}}
 		>
 			<div
@@ -57,7 +58,7 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 				{/* 상단 프로필 + 닉네임 + 별점 */}
 				<div className="flex items-center justify-between p-2">
 					<div className="flex items-center gap-2">
-						<div className="relative w-7 h-8 rounded-full overflow-hidden flex items-center justify-center bg-grey-20">
+						<div className="relative w-7 h-8 rounded-full overflow-hidden flex items-center justify-center">
 							{review.author.profileImageUrl ? (
 								<Image
 									src={review.author.profileImageUrl}
@@ -66,7 +67,7 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 									className="object-cover"
 								/>
 							) : (
-								<Icon name="Avatar" size="xl" className="text-grey-60" />
+								<Icon name="Avatar" size="xxl" />
 							)}
 						</div>
 
@@ -84,9 +85,9 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 					<div className="flex items-center gap-1">
 						<Icon
 							name={'Star'}
-							fill="#3AC8FF"
+							fill="#40D7F5"
 							className="outline-none stroke-0 "
-							color="#3AC8FF"
+							color="#40D7F5"
 							size="xxs"
 						/>
 						<span className="text-sm font-medium">{review.rating}</span>
@@ -112,17 +113,31 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 							{/* 가심비 박스 */}
 							{review.valueForMoneyScore !== undefined && (
 								<div
-									className={`px-2 py-1 text-xs font-medium rounded-md text-white${
+									className={`px-1 py-1.5 text-xs font-medium rounded-md text-white ${
 										review.valueForMoneyScore >= 80
-											? 'border border-green-600 text-white bg-gradient-to-r from-[#00C79F] to-[#59A387]'
+											? 'border border-[#00C79F] text-white bg-gradient-to-r from-[#00C79F] to-[#59A387]'
 											: review.valueForMoneyScore >= 50
 												? 'border border-blue-500 text-white bg-gradient-to-r from-[#3AC8FF] to-[#3A78FF]'
 												: review.valueForMoneyScore >= 30
-													? 'border border-orange-500 text-white bg-gradient-to-r from-[#FFB885] to-[#FF6600]'
+													? 'border border-[#FF893A] text-white bg-gradient-to-r from-[#FFB885] to-[#FF6600]'
 													: 'bg-gray-200 text-white'
 									}`}
 								>
-									{review.valueForMoneyScore}점
+									<div className="flex items-center gap-0.5">
+										<Icon
+											name={
+												review.valueForMoneyScore >= 80
+													? 'greenHeart'
+													: review.valueForMoneyScore >= 50
+														? 'orangeHeart'
+														: review.valueForMoneyScore >= 30
+															? 'GasimbiHeart'
+															: 'None'
+											}
+											size="xs"
+										/>
+										{review.valueForMoneyScore}점
+									</div>
 								</div>
 							)}
 						</div>

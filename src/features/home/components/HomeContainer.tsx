@@ -355,12 +355,16 @@ export default function HomeContainer() {
 
 	return (
 		<main className="flex flex-col h-screen cursor-pointer">
-			<HeaderBox onLocationSaved={handleLocationSaved} user={user} />
+			<HeaderBox
+				onLocationSaved={handleLocationSaved}
+				user={user}
+				bgColorClass="bg-grey-10"
+			/>
 			<div className="flex-1 overflow-y-auto scrollbar-hide pb-[80px] h-auto">
 				<div className="bg-grey-10">
-					<section className="relative mt-2 justify-center flex items-center gap-2 bg-grey-10">
-						<div className="rounded-[18px] bg-gradient-to-r from-[#171D29] via-[#3AC8FF] to-[#2295C0] p-[2px]">
-							<div className="w-full min-w-[351px] max-w-[480px]  h-[48px] rounded-[16px] bg-gradient-to-r from-[#F6FCFF] to-[#F9FCFF] flex items-center">
+					<section className="relative justify-center flex items-center gap-2 bg-grey-10">
+						<div className="rounded-full bg-gradient-to-r from-[#40D7F5] to-[#99E5F3] p-[2px]">
+							<div className="w-full min-w-[351px] max-w-[480px]  h-[48px] rounded-full bg-primary-10 flex items-center">
 								<SearchBox
 									query={query}
 									onChange={setQuery}
@@ -370,8 +374,8 @@ export default function HomeContainer() {
 										<Icon name="Search" size="s" className="text-primary-40" />
 									}
 									className=" h-[48px] flex items-center"
-									placeholder="제주도 여행가서 먹고 싶은 음식은?"
-									placeholderColor="placeholder-primary-60"
+									placeholder="제주도 여행가서 먹고 싶은 음식은??"
+									placeholderColor="placeholder:text-primary-60"
 								/>
 							</div>
 						</div>
@@ -397,14 +401,14 @@ export default function HomeContainer() {
 							<Icon name="Bingtteok" className="w-10 h-10" />
 						</div>
 					</div>
-					<section className="mt-3 px-4 cursor-pointer">
+					<section className="mt-3 px-4 pb-4 cursor-pointer">
 						<CategoryGrid />
 					</section>
 				</div>
 				<section className="  bg-white px-4 py-4">
 					{/* 상단 제목 + 더보기 */}
 					<div className="flex items-center justify-between ">
-						<h2 className="text-lg font-semibold text-[18px]">
+						<h2 className="text-grey-90 font-semibold text-[18px]">
 							똑똣에서 가장 많이 저장된 후기 PICK!
 						</h2>
 					</div>
@@ -452,10 +456,15 @@ export default function HomeContainer() {
 
 					<div className="flex justify-center mt-5">
 						<button
-							className="min-w-[343px] max-w-[430px] w-full border border-grey-40 rounded-3xl text-grey-90 text-center py-2"
+							className="min-w-[343px] max-w-[430px] w-full border border-grey-20 rounded-2xl text-grey-90 text-center py-2"
 							onClick={handleMoreClick}
 						>
-							더보기
+							<span className="text-[14px] font-semibold text-grey-90 mr-1">
+								착한 가게
+							</span>
+							<span className="text-grey-70 text-[14px] font-semibold">
+								더 보기
+							</span>
 						</button>
 					</div>
 

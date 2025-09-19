@@ -40,19 +40,17 @@ export default function SimpleStore({ review }: SimpleStoreProps) {
 
 			<div className="flex flex-col justify-between flex-1">
 				<div className="flex flex-wrap">
-					<span className="text-[14px] font-semibold">{review.storeName}</span>
-					<div className="flex items-center ml-2 text-sm text-grey-80">
-						({review.mainMenu})
-					</div>
+					<span className="text-[14px] font-semibold mb-0.5">
+						{review.storeName}
+					</span>
 				</div>
 
-				<div className="text-xs text-grey-70 flex items-center">
-					<Icon name={'Location'} size="xxs" /> {review.address} ·{' '}
-					{review.distance}
+				<div className="text-xs text-grey-70 flex items-center mb-1">
+					{review.address}
 				</div>
 			</div>
 			<div className="flex items-center">
-				<Icon name="ArrowRight" className="text-grey-50" />
+				<Icon name="ArrowRight" className="text-grey-50" size="xs" />
 			</div>
 		</div>
 	);

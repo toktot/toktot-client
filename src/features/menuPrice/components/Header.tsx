@@ -35,7 +35,7 @@ export default function SearchResultSection() {
 					<Icon name={'ArrowLefttBar'} className="ml-1" />
 				</button>
 				<div className="text-base font-semibold">{query}</div>
-				<Icon name="Bell" />
+				<Icon name="Bell" className="w-[48px] h-[48px]" />
 			</header>
 			<div className="w-full px-3 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap flex gap-4 bg-white">
 				{categories?.map((item, idx) => {
@@ -48,7 +48,7 @@ export default function SearchResultSection() {
 						>
 							<div
 								className={`rounded-xl w-12 h-12 flex items-center justify-center mb-1
-						${isSelected ? 'bg-primary-20 border-primary-20' : 'bg-white'}`}
+						${isSelected ? 'bg-primary-20 border border-primary-30' : 'bg-grey-10'}`}
 							>
 								<Icon name={item.icon} />
 							</div>

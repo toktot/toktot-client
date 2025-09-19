@@ -27,9 +27,28 @@ interface GoodPriceStore {
 }
 
 export default function StoreCardNew({ review }: GoodPriceStore) {
+	const firstMenu = review.main_menus ? review.main_menus.split(' ')[0] : '';
 	const router = useRouter();
+	const getAveragePrice = (menus: string) => {
+		const menuItems = menus.split(',').map((item) => item.trim());
+		const prices: number[] = [];
+
+		menuItems.forEach((menu) => {
+			const match = menu.match(/(\d+)/);
+			if (match) {
+				prices.push(Number(match[1]));
+			}
+		});
+		if (prices.length === 0) return null;
+
+		const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
+		return avg;
+	};
+	const averagePrice = review.main_menus
+		? getAveragePrice(review.main_menus)
+		: null;
 	return (
-		<div className="min-w-[343px] max-w-[430px] w-full h-[232px] bg-white rounded-xl shadow-md overflow-hidden">
+		<div className="min-w-[343px] max-w-[430px] w-full h-[232px] rounded-t-3xl bg-white overflow-hidden">
 			{/* 상단 이미지 */}
 			<div
 				className="relative min-w-[343px] max-w-[430px] w-full h-[122px] justify"
@@ -43,7 +62,7 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 						className="object-cover"
 					/>
 				) : (
-					<div className="min-w-[343px] max-w-[430px] h-[122px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-t-xl">
+					<div className="relative min-w-[343px] max-w-[430px] h-[122px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-3xl overflow-hidden">
 						<div className="flex flex-col flex items-center">
 							<span className="">
 								<Icon name="KoreanDish" size="xxl"></Icon>
@@ -53,43 +72,50 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 					</div>
 				)}
 				{review.is_good_price_store && (
-					<div className="absolute top-2 left-2">
+					<div className="absolute top-0 left-0">
 						<StoreCategoryTag
-							className="text-[9px] px-1 py-0.3"
+							className="text-[12px] px-2 py-0.4 -ml-1 bg-[#18C094] text-white rounded-tl-3xl rounded-tr-full rounded-br-full rounded-bl-none"
 							type="착한가게"
 						/>
 					</div>
 				)}
 			</div>
 
-			{/* 본문 영역 */}
-			<div className="px-3 py-2 flex flex-col gap-1">
-				{/* 가게명 + 대표메뉴 */}
-				<div className="flex items-center gap-2">
-					<span className="text-sm font-semibold text-gray-900">
-						{review.name}
+			<div className="flex items-center gap-1 text-xs mt-1">
+				{review.percent && <TopPercentTag value={review.percent} />}
+				{review.point !== undefined && <GasimbiTag value={review.point} />}
+			</div>
+			{/* main_menus 오른쪽 작은 글씨 */}
+			{review.main_menus && (
+				<div className="gap-2 ml-2 flex items-center mt-1">
+					<span className="text-grey-90 text-[16px] font-semibold">
+						주 메뉴 약 {averagePrice?.toLocaleString()}원
 					</span>
-					{review.main_menus && (
-						<span className="text-xs text-gray-500 truncate">
-							{review.main_menus}
-						</span>
-					)}
-					<Icon name="Star" size="xxs" className="text-yellow-500" />
-					<span className="text-[11px] -ml-1">
+					<span className="text-[16px] text-grey-70">{firstMenu}</span>
+				</div>
+			)}
+
+			{/* 본문 영역 */}
+			<div className="px-2 py-1 flex flex-col gap-1">
+				{/* 가게명 + 대표메뉴 */}
+				<div className="flex items-center gap-1">
+					<span className="text-[14px] text-grey-85">{review.name}</span>
+
+					<Icon
+						name="Star"
+						size="xxs"
+						className="mb-0.5"
+						style={{ fill: '#40D7F5', color: '#40D7F5' }}
+					/>
+					<span className="text-[14px]">
 						{review.average_rating.toFixed(1)}
 					</span>
-					<span className="text-grey-90 text-[11px] -ml-1">
+					<span className="text-grey-60 text-[14px] mb-0.4 -ml-0.5">
 						({review.review_count})
 					</span>
 				</div>
 
 				{/* 메뉴 가격 (첫 번째 메뉴) */}
-				{review.main_menus}
-
-				<div className="flex items-center gap-1 text-xs mt-1">
-					{review.percent && <TopPercentTag value={review.percent} />}
-					{review.point !== undefined && <GasimbiTag value={review.point} />}
-				</div>
 
 				{/* 주소 + 거리 */}
 				<div className="text-xs text-grey-70 flex items-center mt-1">

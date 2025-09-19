@@ -6,7 +6,7 @@ import { mealOptions } from '@/entities/home/model/mockMealOptions';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
+import { AppShell } from '@/widgets/layout';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { Review } from '@/features/home/model/mockHome';
@@ -99,7 +99,7 @@ function toReview(api: BackendReview): Review {
 		isBookmarked: api.isBookmarked ?? false,
 	};
 }
-function toStore(api: BackendPlace): FrontendPlace {
+function toStore(api: Store | BackendPlace): FrontendPlace {
 	let parsedMenus: string[] = [];
 	if (typeof api.main_menus === 'string') {
 		try {
@@ -115,7 +115,7 @@ function toStore(api: BackendPlace): FrontendPlace {
 	}
 
 	return {
-		id: api.id,
+		id: api.id ?? 0,
 		name: api.name,
 		address: api.address,
 		distance: api.distance ?? '0',
@@ -128,6 +128,47 @@ function toStore(api: BackendPlace): FrontendPlace {
 		review_count: api.review_count ?? 0,
 	};
 }
+export interface Store {
+	id: number;
+	name: string;
+	distance: string;
+	main_menus: string;
+	average_rating: number;
+	address: string;
+	review_count: number;
+	is_good_price_store: boolean;
+	is_local_store: boolean;
+	image: string;
+	point: number;
+	percent: string;
+}
+
+// 일반 검색 응답
+interface NormalSearchResponse {
+	data: {
+		places: Store[];
+		current_page: number;
+		is_end: boolean;
+	};
+}
+
+// 필터 검색 응답
+interface FilterSearchResponse {
+	data: {
+		data: {
+			content: Store[];
+			pageable: {
+				pageNumber: number;
+			};
+			last: boolean;
+		};
+		local_food_stats: unknown;
+		is_local_food_search: boolean;
+	};
+}
+
+// 둘 중 하나일 수 있음
+type SearchResponse = NormalSearchResponse | FilterSearchResponse;
 
 export interface ReviewSearchBody {
 	query: string;
@@ -335,9 +376,11 @@ export default function SearchResultSection() {
 					const newReviews = content
 						.map(toReview)
 						.filter((r: Review) => !prev.find((pr) => pr.id === r.id));
-					return [...prev, ...newReviews];
+
+					const updatedReviews = [...prev, ...newReviews];
+					setHasMoreReviews(updatedReviews.length < totalElements); // ✅ 여기로 이동
+					return updatedReviews;
 				});
-				setHasMoreReviews(reviews.length + content.length < totalElements);
 			}
 		} finally {
 			setLoading(false);
@@ -349,7 +392,7 @@ export default function SearchResultSection() {
 		mealTime,
 		menu,
 		rating,
-		reviews.length,
+
 		distance,
 		searchParams,
 		location?.coords,
@@ -438,7 +481,7 @@ export default function SearchResultSection() {
 				? '/v1/restaurants/search/filter?page=0'
 				: '/v1/restaurants/search';
 			console.log('endpoint', endpoint);
-			const res = await api.post(endpoint, body);
+			const res = await api.post<SearchResponse>(endpoint, body);
 			console.log('응답데이터', res.data);
 
 			const data = res.data.data;
@@ -446,26 +489,40 @@ export default function SearchResultSection() {
 			if (!data) {
 				return;
 			}
-			const { places, current_page, is_end } = data;
-			console.log('응답 데이터 :', data);
-			console.log('places', res.data.data.places);
-			console.log('res', places);
+
+			let places: Store[] = [];
+			let isEnd = false;
+			let currentPage = 0;
+
+			if ('places' in data) {
+				places = data.places;
+				isEnd = data.is_end;
+				currentPage = data.current_page;
+			}
+
+			// 필터 검색
+			else if ('data' in data && 'content' in data.data) {
+				places = data.data.content;
+				isEnd = data.data.last;
+				currentPage = data.data.pageable.pageNumber;
+			}
 			if (!places || places.length == 0) {
 				setHasMore(false);
 				return;
-			} else if (places) {
-				setStores((prev) => {
-					const newStores = places.map(toStore);
-					const merged = [...prev, ...newStores];
-					return merged.filter(
-						(store, index, arr) =>
-							arr.findIndex((s) => s.id === store.id) === index,
-					);
-				});
-
-				if (is_end) setHasMore(false);
-				pageRef.current = current_page + 1;
 			}
+			const newStores: FrontendPlace[] = places.map(toStore);
+			setStores((prev) => {
+				console.log('파싱 후 가게 데이터:', newStores);
+				const merged = [...prev, ...newStores];
+				const unique = merged.filter(
+					(store, idx, arr) => arr.findIndex((s) => s.id === store.id) === idx,
+				);
+				console.log('🟢 최종 렌더링용 가게 데이터:', unique);
+				return unique;
+			});
+
+			if (isEnd) setHasMore(false);
+			pageRef.current = currentPage + 1;
 		} finally {
 			setLoading(false);
 		}
@@ -529,9 +586,12 @@ export default function SearchResultSection() {
 	}, [tab, fetchReviews, fetchStores, query]);
 
 	return (
-		<HomeAppShell showBottomNav={true}>
+		<AppShell showBottomNav={true}>
 			<main className="flex flex-col h-screen cursor-pointer pb-[80px]">
-				<HeaderBox onLocationSaved={handleLocationSaved} />
+				<HeaderBox
+					onLocationSaved={handleLocationSaved}
+					bgColorClass="bg-white"
+				/>
 				<div className=" bg-white flex-1 overflow-y-auto scrollbar-hide cursor-pointer">
 					<div className="px-4 py-6">
 						<section className="-mt-3 flex items-center gap-2">
@@ -570,7 +630,7 @@ export default function SearchResultSection() {
 										<Icon name="Search" size="s" className="text-grey-50" />
 									}
 									rightIcon={
-										<Icon name="Cancel" size="s" className="text-grey-50" />
+										<Icon name="Cancel" size="xl" className="text-grey-50" />
 									}
 									className="min-w-[315px] max-w-[400px] w-full h-[44px] flex items-start bg-grey-10 text-[14px] text-grey-90"
 									rightIconOnClick={handleReset}
@@ -636,7 +696,7 @@ export default function SearchResultSection() {
 								</div>
 							) : (
 								// PriceSummary 없을 때
-								<div className="bg-white mt-4 w-full pt-0 pb-6">
+								<div className="bg-white mt-4 ml-2 w-full pt-0 pb-6">
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between">
 										{reviews.map((review) => (
@@ -666,8 +726,11 @@ export default function SearchResultSection() {
 								<Auto query={text} onSelect={handleSelect} />
 							</div>
 							<div className="mt-4 w-full flex flex-col">
-								{stores.map((store) => (
-									<StoreInfoCard review={store} key={store.id} />
+								{stores.map((store, index) => (
+									<StoreInfoCard
+										review={store}
+										key={store.id ?? `${store.name}-${index}`}
+									/>
 								))}
 							</div>
 							{showToast && (
@@ -681,6 +744,6 @@ export default function SearchResultSection() {
 					)}
 				</div>
 			</main>
-		</HomeAppShell>
+		</AppShell>
 	);
 }

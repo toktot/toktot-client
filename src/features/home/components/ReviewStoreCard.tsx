@@ -50,7 +50,7 @@ const ReviewStoreCard: React.FC<ReviewStoreCardProps> = ({ review }) => {
 					className="absolute top-2 right-2 transform rotate-90 text-white"
 					onClick={handleClick}
 				/>
-				<div className="absolute bottom-1 left-3 text-[9px] text-[#FFFFFF] ">
+				<div className="absolute bottom-1 left-3 text-[12px] text-[#FFFFFF] ">
 					{review.writer} · {getTimeAgo(review.time ?? '')}
 				</div>
 			</div>
