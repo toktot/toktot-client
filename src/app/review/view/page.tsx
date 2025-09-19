@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { AppShell, Header } from '@/widgets/layout';
 import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 
+import { LocationDisplayTrigger } from '@/features/locationsetting/ui/LocationDisplayTrigger';
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { ReviewOptionsMenu } from '@/features/review/read/ui/ReviewOptionsMenu';
 
@@ -14,7 +15,7 @@ const page = () => {
 					<BackButton className="text-white" />
 				</Header.Left>
 				<Header.Center>
-					<span className="text-white">위치 표시</span>
+					<LocationDisplayTrigger className="text-white" />
 				</Header.Center>
 				<Header.Right>
 					<Suspense fallback={<div></div>}>
