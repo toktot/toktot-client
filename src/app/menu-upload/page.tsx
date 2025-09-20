@@ -16,7 +16,7 @@ const SelectStoreForMenuUploadPage = () => {
 	};
 
 	return (
-		<AppShell showBottomNav={true}>
+		<AppShell showBottomNav={false}>
 			<Header className="bg-white">
 				<Header.Left>
 					<BackButton className="text-grey-70" />

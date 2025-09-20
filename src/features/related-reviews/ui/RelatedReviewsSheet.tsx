@@ -20,6 +20,7 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 	>('all');
 
 	const { data: reviews, isLoading } = useInfiniteStoreReviews(storeId);
+	console.log('🚀 ~ RelatedReviewsSheet ~ reviews:', reviews);
 
 	const handleCategoryChange = (category: TooltipCategory | 'all') => {
 		setSelectedCategory(category);
@@ -28,9 +29,7 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 	const filteredReviews = !reviews
 		? []
 		: selectedCategory === 'all'
-			? reviews.filter((review) =>
-					review.images.some((image) => image.tooltips.length > 0),
-				)
+			? reviews
 			: reviews.filter((review) =>
 					review.images.some((image) =>
 						image.tooltips.some((tooltip) => tooltip.type === selectedCategory),
