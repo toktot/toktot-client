@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { AppShell, Header } from '@/widgets/layout';
 
@@ -13,10 +12,18 @@ import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import Icon from '@/shared/ui/Icon';
 import Tab from '@/shared/ui/Tab';
 
-type MyPageTab = 'saved' | 'my';
+type MyPageTab = 'written' | 'saved';
 
 const MyPage = () => {
-	const [activeTab, setActiveTab] = useState<MyPageTab>('my');
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const activeTab = searchParams.get('tab') || 'written';
+
+	const handleTabChange = (tab: MyPageTab) => {
+		const url = new URL(window.location.href);
+		url.searchParams.set('tab', tab);
+		router.push(url.pathname + url.search);
+	};
 
 	return (
 		<AppShell>
@@ -39,15 +46,15 @@ const MyPage = () => {
 				</div>
 			</div>
 			<Tab<MyPageTab>
-				activeTab={activeTab}
-				onTabChange={setActiveTab}
+				activeTab={activeTab as MyPageTab}
+				onTabChange={handleTabChange}
 				tabs={[
-					{ id: 'my', label: '작성한 리뷰' },
+					{ id: 'written', label: '작성한 리뷰' },
 					{ id: 'saved', label: '저장한 리뷰' },
 				]}
 			/>
 			<div>
-				{activeTab === 'my' && <MyReviewList />}
+				{activeTab === 'written' && <MyReviewList />}
 				{activeTab === 'saved' && <FolderList />}
 			</div>
 		</AppShell>
