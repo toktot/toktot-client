@@ -49,34 +49,39 @@ export const ReviewDetailItem = ({
 						className="object-cover rounded-full"
 					/>
 				</div>
-				<div>
-					{/* 유저 정보 */}
-					<div className="flex items-center justify-between">
-						<div className="flex gap-2">
-							<span className="font-bold">{review.author.nickname}</span>
-							<div className="text-grey-70">
-								<span>평균 {review.author.averageRating.toFixed(1)}</span>
-								<span>({review.author.reviewCount}개)</span>
+				<div className="flex-1 gap-2 flex flex-col">
+					<div>
+						{/* 유저 정보 */}
+						<div className="flex items-center justify-between">
+							<div className="flex gap-2">
+								<span className="font-bold w-1/2 truncate">
+									{review.author.nickname}
+								</span>
+								<div className="text-grey-70 shrink-0">
+									<span>평균 {review.author.averageRating.toFixed(1)}</span>
+									<span>({review.author.reviewCount}개)</span>
+								</div>
 							</div>
 						</div>
+						{/* 리뷰 정보 */}
+						<div className="flex gap-2 items-center text-sm text-grey-60">
+							<RatingStarView value={review.reviewRating} category={'food'} />
+							<MealTimeDisplay mealTime={review.mealTime} />
+							<div>{relativeTime}</div>
+						</div>
+						{/* 키워드 */}
+						<div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden mb-2">
+							{review.keywords.map((keyword) => (
+								<span
+									key={keyword}
+									className="rounded-lg px-2 text-xs bg-white shrink-0"
+								>
+									<Label>{keyword}</Label>
+								</span>
+							))}
+						</div>
 					</div>
-					{/* 리뷰 정보 */}
-					<div className="flex gap-2 items-center text-sm text-grey-60">
-						<RatingStarView value={review.reviewRating} category={'food'} />
-						<MealTimeDisplay mealTime={review.mealTime} />
-						<div>{relativeTime}</div>
-					</div>
-					{/* 키워드 */}
-					<div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden mb-2">
-						{review.keywords.map((keyword) => (
-							<span
-								key={keyword}
-								className="rounded-lg px-2 text-xs bg-white shrink-0"
-							>
-								<Label>{keyword}</Label>
-							</span>
-						))}
-					</div>
+
 					<div className="flex gap-2 overflow-x-auto">
 						{review.images.map((image) => (
 							<Image
@@ -91,7 +96,7 @@ export const ReviewDetailItem = ({
 					</div>
 
 					{/* 툴팁 정보 */}
-					<div>
+					<div className="space-y-2">
 						{review.images.flatMap((image) =>
 							image.tooltips
 								.filter((tooltip) => {
@@ -99,6 +104,7 @@ export const ReviewDetailItem = ({
 									return tooltip.type.toLowerCase() === selectedCategory;
 								})
 								.map((tooltip) => {
+									console.log('🚀 ~ tooltip:', tooltip);
 									const categoryKey =
 										tooltip.type.toLowerCase() as TooltipCategory;
 									const markerStyle = tooltipMarkerStyleMap[categoryKey];
@@ -110,16 +116,14 @@ export const ReviewDetailItem = ({
 											key={tooltip.id}
 											className="flex flex-col gap-1 text-xs"
 										>
-											<div className="flex items-center gap-2 rounded-full w-fit px-2 bg-white">
-												<div className="flex">
-													<Icon
-														name={markerStyle.icon}
-														fill={tooltipCategoryColor}
-														color={tooltipCategoryColor}
-														size={'xs'}
-													/>
-													<span>{tooltip.rating}</span>
-												</div>
+											<div className="flex gap-1 rounded-full w-fit px-2 bg-white">
+												<Icon
+													name={markerStyle.icon}
+													fill={tooltipCategoryColor}
+													color={tooltipCategoryColor}
+													size={'xs'}
+												/>
+												<span>{tooltip.rating}</span>
 												{tooltip.type === 'food' && (
 													<>
 														<span>{tooltip.menuName}</span>
