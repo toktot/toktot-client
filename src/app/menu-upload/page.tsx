@@ -19,7 +19,7 @@ const SelectStoreForMenuUploadPage = () => {
 		<AppShell showBottomNav={false}>
 			<Header className="bg-white">
 				<Header.Left>
-					<BackButton />
+					<BackButton className="text-grey-70" />
 				</Header.Left>
 				<Header.Center>메뉴판 등록</Header.Center>
 			</Header>

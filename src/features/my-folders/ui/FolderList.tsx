@@ -6,6 +6,19 @@ import { useReviewFolderStore } from '@/entities/review-folder/model/store';
 
 import { FolderCard } from './FolderCard';
 
+const FolderListLoader = () => (
+	<div className="p-4">
+		<div className="grid grid-cols-2 gap-4">
+			{Array.from({ length: 4 }).map((_, i) => (
+				<div
+					key={i}
+					className="h-[20vh] w-full rounded-lg bg-grey-200 animate-pulse bg-grey-10"
+				/>
+			))}
+		</div>
+	</div>
+);
+
 export const FolderList = () => {
 	const { folders, isLoading, fetchFolders } = useReviewFolderStore();
 
@@ -14,16 +27,7 @@ export const FolderList = () => {
 	}, [fetchFolders]);
 
 	if (isLoading) {
-		return (
-			<div className="grid grid-cols-2 gap-4">
-				{Array.from({ length: 4 }).map((_, i) => (
-					<div
-						key={i}
-						className="h-[20vh] w-full rounded-lg bg-grey-200 animate-pulse bg-grey-10"
-					/>
-				))}
-			</div>
-		);
+		return <FolderListLoader />;
 	}
 
 	if (folders.length === 0) {

@@ -40,13 +40,14 @@ export const SelectStoreForReview = ({
 		searchStores,
 		clearSuggestions,
 		clearResults,
+		error,
 	} = useStoreSearch();
 
 	const [view, setView] = useState<'suggestions' | 'results'>('suggestions');
 
 	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
 		isLoading,
-		hasMore: !isEnd,
+		hasMore: !isEnd && !error,
 		onLoadMore: () => searchStores(false),
 		threshold: 1.0,
 	});
