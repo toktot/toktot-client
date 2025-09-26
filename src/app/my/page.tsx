@@ -1,4 +1,7 @@
 'use client';
+'use client';
+
+import { Suspense } from 'react';
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -14,7 +17,7 @@ import Tab from '@/shared/ui/Tab';
 
 type MyPageTab = 'written' | 'saved';
 
-const MyPage = () => {
+const MyPageInner = () => {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const activeTab = searchParams.get('tab') || 'written';
@@ -60,5 +63,11 @@ const MyPage = () => {
 		</AppShell>
 	);
 };
+
+const MyPage = () => (
+	<Suspense fallback={<div>로딩중...</div>}>
+		<MyPageInner />
+	</Suspense>
+);
 
 export default MyPage;
