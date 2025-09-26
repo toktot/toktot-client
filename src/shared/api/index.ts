@@ -1,5 +1,10 @@
 import ky, { Options } from 'ky';
 import toast from 'react-hot-toast';
+import { z } from 'zod';
+
+import { ApiResponseSchema } from '@/shared/api/schema';
+
+const BaseResponseSchema = ApiResponseSchema(z.unknown());
 
 const baseOptions: Options = {
 	prefixUrl: process.env.NEXT_PUBLIC_API_URL,
@@ -15,12 +20,21 @@ interface AuthApiOptions {
 	alertMessage?: string;
 }
 
-const handleAuthRequired = (loginPath: string, alertMessage: string) => {
-	toast.error(alertMessage, { duration: 2000 });
-	setTimeout(() => {
-		window.location.href = loginPath;
-	}, 2000);
+const handleAuthRequired = async (loginPath: string, alertMessage: string) => {
+	toast.error(alertMessage, { id: 'auth-error', duration: 2000 });
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	window.location.href = loginPath;
 };
+
+const AUTH_ERRORS = new Set([
+	'INVALID_PASSWORD',
+	'USER_NOT_FOUND',
+	'TOKEN_EXPIRED',
+	'TOKEN_INVALID',
+	'LOGIN_REQUIRED',
+	'KAKAO_LOGIN_FAILED',
+	'KAKAO_TOKEN_INVALID',
+]);
 
 export const createAuthApi = (opts?: AuthApiOptions) => {
 	const {
@@ -45,15 +59,42 @@ export const createAuthApi = (opts?: AuthApiOptions) => {
 					}
 				},
 			],
+
 			afterResponse: [
 				async (_request, _options, response) => {
-					// 토큰은 있지만 만료되었거나 유효하지 않은 경우
+					try {
+						debugger;
+						const cloned = await response.clone().json();
+						const parsed = BaseResponseSchema.safeParse(cloned);
+
+						if (!parsed.success) {
+							return;
+						}
+
+						const data = parsed.data;
+						console.log('🚀 ~ createAuthApi ~ data:', data);
+						if (
+							data.success === false &&
+							data.errorCode &&
+							AUTH_ERRORS.has(data.errorCode)
+						) {
+							await handleAuthRequired(
+								loginPath,
+								data.message ?? '로그인이 필요한 서비스입니다.',
+							);
+							return Promise.reject(new Error('인증 오류'));
+						}
+					} catch {
+						return;
+					}
+
 					if (response.status === 401) {
 						onAuthError?.(401);
 						handleAuthRequired(
 							loginPath,
 							'인증이 만료되었습니다. 다시 로그인해주세요.',
 						);
+						throw new Error('401 Unauthorized');
 					}
 				},
 			],
