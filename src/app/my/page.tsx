@@ -65,7 +65,7 @@ const MyPageInner = () => {
 };
 
 const MyPage = () => (
-	<Suspense fallback={<div>로딩중...</div>}>
+	<Suspense fallback={<div></div>}>
 		<MyPageInner />
 	</Suspense>
 );

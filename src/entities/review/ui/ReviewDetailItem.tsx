@@ -104,7 +104,6 @@ export const ReviewDetailItem = ({
 									return tooltip.type.toLowerCase() === selectedCategory;
 								})
 								.map((tooltip) => {
-									console.log('🚀 ~ tooltip:', tooltip);
 									const categoryKey =
 										tooltip.type.toLowerCase() as TooltipCategory;
 									const markerStyle = tooltipMarkerStyleMap[categoryKey];
