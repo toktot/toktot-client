@@ -46,6 +46,7 @@ export function ReviewStoryFeed() {
 		isSortSheetOpen,
 		currentSortOption,
 		sort,
+		availableSortOptions,
 	} = states;
 	const {
 		paginate,
@@ -146,6 +147,7 @@ export function ReviewStoryFeed() {
 				onOpenChange={setIsSortSheetOpen}
 				currentSort={sort}
 				onSortChange={handleSortChange}
+				options={availableSortOptions}
 			/>
 		</div>
 	);

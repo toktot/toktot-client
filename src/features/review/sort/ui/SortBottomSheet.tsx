@@ -15,11 +15,12 @@ interface SortBottomSheetProps {
 	onOpenChange: (isOpen: boolean) => void;
 	currentSort: SortValue;
 	onSortChange: (sort: SortValue) => void;
+	options: typeof BASE_SORT_OPTIONS;
 }
 
-export const SORT_OPTIONS: { id: string; label: string; value: SortValue }[] = [
+export const BASE_SORT_OPTIONS: { id: string; label: string; value: SortValue }[] = [
 	{ id: 'latest', label: '최신순', value: undefined },
-	{ id: 'distance', label: '가까운순(현재 불가)', value: 'DISTANCE' },
+	{ id: 'distance', label: '가까운순', value: 'DISTANCE' },
 	{ id: 'rating', label: '별점높은순', value: 'RATING' },
 	{ id: 'popularity', label: '인기순', value: 'POPULARITY' },
 	{ id: 'satisfaction', label: '만족도순', value: 'SATISFACTION' },
@@ -30,6 +31,7 @@ export const SortBottomSheet = ({
 	onOpenChange,
 	currentSort,
 	onSortChange,
+	options,
 }: SortBottomSheetProps) => {
 	const handleSelect = (value: SortValue) => {
 		onSortChange(value);
@@ -42,7 +44,7 @@ export const SortBottomSheet = ({
 			<BottomSheetContent className="fixed bottom-0 z-50 w-full max-h-[460px] min-h-40 rounded-t-2xl bg-white shadow-lg p-4">
 				<div className="mx-auto h-1 w-6 rounded-full bg-grey-30" />
 				<ul className="flex flex-col gap-2 my-2">
-					{SORT_OPTIONS.map((opt) => (
+					{options.map((opt) => (
 						<li key={opt.id}>
 							<button
 								onClick={() => handleSelect(opt.value)}
@@ -58,7 +60,10 @@ export const SortBottomSheet = ({
 						</li>
 					))}
 				</ul>
-				<button className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold">
+				<button
+					onClick={() => onOpenChange(false)}
+					className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold"
+				>
 					닫기
 				</button>
 			</BottomSheetContent>
