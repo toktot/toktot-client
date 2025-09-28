@@ -84,13 +84,10 @@ export default function StoreDetailPage() {
 	const handleBack = () => {
 		router.back();
 	};
+	const fillColor = '#3AC8FF';
 
 	if (!store) {
-		return (
-			<div className="flex items-center justify-center h-screen text-lg font-semibold">
-				가게 정보를 찾을 수 없습니다.
-			</div>
-		);
+		return;
 	}
 
 	return (
@@ -152,6 +149,23 @@ export default function StoreDetailPage() {
 			<div className="bg-white w-full max-w-[480px] mx-auto rounded-t-3xl ">
 				<div className="px-4 mt-3">
 					<h1 className="text-[20px] font-bold">{store.name}</h1>
+					<div className="flex flex-wrap justify items-center gap-1">
+						<Icon
+							name={'Star'}
+							fill={fillColor}
+							className="outline-none stroke-0 "
+							color={fillColor}
+							size="xxs"
+						/>
+						<span className="text-[14px] font-semibold text-grey-85">
+							{store.value_for_money_score ?? 0}
+						</span>
+						<span className="mx-1 text-[#D9D9D9]">·</span>
+						<span className="text-[14px] font-semibold text-grey-85">
+							리뷰 {store.point ?? 0}개
+						</span>
+						<Icon name="ArrowRight" size="xxs" className=" text-grey-80 ml-1" />
+					</div>
 					<div className="border border-grey-20 rounded-2xl -mx-1 py-1 px-2 mt-2">
 						<div className=" flex items-center gap-2 mb-2 pt-2">
 							<Icon name={'Location'} className="mr-2 w-5 h-5 text-grey-50" />
@@ -182,9 +196,7 @@ export default function StoreDetailPage() {
 
 						<div className="flex items-center gap-2 mb-2">
 							<Icon name={'call'} className="mr-2 w-5 h-5 text-grey-50" />
-							<span className="text-grey-80 text-[14px]">
-								{store.phone ?? '정보 없음'}
-							</span>
+
 							<span className="-ml-2">
 								<CopyButton text={store.phone} />
 							</span>
@@ -217,7 +229,7 @@ export default function StoreDetailPage() {
 					{tab === 'menu' && (
 						<div className="text-gray-700">
 							<div className="h-[0.5px] bg-grey-10 w-full" />
-							<StoreMenuSection />
+							<StoreMenuSection storeId={storeId} />
 						</div>
 					)}
 					{tab === 'review' && (

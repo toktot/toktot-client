@@ -40,10 +40,8 @@ export default function AlarmBox() {
 						{currentAlarm.alarmFood}
 					</span>
 					<div className="flex gap-0.5">
-						<span className="text-grey-80 text-[12px]">
-							{currentAlarm.average} 평균
-						</span>
-						<span className="text-grey-90 font-semibold text-[12px] ml-1">
+						<span className="text-grey-80 text-[12px]">평균</span>
+						<span className="text-grey-90 font-semibold text-[12px]">
 							{currentAlarm.price}
 						</span>
 						<span className="text-grey-80 text-[12px]">원</span>

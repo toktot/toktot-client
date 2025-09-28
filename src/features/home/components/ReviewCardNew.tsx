@@ -136,7 +136,8 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 											}
 											size="xs"
 										/>
-										{review.valueForMoneyScore}점
+										내 가심비
+										<div className="ml-0.3">{review.valueForMoneyScore}점</div>
 									</div>
 								</div>
 							)}

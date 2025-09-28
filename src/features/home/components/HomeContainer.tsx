@@ -132,7 +132,7 @@ export default function HomeContainer() {
 	const [price, setPrice] = useState<number>(0);
 	const [food, setFood] = useState(searchParams.get('food') || '');
 	const [popularReviews, setPopularReviews] = useState<PopularReview[]>([]);
-
+	const [openLocationSheet, setOpenLocationSheet] = useState(false);
 	useEffect(() => {
 		if (!location || locationError) {
 			setNearbyStores([]);
@@ -359,6 +359,8 @@ export default function HomeContainer() {
 				onLocationSaved={handleLocationSaved}
 				user={user}
 				bgColorClass="bg-grey-10"
+				open={openLocationSheet}
+				setOpen={setOpenLocationSheet}
 			/>
 			<div className="flex-1 overflow-y-auto scrollbar-hide pb-[80px] h-auto">
 				<div className="bg-grey-10">
@@ -374,19 +376,23 @@ export default function HomeContainer() {
 										<Icon name="Search" size="s" className="text-primary-40" />
 									}
 									className=" h-[48px] flex items-center"
-									placeholder="제주도 여행가서 먹고 싶은 음식은??"
-									placeholderColor="placeholder:text-primary-60"
+									placeholder={'제주도 여행가서 먹고 싶은 음식은??'}
 								/>
 							</div>
 						</div>
 					</section>
 					<AlarmBox />
-					<div className="mt-3 mx-4 rounded-3xl p-4 bg-gradient-to-r from-primary-30 via-primary-20 to-primary-30 relative overflow-hidden">
+					<div className="mt-3 mx-4 rounded-3xl p-4 bg-gradient-to-r from-[#99E5F3] via-[#99E5F3] to-[#DBF5FB] relative overflow-hidden">
 						<p className="text-[16px] font-semibold text-grey-90">
 							여러분만의 특별한 <br />
 							제주도 음식을 작성해주세요!
 						</p>
-						<button className="mt-3 px-3 py-1 rounded-full bg-primary-40 text-primary-10 text-[12px] font-semibold">
+						<button
+							className="mt-3 px-3 py-1 rounded-full bg-primary-40 text-primary-10 text-[12px] font-semibold cursor-pointer"
+							onClick={() => {
+								router.push('/review/write');
+							}}
+						>
 							바로 작성하러가기
 						</button>
 
@@ -441,7 +447,7 @@ export default function HomeContainer() {
 					{/* 가격 + 음식 필터 */}
 					<div className="mt-8 flex items-center justify-between mb-4">
 						<h2 className="text-[18px] font-semibold">
-							가격도 착하고 맛까지 좋은 가게는?
+							가격도 착하고, 맛까지 좋은 가게는?
 						</h2>
 					</div>
 					<PriceTabs
@@ -482,20 +488,31 @@ export default function HomeContainer() {
 							더보기
 						</button>
 					</div>
-					{!locationLoading &&
-						location &&
-						!locationError &&
-						nearbyStores.length > 0 && (
+					{!locationLoading && location && !locationError ? (
+						nearbyStores.length > 0 ? (
 							<section className="mt-8 flex flex-col">
 								{/* 가격도 착하고 맛까지 좋은 가게 */}
-
 								<div className="flex flex-col gap-4">
 									{nearbyStores.map((store) => (
 										<NearCard key={store.id} review={store} />
 									))}
 								</div>
 							</section>
-						)}
+						) : (
+							// 위치는 있지만 가게가 없을 때
+							<div className="mt-8 flex flex-col items-center justify-center bg-grey-10 rounded-xl py-10">
+								<p className="text-grey-60 mb-2 text-[14px]">
+									현재 위치가 설정되지 않았어요
+								</p>
+								<button
+									onClick={() => setOpenLocationSheet(true)} // 위치 설정 함수 연결
+									className="px-4 py-2 border border-primary-40 text-[#00B2E8] rounded-full text-[12px] font-semibold cursor-pointer"
+								>
+									지금 설정하기
+								</button>
+							</div>
+						)
+					) : null}
 					{/* StoreInfoCard 목록 */}
 				</section>
 				{/* Toast */}

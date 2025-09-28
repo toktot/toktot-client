@@ -24,7 +24,6 @@ export function Marker({
 		if (!map) return;
 
 		if (!isMarkerClicked) {
-			// 📌 프로필 이미지를 보여주는 custom overlay
 			const content = document.createElement('div');
 			content.style.width = '40px';
 			content.style.height = '40px';
@@ -36,17 +35,14 @@ export function Marker({
 			content.style.border = '2px solid #3AC8FF';
 			content.style.background = '#fff';
 
-			if (user) {
-				const img = document.createElement('img');
-				img.src = user;
-				img.alt = 'user';
-				img.style.width = '100%';
-				img.style.height = '100%';
-				img.style.objectFit = 'cover';
-				content.appendChild(img);
-			} else {
-				content.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="gray" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>`;
-			}
+			// ✅ Next.js <Image> 대신 일반 <img> 사용
+			const img = document.createElement('img');
+			img.src = '/images/Checker.png'; // public/images/Checker.png
+			img.alt = 'Checker';
+			img.style.width = '100%';
+			img.style.height = '100%';
+			img.style.objectFit = 'cover';
+			content.appendChild(img);
 
 			const overlay = new kakao.maps.CustomOverlay({
 				position: new kakao.maps.LatLng(position.lat, position.lng),
@@ -55,12 +51,8 @@ export function Marker({
 			});
 
 			overlay.setMap(map);
-
 			content.addEventListener('click', onClick || (() => {}));
 
-			// CustomOverlay에도 클릭 이벤트 붙이기
-
-			// cleanup
 			return () => {
 				overlay.setMap(null);
 				content.removeEventListener('click', onClick || (() => {}));

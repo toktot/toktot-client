@@ -89,12 +89,15 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 						<div className="flex items-center gap-4">
 							<span>
 								{review.author.profileImageUrl ? (
-									<Image
-										src={review.author.profileImageUrl}
-										alt={`${review.author.nickname} 프로필`}
-										fill
-										className="object-cover"
-									/>
+									<div className="rounded-full w-[28px] h-[28px]">
+										<Image
+											src={review.author.profileImageUrl}
+											alt={`${review.author.nickname} 프로필`}
+											width={28}
+											height={28}
+											className="object-cover"
+										/>
+									</div>
 								) : (
 									<Icon name="Avatar" size="s" className="text-grey-60" />
 								)}
@@ -104,15 +107,15 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 									<span className="font-semibold text-[12px]">
 										{review.author.nickname}
 									</span>
-									<span className="text-grey-70 text-[11px]">
-										평균 ({review.author.averageRating?.toFixed(1)}점)
+									<span className="text-grey-70 text-[11px] ml-2">
+										평균 {review.author.averageRating?.toFixed(1)}점
 									</span>
 									<span className="text-grey-70 text-[11px]">
 										({review.author.reviewCount}개)
 									</span>
 								</div>
 
-								<div className="flex items-center justify-between mt-2 gap-2">
+								<div className="flex items-center justify-between mt-2">
 									<StarRating
 										value={review.reviewRating}
 										onChange={setRating}
@@ -127,7 +130,11 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 											if (!meal) return null;
 											return (
 												<div className="flex items-center gap-1">
-													<Icon name={meal.iconName} size="xxs" />
+													<Icon
+														name={meal.iconName}
+														size="xxs"
+														className="ml-1"
+													/>
 													<span className="text-grey-60 text-[9px]">
 														{meal.label}
 													</span>
@@ -154,20 +161,41 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 
 				{/* 가심비 & 카테고리 태그 */}
 				<div className="flex flex-wrap gap-2">
-					<div
-						className={clsx(
-							'px-2 py-0.5 rounded-md font-semibold text-sm border',
-							review.gasimbi! >= 80
-								? 'bg-green-100 border-green-600 text-green-600'
-								: review.gasimbi! >= 50
-									? 'bg-blue-100 border-blue-500 text-blue-500'
-									: review.gasimbi! >= 30
-										? 'bg-orange-100 border-orange-500 text-orange-500'
-										: 'bg-grey-10 border-grey-300 text-grey-50',
-						)}
-					>
-						가심비 {review.gasimbi ?? 0}점
-					</div>
+					{review.gasimbi && (
+						<div>
+							{/* 가심비 박스 */}
+							{review.gasimbi !== undefined && (
+								<div
+									className={`px-1 py-1 text-xs font-medium rounded-md text-white ${
+										review.gasimbi >= 80
+											? 'border border-[#00C79F] text-white bg-gradient-to-r from-[#00C79F] to-[#59A387]'
+											: review.gasimbi >= 50
+												? 'border border-blue-500 text-white bg-gradient-to-r from-[#3AC8FF] to-[#3A78FF]'
+												: review.gasimbi >= 30
+													? 'border border-[#FF893A] text-white bg-gradient-to-r from-[#FFB885] to-[#FF6600]'
+													: 'bg-gray-200 text-white'
+									}`}
+								>
+									<div className="flex items-center gap-0.5">
+										<Icon
+											name={
+												review.gasimbi >= 80
+													? 'greenHeart'
+													: review.gasimbi >= 50
+														? 'orangeHeart'
+														: review.gasimbi >= 30
+															? 'GasimbiHeart'
+															: 'None'
+											}
+											size="xs"
+										/>
+										내 가심비
+										<div className="ml-0.3">{review.gasimbi}점</div>
+									</div>
+								</div>
+							)}
+						</div>
+					)}
 					{review.keywords.map((kw) => {
 						const category = detailCategories.find(
 							(c) =>
@@ -202,6 +230,8 @@ const ReviewCard = forwardRef<HTMLDivElement, ReviewCardProps>(
 								key={image.imageId}
 								src={image.imageUrl as string}
 								alt="리뷰 이미지"
+								width={89}
+								height={89}
 								className="rounded-md object-cover w-[65px] h-[65px]"
 							/>
 						))}

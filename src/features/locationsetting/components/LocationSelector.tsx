@@ -32,6 +32,8 @@ export default function LocationSelector({
 	const [isMarkerClicked, setIsMarkerClicked] = useState(false);
 	const [displayName, setDisplayName] = useState('');
 	const { setLocation } = useLocation();
+	const [isSearching, setIsSearching] = useState(false);
+
 	const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(
 		null,
 	);
@@ -44,6 +46,18 @@ export default function LocationSelector({
 
 	const handleSaveLocation = () => {
 		if (!searchAddress || !JEJU_LOCATIONS) return;
+		if (!isMarkerClicked) {
+			setIsMarkerClicked(true);
+			return;
+		} else {
+			setLocation({
+				address: displayName || address,
+				lat: latLng?.lat ?? null,
+				lng: latLng?.lng ?? null,
+			});
+			onLocationSaved?.();
+			onClose?.();
+		}
 
 		setLocation({
 			address: displayName || address,
@@ -60,6 +74,7 @@ export default function LocationSelector({
 		setDisplayName(displayText); // 필요 시 표시용으로 따로 저장
 		setIsMarkerClicked(false);
 		setIsSelected(true);
+		setIsSearching(false);
 	};
 
 	const handleCurrentLocationClick = async () => {
@@ -135,33 +150,50 @@ export default function LocationSelector({
 								)}
 							</div>
 							<div className="flex justify-center">
-								<div className="flex justify-between bg-grey-10 px-4 py-3 mb-4 w-full rounded-2xl h-[44px] min-w-[343px] max-w-[440px]">
-									<div className="flex items-center gap-2">
+								<SearchBox
+									query={address}
+									onChange={(val) => {
+										setAddress(val);
+										setIsSearching(true);
+										setIsSelected(false);
+									}}
+									onSearchClick={handleSearchClick}
+									placeholder="주소를 입력하세요"
+									placeholderColor="placeholder-grey-80"
+									leftIcon={
 										<Icon
 											name="Location"
 											className="text-primary-40"
 											size="s"
 										/>
-										<span className="text-[14px] text-grey-90 font-semibold">
-											{address}
-										</span>
-									</div>
-									<button
-										onClick={() => {
-											setAddress('');
-											setSearchAddress('');
-											setStep('search');
-										}}
-									>
-										<Icon
-											name={'Cancel'}
-											size="m"
-											className="text-grey-50 cursor-pointer"
-										/>
-									</button>
-								</div>
+									}
+									rightIcon={
+										address.trim() ? (
+											<Icon
+												name={'Cancel'}
+												size="m"
+												className="text-grey-50 cursor-pointer"
+												onClick={() => {
+													setAddress('');
+													setSearchAddress('');
+													setIsSearching(false);
+												}}
+											/>
+										) : undefined
+									}
+									className="w-full min-w-[343px] max-w-[450px] h-[43px] flex items-center bg-grey-10 text-[14px]"
+								/>
 							</div>
-							<div className="w-full">
+							{isSearching && (
+								<div className="absolute top-[110px] left-0 w-full max-h-[60vh] overflow-y-auto bg-white z-50">
+									<AutocompleteList
+										query={address}
+										onSelect={handleSelect}
+										onCurrentLocationClick={handleCurrentLocationClick}
+									/>
+								</div>
+							)}
+							<div className="w-full mt-7">
 								<SearchLocationMap
 									address={searchAddress}
 									lat={latLng?.lat}
@@ -174,11 +206,13 @@ export default function LocationSelector({
 
 							<div className="flex justify-center mt-6 ">
 								<button
-									disabled={!isMarkerClicked}
 									onClick={handleSaveLocation}
 									className=" min-w-[343px] cursor-pointer max-w-[450px] w-full py-3 rounded-2xl font-semibold transition-all bg-black text-primary-40"
 								>
-									위치 저장
+									<div className="flex flex-wrap justify-center gap-1">
+										<Icon name="Plus" />
+										위치 저장
+									</div>
 								</button>
 							</div>
 							<div className="w-16 h-[0.9px] bg-[#000000] rounded-full mx-auto mt-3 bottom-3 z-50" />
@@ -222,14 +256,17 @@ export default function LocationSelector({
 								/>
 							</div>
 							<div className=" relative bottom-3 mx-auto min-w-[343px] max-w-[450px] w-full z-50">
-								<div className="flex justify-center ml-2">
+								<div className="flex justify-center">
 									<button
 										disabled={!isSelected}
-										className={`bg-black text-white w-full h-[46px] py-3 rounded-2xl font-semibold cursor-pointer
-							${!isSelected ? 'bg-grey-20 text-white cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
+										className={`bg-black text-white w-full h-[46px] py-3.5 rounded-2xl font-semibold cursor-pointer
+							${!isSelected ? 'bg-grey-30 text-white cursor-not-allowed' : 'bg-primary-90 text-primary-40'}`}
 										onClick={goToNextStep}
 									>
-										다음
+										<div className="flex items-center justify-center gap-1">
+											<Icon name="Plus" />
+											다음
+										</div>
 									</button>
 								</div>
 

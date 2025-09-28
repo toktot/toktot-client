@@ -29,7 +29,16 @@ const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 	return (
 		<div className="bg-white rounded-3xl p-4 cursor-pointer">
 			<h2 className="text-[18px] font-semibold text-grey-90 mb-4 ml-3">
-				로컬음식
+				<div className="flex flex-wrap justify items-center gap-2">
+					로컬음식
+					<button>
+						<Icon
+							name="ArrowDown"
+							size="l"
+							className="rotate-180 transition-transform duration-300"
+						/>
+					</button>
+				</div>
 			</h2>
 			<div className="grid grid-cols-5 gap-x-1 gap-y-2">
 				{categories?.map((item, idx) => (

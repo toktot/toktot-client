@@ -15,7 +15,7 @@ interface PriceTabsProps {
 	onChange?: (price: number, food: string) => void;
 }
 const priceRanges = [
-	{ label: '만원이하', value: 0 },
+	{ label: '1만원 이하', value: 0 },
 	{ label: '1만원대', value: 10000 },
 	{ label: '2~3만원대', value: 20000 },
 	{ label: '3~5만원대', value: 30000 },
@@ -110,7 +110,7 @@ export default function PriceTabs({
 						return (
 							<button
 								key={range.label}
-								className={`flex-shrink-0 relative px-4 py-2 text-sm font-medium
+								className={`flex-shrink-0 relative px-4 py-2 text-[16px] font-semibold
 						${isActive ? 'text-grey-90' : 'text-grey-40'}
 					`}
 								onClick={() => handleSelect(selectedFood, range)}

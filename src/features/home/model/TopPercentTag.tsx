@@ -40,7 +40,7 @@ export default function TopPercentTag({
 			)}
 		>
 			<Icon name={iconName} size="xs" />
-			<span className="font-semibold text-[11px] ">{value}%</span>
+			<span className="font-semibold text-[11px] ">{value}</span>
 		</div>
 	);
 }

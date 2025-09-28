@@ -84,7 +84,7 @@ export default function SearchBox({
 				value={query}
 				onFocus={onFocus}
 				onChange={(e) => onChange(e.target.value)}
-				className={`w-full h-full  border-none outline-none bg-transparent ${inputPaddingLeft} ${inputPaddingRight} ${placeholderColor}`}
+				className={`w-full h-full border-none outline-none bg-transparent ${inputPaddingLeft} ${inputPaddingRight} ${placeholderColor ?? 'placeholder:text-primary-60'}`}
 			/>
 		</form>
 	);

@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 
 import ClientProviders from '@/features/auth/context/ClientProviders';
 
+import PageLoader from '@/shared/components/PageLoader';
 import { DevelopmentBanner } from '@/shared/ui/DevelopmentBanner';
 import Icon from '@/shared/ui/Icon';
 
@@ -25,6 +26,7 @@ export default function RootLayout({
 				className={`${pretendard.variable} ${manrope.variable} antialiased`}
 			>
 				<ClientProviders>
+					<PageLoader duration={500} />
 					{children}
 					<DevelopmentBanner />
 					<Toaster
