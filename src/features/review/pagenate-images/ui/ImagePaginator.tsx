@@ -189,6 +189,7 @@ export const ImagePaginator = ({
 					<Image
 						src={currentImage.url}
 						alt="리뷰 이미지"
+						sizes="100vw"
 						priority={true}
 						layout="fill"
 						objectFit="contain"

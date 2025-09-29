@@ -132,14 +132,16 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 
 	colors[maxKey] = 'bg-grey-90';
 
-	//가중 평균
+	//가중 평균 (소수점 버림)
 	const avgSatisfaction =
 		total === 0
 			? 0
-			: (distribution.high * 85 +
-					distribution.mid * 54.5 +
-					distribution.low * 19.5) /
-				total;
+			: Math.trunc(
+					(distribution.high * 85 +
+						distribution.mid * 54.5 +
+						distribution.low * 19.5) /
+						total,
+				);
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -150,10 +152,7 @@ const SatisfactionSection = ({ distribution }: SatisfactionSectionProps) => {
 						평균 가심비
 					</Typography>
 					<span className="text-3xl font-bold">
-						<span className="text-primary-40">
-							{avgSatisfaction.toFixed(1)}
-						</span>
-						점
+						<span className="text-primary-40">{avgSatisfaction}</span>점
 					</span>
 				</div>
 				<div className="flex flex-col gap-2 flex-1 text-sm text-nowrap">

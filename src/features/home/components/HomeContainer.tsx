@@ -6,6 +6,8 @@ import { detailCategories } from '@/entities/cataegory/detailCategories';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { useLocation } from '@/features/locationsetting/components/LocationContext';
+
 import HeaderBox from '@/shared/components/HeaderBox';
 import NearCard from '@/shared/components/NearCard';
 import SearchBox from '@/shared/components/SearchBox';
@@ -124,17 +126,23 @@ export default function HomeContainer() {
 	const [showToast, setShowToast] = useState(false);
 	const [, setGoodPriceStores] = useState<GoodPriceStore[]>([]);
 	const [nearbyStores, setNearbyStores] = useState<NearbyStore[]>([]);
+	const { location: selectedLocation } = useLocation();
+
 	const {
-		location,
+		location: currentLocation,
 		loading: locationLoading,
 		error: locationError,
 	} = useCurrentLocation();
+	const effectiveLocation = selectedLocation;
 	const [price, setPrice] = useState<number>(0);
 	const [food, setFood] = useState(searchParams.get('food') || '');
 	const [popularReviews, setPopularReviews] = useState<PopularReview[]>([]);
 	const [openLocationSheet, setOpenLocationSheet] = useState(false);
 	useEffect(() => {
-		if (!location || locationError) {
+		const baseLat = selectedLocation?.lat ?? currentLocation?.coords?.latitude;
+		const baseLng = selectedLocation?.lng ?? currentLocation?.coords?.longitude;
+		console.log('검색 기준 위치:', { baseLat, baseLng, selectedLocation });
+		if (!baseLat || !baseLng) {
 			setNearbyStores([]);
 			return;
 		}
@@ -145,12 +153,13 @@ export default function HomeContainer() {
 					'/v1/restaurants/search/filter?page=0',
 					{
 						location: {
-							latitude: location.coords?.latitude,
-							longitude: location.coords?.longitude,
+							latitude: baseLat,
+							longitude: baseLng,
 							radius: 1000, // 1km 반경
 						},
 					},
 				);
+				console.log('📍 API 응답', response?.data);
 
 				let stores: NearbyStore[] = response?.data?.data?.content ?? [];
 
@@ -162,7 +171,7 @@ export default function HomeContainer() {
 		};
 
 		fetchNearbyStores();
-	}, [location, locationError]);
+	}, [locationError, selectedLocation, currentLocation]);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -488,7 +497,7 @@ export default function HomeContainer() {
 							더보기
 						</button>
 					</div>
-					{!locationLoading && location && !locationError ? (
+					{!locationLoading && effectiveLocation && !locationError ? (
 						nearbyStores.length > 0 ? (
 							<section className="mt-8 flex flex-col">
 								{/* 가격도 착하고 맛까지 좋은 가게 */}

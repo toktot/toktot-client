@@ -1,8 +1,9 @@
 'use client';
 
-import { useReviewFeedStore } from '@/features/review/read/hooks/useReviewFeedStore';
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
+
+import { useReviewFeedStore } from '@/features/review/read/hooks/useReviewFeedStore';
 
 import { createAuthApi } from '@/shared/api';
 import { ReviewFolderId, ReviewId } from '@/shared/model/types';
@@ -50,7 +51,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 
 	return {
 		folders: [],
-		isLoading: false,
+		isLoading: true,
 
 		fetchFolders: async () => {
 			set({ isLoading: true });
@@ -119,7 +120,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 				const mapped = updatedServerFolders.map(mapFolderClientToReviewFolder);
 				set({ folders: mapped, isLoading: false });
 
-        useReviewFeedStore.getState().updateBookmarkStatus(reviewId, true);
+				useReviewFeedStore.getState().updateBookmarkStatus(reviewId, true);
 
 				return { success: true };
 			} catch (err: unknown) {

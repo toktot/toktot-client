@@ -9,9 +9,13 @@ interface HeaderPartProps {
 const Left = ({ children }: HeaderPartProps) => (
 	<div className="flex-shrink-0">{children}</div>
 );
+
 const Center = ({ children }: HeaderPartProps) => (
-	<div className="flex-1 flex justify-center font-semibold">{children}</div>
+	<div className="absolute left-1/2 -translate-x-1/2 font-semibold">
+		{children}
+	</div>
 );
+
 const Right = ({ children }: HeaderPartProps) => (
 	<div className="flex-shrink-0">{children}</div>
 );

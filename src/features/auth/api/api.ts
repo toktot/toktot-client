@@ -18,3 +18,11 @@ export const logoutUserApi = async (): Promise<void> => {
 		console.error('Server logout failed:', error);
 	}
 };
+
+/**
+ * 서버에 회원 탈퇴 요청을 보냅니다.
+ * @returns Promise<void>
+ */
+export const deleteUserApi = async (): Promise<void> => {
+	await api.delete('v1/users/me');
+};

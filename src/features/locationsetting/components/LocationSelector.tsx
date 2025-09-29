@@ -13,6 +13,7 @@ import SearchBox from '@/shared/components/SearchBox';
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
 
+import { geocodeAddress } from '../lib/geocode';
 import { useLocation } from './LocationContext';
 
 interface LocationSelectorProps {
@@ -50,31 +51,35 @@ export default function LocationSelector({
 			setIsMarkerClicked(true);
 			return;
 		} else {
-			setLocation({
+			const savedLocation = {
 				address: displayName || address,
 				lat: latLng?.lat ?? null,
 				lng: latLng?.lng ?? null,
-			});
+			};
+
+			console.log('📍 저장된 위치:', savedLocation); // 여기서 확인 가능
+
+			setLocation(savedLocation);
 			onLocationSaved?.();
 			onClose?.();
 		}
 
-		setLocation({
-			address: displayName || address,
-			lat: null,
-			lng: null,
-		});
 		onLocationSaved?.();
 		onClose?.();
 	};
 	const [isSelected, setIsSelected] = useState(false);
-	const handleSelect = (selectedAddress: string, displayText: string) => {
+	const handleSelect = async (selectedAddress: string, displayText: string) => {
 		setAddress(displayText); // 검색창에는 보기 좋은 이름 (ex: 제주사랑 카페)
 		setSearchAddress(selectedAddress); // 실제 지도 검색은 주소로 해야 하므로 address
 		setDisplayName(displayText); // 필요 시 표시용으로 따로 저장
 		setIsMarkerClicked(false);
 		setIsSelected(true);
 		setIsSearching(false);
+		const coords = await geocodeAddress(selectedAddress);
+		console.log('geocode', selectedAddress);
+		if (coords) {
+			setLatLng(coords);
+		}
 	};
 
 	const handleCurrentLocationClick = async () => {

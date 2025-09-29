@@ -28,9 +28,7 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 	const filteredReviews = !reviews
 		? []
 		: selectedCategory === 'all'
-			? reviews.filter((review) =>
-					review.images.some((image) => image.tooltips.length > 0),
-				)
+			? reviews
 			: reviews.filter((review) =>
 					review.images.some((image) =>
 						image.tooltips.some((tooltip) => tooltip.type === selectedCategory),
@@ -50,7 +48,7 @@ export const RelatedReviewsSheet = ({ storeId }: RelatedReviewsSheetProps) => {
 			{/* 리뷰 리스트 */}
 			<div className="flex-1 min-h-fit px-4 bg-[#F2FAFE] overflow-y-auto [&::-webkit-scrollbar]:hidden">
 				<hr className="border-grey-20 -mx-4" />
-				<div className="h-[25vh]">
+				<div className="h-[30vh] max-h-fit">
 					{isLoading && <div className="p-4 text-center">로딩 중...</div>}
 					{!isLoading && filteredReviews.length === 0 && (
 						<div className="p-4 text-center text-grey-60">

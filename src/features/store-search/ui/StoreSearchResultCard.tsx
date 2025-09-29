@@ -15,7 +15,7 @@ export const StoreSearchResultCard = ({
 }: StoreSearchResultCardProps) => {
 	return (
 		<div
-			className="flex items-center p-2 border-b border-grey-10 cursor-pointer hover:bg-grey-5"
+			className="flex items-center p-2 border-b border-grey-10 cursor-pointer hover:bg-grey-5 hover:bg-grey-10"
 			onClick={() => onSelect(store)}
 		>
 			<div className="relative w-22 h-22 mr-4 text-center">

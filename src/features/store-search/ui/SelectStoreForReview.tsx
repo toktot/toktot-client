@@ -40,13 +40,14 @@ export const SelectStoreForReview = ({
 		searchStores,
 		clearSuggestions,
 		clearResults,
+		error,
 	} = useStoreSearch();
 
 	const [view, setView] = useState<'suggestions' | 'results'>('suggestions');
 
 	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
 		isLoading,
-		hasMore: !isEnd,
+		hasMore: !isEnd && !error,
 		onLoadMore: () => searchStores(false),
 		threshold: 1.0,
 	});
@@ -97,7 +98,7 @@ export const SelectStoreForReview = ({
 			{view === 'suggestions' && query && (
 				<ul className="mt-2 ">
 					<li
-						className="p-3 cursor-pointer hover:bg-grey-50 flex items-center gap-2"
+						className="p-3 cursor-pointer hover:bg-grey-10 flex items-center gap-2"
 						onClick={handleSearchSubmit}
 					>
 						<Icon name="Search" size="xs" />
@@ -106,7 +107,7 @@ export const SelectStoreForReview = ({
 					{suggestions.map((store) => (
 						<li
 							key={store.id}
-							className="p-3 cursor-pointer hover:bg-grey-50 flex items-center justify-between"
+							className="p-3 cursor-pointer hover:bg-grey-10 flex items-center justify-between"
 							onClick={() => handleSelectStore(store)}
 						>
 							<div className=" flex items-center gap-2">

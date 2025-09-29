@@ -10,7 +10,7 @@ export const DevelopmentBanner = () => {
 			style={{
 				position: 'fixed',
 				top: '10px',
-				right: '10px',
+				right: '50px',
 				background: 'rgba(255, 229, 100, 0.8)',
 				color: '#333',
 				padding: '8px 12px',
