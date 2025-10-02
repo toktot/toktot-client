@@ -47,9 +47,9 @@ export default function NearCard({ review }: StoreInfoCardProps) {
 					<div className="w-[89px] h-[89px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-xl">
 						<div className="flex flex-col flex items-center">
 							<span className="">
-								<Icon name="KoreanDish" size="xxl"></Icon>
+								<Icon name="KoreanDish" size="xl"></Icon>
 							</span>
-							<div className="">사진을 준비하고 있어요</div>
+							<div className="text-[9px] text-grey-50 font-semibold flex items-center text-center">사진을 준비하고<br/> 있어요</div>
 						</div>
 					</div>
 				)}
@@ -66,11 +66,11 @@ export default function NearCard({ review }: StoreInfoCardProps) {
 
 			<div className="flex flex-col justify-between flex-1">
 				<div className="flex justify-between items-center text-sm text-grey-80">
-					<div className="flex flex-col">
+					<div className="flex flex-wrap gap-2 mt-1">
 						<span className="text-[16px] font-semibold">{review.name}</span>
 						<div className="flex flex-wrap items-center text-sm text-grey-80">
 							<div className="flex items-center text-sm text-grey-80 flex-shrink-0">
-								<Icon name="Star" size="xs" className="text-yellow-500 mr-1" />
+								<Icon name="Star" size="xs" className="mr-1" style={{fill : '#40D7F5', color:'#40D7F5'}}/>
 								<span className="mr-1">{review.average_rating.toFixed(1)}</span>
 								<span className="text-grey-90 mr-2">
 									({review.review_count})
@@ -92,7 +92,7 @@ export default function NearCard({ review }: StoreInfoCardProps) {
 					)}
 				</div>
 
-				<div className="text-xs text-grey-70 flex items-center">
+				<div className="text-xs text-grey-70 flex items-center mb-1">
 					<Icon name={'Location'} size="xxs" /> {review.address} ·{' '}
 					{review.distance}
 				</div>

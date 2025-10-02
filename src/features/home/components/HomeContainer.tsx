@@ -10,7 +10,7 @@ import { useLocation } from '@/features/locationsetting/components/LocationConte
 
 import HeaderBox from '@/shared/components/HeaderBox';
 import NearCard from '@/shared/components/NearCard';
-import SearchBox from '@/shared/components/SearchBox';
+
 import Toast from '@/shared/components/Toast';
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
@@ -22,6 +22,7 @@ import CategoryGrid from './FoodIcon';
 import PhotoReviewCard from './ReviewCardNew';
 import AlarmBox from './alarmBox';
 import PriceTabs from './homeStore';
+import HomeSearchBox from '@/shared/components/HomeSearchBox';
 
 interface NearbyStore {
 	id: number;
@@ -159,9 +160,11 @@ export default function HomeContainer() {
 						},
 					},
 				);
-				console.log('📍 API 응답', response?.data);
+				if (!response.data) {
+					return;
+				}
 
-				let stores: NearbyStore[] = response?.data?.data?.content ?? [];
+				let stores: NearbyStore[] = response?.data?.data?.data?.content ?? [];
 
 				stores = stores.slice(0, 5);
 				setNearbyStores(stores);
@@ -374,9 +377,9 @@ export default function HomeContainer() {
 			<div className="flex-1 overflow-y-auto scrollbar-hide pb-[80px] h-auto">
 				<div className="bg-grey-10">
 					<section className="relative justify-center flex items-center gap-2 bg-grey-10">
-						<div className="rounded-full bg-gradient-to-r from-[#40D7F5] to-[#99E5F3] p-[2px]">
-							<div className="w-full min-w-[351px] max-w-[480px]  h-[48px] rounded-full bg-primary-10 flex items-center">
-								<SearchBox
+						<div className="rounded-full bg-gradient-to-r from-[rgb(64,215,245)] to-[#99E5F3] p-[2px]">
+							<div className="w-full min-w-[351px] sm:w-[440px]  h-[48px] rounded-full bg-primary-10 flex items-center">
+								<HomeSearchBox
 									query={query}
 									onChange={setQuery}
 									onClick={() => router.push('/searchBar')}
@@ -384,8 +387,8 @@ export default function HomeContainer() {
 									leftIcon={
 										<Icon name="Search" size="s" className="text-primary-40" />
 									}
-									className=" h-[48px] flex items-center"
-									placeholder={'제주도 여행가서 먹고 싶은 음식은??'}
+									className=" h-[48px] flex items-center text-primary-60 text-[14px] w-[300px]"
+									
 								/>
 							</div>
 						</div>
