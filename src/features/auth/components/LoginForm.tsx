@@ -10,25 +10,16 @@ import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
 import Icon from '@/shared/ui/Icon';
 import { getKakaoLoginUrl } from '@/shared/utils/storage';
 
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '@/features/auth/context/AuthProvider';
 
-export interface LoginResponse {
-	success: boolean;
-	message: string;
-	data: {
-		access_token: string;
-		token_type: string;
-		expires_in: number;
-	};
-}
 export default function LoginForm() {
 	const { login } = useAuth();
 	const router = useRouter();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [error, setError] = useState('');
-
+	const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 	const validatePassword = (pwd: string) => {
 		const regex =
 			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':",.<>?\\|`~\-=/]).{8,20}$/;
@@ -42,31 +33,48 @@ export default function LoginForm() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setError('');
+		setEmailError('');
+    setPasswordError('');
+
 		console.log({ username, password });
 
 		if (!username.trim()) {
-			setError('아이디를 입력해 주세요.');
+			setEmailError('아이디를 입력해 주세요.');
 			return;
 		}
 
 		if (!password.trim()) {
-			setError('비밀번호를 입력해 주세요.');
+			setPasswordError('비밀번호를 입력해 주세요.');
 			return;
 		}
 
 		if (!validatePassword(password)) {
-			setError('비밀번호 형식이 올바르지 않습니다.');
+			setPasswordError('비밀번호 형식이 올바르지 않습니다.');
 			return;
 		}
-		try {
-			const response = await login(username, password);
-			if (response.success && response.data?.access_token) {
-				router.push('/');
-			}
-		} catch (err: unknown) {
-			if (err instanceof Error) setError(err.message);
-			else setError('알수 없는 에러가 발생했습니다.');
+
+		const result = await login(username, password); // 여기만 호출
+		console.log('result.success', result.success);
+
+		if (result.success) {
+			router.push('/'); // 로그인 성공 시 이동
+		} else {
+			switch (result.errorCode) {
+      case 'USER_NOT_FOUND':
+        setEmailError('이메일이 틀렸습니다.'); // 이메일 오류는 alert 또는 toast
+        break;
+      case 'INVALID_PASSWORD':
+        setPasswordError('비밀번호가 틀렸습니다.'); // 비밀번호 오류는 입력 아래 빨간 글씨
+        break;
+      case 'ACCOUNT_LOCKED':
+        setPasswordError('로그인 실패 5회로 계정이 잠겼습니다.');
+        break;
+      case 'ACCOUNT_DISABLED':
+        setEmailError('비활성화된 계정입니다.');
+        break;
+      default:
+        setPasswordError(result.message || '로그인에 실패했습니다.');
+    }
 		}
 	};
 
@@ -85,6 +93,7 @@ export default function LoginForm() {
 					inputClassName="w-[343px] h-[48px] hover:border border-primary-40 hover:text-primary-40 focus:border border-primary-40 focus:text-primary-40"
 					labelClassName="text-grey-90"
 				/>
+				{emailError && <p className="text-red-500 text-sm mt-5 pl-2">{emailError}</p>}
 			</div>
 
 			<div className="w-full max-w-[343px] mt-[20px]">
@@ -98,7 +107,7 @@ export default function LoginForm() {
 					labelClassName="text-grey-90"
 				/>
 
-				{error && <p className="text-red-500 text-sm mt-1 pl-2">{error}</p>}
+				{passwordError && <p className="text-red-500 text-sm mt-5 pl-2">{passwordError}</p>}
 			</div>
 
 			<div className="w-full max-w-[343px] mt-[20px]">

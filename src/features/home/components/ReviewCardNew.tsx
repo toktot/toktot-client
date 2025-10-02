@@ -53,7 +53,11 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 		>
 			<div
 				className=""
-				onClick={() => router.push(`/review/view?reviewId=${review.id}`)}
+				onClick={() =>
+					router.push(
+						`/review/view?reviewId=${review.id}?authorId=${review.author.id}`,
+					)
+				}
 			>
 				{/* 상단 프로필 + 닉네임 + 별점 */}
 				<div className="flex items-center justify-between p-2">
@@ -90,7 +94,9 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 							color="#40D7F5"
 							size="xxs"
 						/>
-						<span className="text-sm font-medium">{review.rating}</span>
+						<span className="text-sm font-medium">
+							{review.rating?.toFixed(1)}
+						</span>
 					</div>
 				</div>
 
@@ -136,7 +142,8 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 											}
 											size="xs"
 										/>
-										{review.valueForMoneyScore}점
+										내 가심비
+										<div className="ml-0.3">{review.valueForMoneyScore}점</div>
 									</div>
 								</div>
 							)}

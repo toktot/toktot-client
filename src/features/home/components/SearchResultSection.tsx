@@ -227,15 +227,17 @@ export default function SearchResultSection() {
 	const [inputValue, setInputValue] = useState(q);
 	const [query, setQuery] = useState(q);
 	const initialTab = searchParams.get('tab') as 'review' | 'store' | null;
-	const [tab, setTab] = useState<'review' | 'store'>(initialTab ?? 'review');
+	const [tab, setTab] = useState<'review' | 'store'>(initialTab ?? 'store');
 	const [filter, setFilter] = useState<number | null>(null);
 	const [, setFilterSummary] = useState('');
 	const [stores, setStores] = useState<FrontendPlace[]>([]);
 	const [, setLoading] = useState(true);
-
+	const loaderRef = useRef<HTMLDivElement | null>(null);
 	const fetchRef = useRef({ reviews: false, stores: false });
 	const pageRef = useRef(1);
 	const [text, setText] = useState('');
+
+	const fetchingRef = useRef(false);
 	const handleSelect = (selectedText: string) => {
 		setInputValue(selectedText);
 		setQuery(selectedText);
@@ -258,7 +260,7 @@ export default function SearchResultSection() {
 		setQuery('');
 		setInputValue('');
 	};
-	const [, setHasMore] = useState(true);
+	const [hasMore, setHasMore] = useState(true);
 	const handleSortChange = (option: typeof sortOption) => {
 		setSortOption(option); // FilterBar에서 변경된 값을 반영
 	};
@@ -289,7 +291,7 @@ export default function SearchResultSection() {
 	const { location } = useCurrentLocation();
 
 	const fetchReviews = useCallback(async () => {
-		if (!query) return;
+		if (!query || fetchRef.current.reviews) return;
 		fetchRef.current.reviews = true;
 		try {
 			const body: ReviewSearchBody = {
@@ -382,6 +384,7 @@ export default function SearchResultSection() {
 					return updatedReviews;
 				});
 			}
+			pageRef.current += 1;
 		} finally {
 			setLoading(false);
 			fetchRef.current.reviews = false;
@@ -399,8 +402,8 @@ export default function SearchResultSection() {
 	]);
 
 	const fetchStores = useCallback(async () => {
-		if (!query) return;
-
+		if (!query || !hasMore) return;
+		fetchingRef.current = true;
 		setLoading(true);
 
 		try {
@@ -409,7 +412,7 @@ export default function SearchResultSection() {
 
 				sort: sortOption,
 			};
-			console.log('pageRef.current', pageRef.current);
+
 			if (distance && location?.coords) {
 				const lat = location?.coords.latitude;
 				const lng = location?.coords.longitude;
@@ -476,52 +479,60 @@ export default function SearchResultSection() {
 			if (!hasFilter) {
 				body.page = pageRef.current;
 			}
-			console.log('요청 body:', body);
-			const endpoint = hasFilter
-				? '/v1/restaurants/search/filter?page=0'
-				: '/v1/restaurants/search';
-			console.log('endpoint', endpoint);
-			const res = await api.post<SearchResponse>(endpoint, body);
-			console.log('응답데이터', res.data);
-
-			const data = res.data.data;
-
-			if (!data) {
-				return;
-			}
-
-			let places: Store[] = [];
+			let allPlaces: Store[] = [];
 			let isEnd = false;
-			let currentPage = 0;
+			let currentPage = pageRef.current;
+			while (!isEnd) {
+				const bodys: StoreSearchBody = {
+					...body,
+					page: hasFilter ? 0 : currentPage, // ✅ 필터 없으면 currentPage 반영
+				};
+				const endpoint = hasFilter
+					? '/v1/restaurants/search/filter?page=0'
+					: '/v1/restaurants/search';
+				const res = await api.post<SearchResponse>(endpoint, bodys);
+				console.log('응답데이터', res.data);
 
-			if ('places' in data) {
-				places = data.places;
-				isEnd = data.is_end;
-				currentPage = data.current_page;
+				const data = res.data?.data;
+				if (!data) {
+					break;
+				}
+
+				let places: Store[] = [];
+				if ('places' in data) {
+					places = data.places;
+					isEnd = data.is_end;
+					currentPage = data.current_page + 1;
+				} else if ('data' in data && 'content' in data.data) {
+					places = data.data.content;
+					isEnd = data.data.last;
+					currentPage = data.data.pageable.pageNumber + 1;
+				}
+
+				if (!places || places.length === 0) {
+					break;
+				}
+
+				allPlaces = [...allPlaces, ...places];
 			}
 
-			// 필터 검색
-			else if ('data' in data && 'content' in data.data) {
-				places = data.data.content;
-				isEnd = data.data.last;
-				currentPage = data.data.pageable.pageNumber;
-			}
-			if (!places || places.length == 0) {
-				setHasMore(false);
-				return;
-			}
-			const newStores: FrontendPlace[] = places.map(toStore);
+			const newStores: FrontendPlace[] = allPlaces.map(toStore);
 			setStores((prev) => {
 				console.log('파싱 후 가게 데이터:', newStores);
 				const merged = [...prev, ...newStores];
 				const unique = merged.filter(
 					(store, idx, arr) => arr.findIndex((s) => s.id === store.id) === idx,
 				);
-				console.log('🟢 최종 렌더링용 가게 데이터:', unique);
+
 				return unique;
 			});
-
-			if (isEnd) setHasMore(false);
+			console.log('isEnd', isEnd);
+			if (!isEnd) {
+				pageRef.current += 1;
+			} else {
+				setHasMore(false);
+				return;
+			}
 			pageRef.current = currentPage + 1;
 		} finally {
 			setLoading(false);
@@ -535,7 +546,29 @@ export default function SearchResultSection() {
 		mealTime,
 		sortOption,
 		location?.coords,
+		hasMore,
 	]);
+	useEffect(() => {
+		if (!loaderRef.current) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					if (tab === 'review' && !fetchRef.current.reviews) {
+						fetchReviews();
+					}
+					if (tab === 'store' && !fetchRef.current.stores) {
+						fetchStores();
+					}
+				}
+			},
+			{ threshold: 1.0 },
+		);
+		observer.observe(loaderRef.current);
+		return () => {
+			if (loaderRef.current) observer.unobserve(loaderRef.current);
+		};
+	}, [tab, fetchReviews, fetchStores]);
 
 	const handleFilterChange = (newFilter: number | null) => {
 		setFilter(newFilter);
@@ -559,6 +592,14 @@ export default function SearchResultSection() {
 		fetchReviews();
 	};
 	useEffect(() => {
+		if (tab === 'review' && reviews.length === 0) {
+			fetchReviews();
+		}
+		if (tab === 'store' && stores.length === 0) {
+			fetchStores();
+		}
+	}, [tab, fetchReviews, fetchStores, query, reviews.length, stores.length]);
+	useEffect(() => {
 		const summaryParts: string[] = [];
 		if (searchParams.get('distance'))
 			summaryParts.push(`${searchParams.get('distance')}m 이내`);
@@ -580,10 +621,6 @@ export default function SearchResultSection() {
 
 		setFilterSummary(summaryParts.join(' '));
 	}, [rating, searchParams]);
-	useEffect(() => {
-		if (tab === 'review') fetchReviews();
-		if (tab === 'store') fetchStores();
-	}, [tab, fetchReviews, fetchStores, query]);
 
 	return (
 		<AppShell showBottomNav={true}>
@@ -641,16 +678,6 @@ export default function SearchResultSection() {
 						<div className="flex mt-6 border-b border-gray-100 justify-center gap-x-40 cursor-pointer">
 							<button
 								className={`pb-2 text-base font-semibold cursor-pointer ${
-									tab === 'review'
-										? 'text-gray-900 border-b-2 border-gray-900'
-										: 'text-gray-400'
-								}`}
-								onClick={() => setTab('review')}
-							>
-								리뷰
-							</button>
-							<button
-								className={`pb-2 text-base font-semibold cursor-pointer ${
 									tab === 'store'
 										? 'text-gray-900 border-b-2 border-gray-900'
 										: 'text-gray-400'
@@ -659,9 +686,55 @@ export default function SearchResultSection() {
 							>
 								가게명
 							</button>
+							<button
+								className={`pb-2 text-base font-semibold cursor-pointer ${
+									tab === 'review'
+										? 'text-gray-900 border-b-2 border-gray-900'
+										: 'text-gray-400'
+								}`}
+								onClick={() => setTab('review')}
+							>
+								리뷰
+							</button>
 						</div>
 					</div>
 
+					{/* 가게명 탭 콘텐츠 */}
+					{tab === 'store' && (
+						<>
+							<div className="px-4 -mt-2">
+								<FilterBar
+									value={filter}
+									onChange={handleFilterChange}
+									onSummaryChange={setFilterSummary}
+									onClick={() =>
+										router.push(
+											`/searchDetection?from=search&q=${encodeURIComponent(query)}`,
+										)
+									}
+									onSortChange={(newSort) => setSortOption(newSort)}
+								/>
+								<Auto query={text} onSelect={handleSelect} />
+							</div>
+							<div className="mt-4 w-full flex flex-col">
+								{stores.map((store, index) => (
+									<StoreInfoCard
+										review={store}
+										key={store.id ?? `${store.name}-${index}`}
+									/>
+								))}
+								<div ref={loaderRef} className="h-[1px] w-full opacity-0" />{' '}
+								{/* sentinel */}
+							</div>
+							{showToast && (
+								<Toast
+									message="위치가 설정되었어요."
+									duration={2000}
+									onClose={handleToastClose}
+								/>
+							)}
+						</>
+					)}
 					{/* 리뷰 탭 콘텐츠 */}
 					{tab === 'review' && (
 						<>
@@ -689,9 +762,15 @@ export default function SearchResultSection() {
 									</div>
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between mt-4">
-										{reviews.map((review) => (
-											<ReviewStoreCard key={review.id} review={review} />
-										))}
+										{reviews.length === 0 ? (
+											<p className="w-full text-center text-grey-60 mt-10">
+												검색 결과와 비슷한 리뷰가 없어요
+											</p>
+										) : (
+											reviews.map((review) => (
+												<ReviewStoreCard key={review.id} review={review} />
+											))
+										)}
 									</div>
 								</div>
 							) : (
@@ -704,41 +783,6 @@ export default function SearchResultSection() {
 										))}
 									</div>
 								</div>
-							)}
-						</>
-					)}
-
-					{/* 가게명 탭 콘텐츠 */}
-					{tab === 'store' && (
-						<>
-							<div className="px-4 -mt-2">
-								<FilterBar
-									value={filter}
-									onChange={handleFilterChange}
-									onSummaryChange={setFilterSummary}
-									onClick={() =>
-										router.push(
-											`/searchDetection?from=search&q=${encodeURIComponent(query)}`,
-										)
-									}
-									onSortChange={(newSort) => setSortOption(newSort)}
-								/>
-								<Auto query={text} onSelect={handleSelect} />
-							</div>
-							<div className="mt-4 w-full flex flex-col">
-								{stores.map((store, index) => (
-									<StoreInfoCard
-										review={store}
-										key={store.id ?? `${store.name}-${index}`}
-									/>
-								))}
-							</div>
-							{showToast && (
-								<Toast
-									message="위치가 설정되었어요."
-									duration={2000}
-									onClose={handleToastClose}
-								/>
 							)}
 						</>
 					)}

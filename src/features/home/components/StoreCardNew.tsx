@@ -27,26 +27,30 @@ interface GoodPriceStore {
 }
 
 export default function StoreCardNew({ review }: GoodPriceStore) {
-	const firstMenu = review.main_menus ? review.main_menus.split(' ')[0] : '';
 	const router = useRouter();
 	const getAveragePrice = (menus: string) => {
 		const menuItems = menus.split(',').map((item) => item.trim());
 		const prices: number[] = [];
+		const names: string[] = [];
 
 		menuItems.forEach((menu) => {
-			const match = menu.match(/(\d+)/);
+			const match = menu.match(/(.+?)\s*(\d+)/);
 			if (match) {
-				prices.push(Number(match[1]));
+				const name = match[1].trim();
+				const price = Number(match[2]);
+				names.push(name);
+				prices.push(price);
 			}
 		});
 		if (prices.length === 0) return null;
 
 		const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-		return avg;
+		return { avg, names };
 	};
-	const averagePrice = review.main_menus
+	const menuInfo = review.main_menus
 		? getAveragePrice(review.main_menus)
 		: null;
+
 	return (
 		<div className="min-w-[343px] max-w-[430px] w-full h-[232px] rounded-t-3xl bg-white overflow-hidden">
 			{/* 상단 이미지 */}
@@ -86,12 +90,11 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 				{review.point !== undefined && <GasimbiTag value={review.point} />}
 			</div>
 			{/* main_menus 오른쪽 작은 글씨 */}
-			{review.main_menus && (
+			{menuInfo && (
 				<div className="gap-2 ml-2 flex items-center mt-1">
 					<span className="text-grey-90 text-[16px] font-semibold">
-						주 메뉴 약 {averagePrice?.toLocaleString()}원
+						{menuInfo.names.join(',')} 약 {menuInfo.avg.toLocaleString()}원
 					</span>
-					<span className="text-[16px] text-grey-70">{firstMenu}</span>
 				</div>
 			)}
 

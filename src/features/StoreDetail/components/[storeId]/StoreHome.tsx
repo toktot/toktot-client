@@ -82,7 +82,7 @@ export default function StoreHome() {
 	// 지도 초기화 (store.location으로 중심 설정)
 	// 기본 좌표가 필요하니 실제 앱에서는 store.location을 주소 → 좌표 변환해야 함 (geocoding)
 	// 지금은 예제로 DEFAULT_CENTER 사용
-	if (!store) return <div>가게 정보를 찾을 수 없습니다.</div>;
+	if (!store) return;
 	const kakaoRouteUrl = `https://map.kakao.com/link/to/${encodeURIComponent(
 		store.name,
 	)},${store.latitude},${store.longitude}`;

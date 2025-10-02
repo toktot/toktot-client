@@ -6,9 +6,11 @@ import { detailCategories } from '@/entities/cataegory/detailCategories';
 import { mockStores } from '@/entities/store/model/mockStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { useLocation } from '@/features/locationsetting/components/LocationContext';
+
 import HeaderBox from '@/shared/components/HeaderBox';
 import NearCard from '@/shared/components/NearCard';
-import SearchBox from '@/shared/components/SearchBox';
+
 import Toast from '@/shared/components/Toast';
 import { useCurrentLocation } from '@/shared/location/lib/useCurrentLocation';
 import Icon from '@/shared/ui/Icon';
@@ -20,6 +22,7 @@ import CategoryGrid from './FoodIcon';
 import PhotoReviewCard from './ReviewCardNew';
 import AlarmBox from './alarmBox';
 import PriceTabs from './homeStore';
+import HomeSearchBox from '@/shared/components/HomeSearchBox';
 
 interface NearbyStore {
 	id: number;
@@ -124,17 +127,23 @@ export default function HomeContainer() {
 	const [showToast, setShowToast] = useState(false);
 	const [, setGoodPriceStores] = useState<GoodPriceStore[]>([]);
 	const [nearbyStores, setNearbyStores] = useState<NearbyStore[]>([]);
+	const { location: selectedLocation } = useLocation();
+
 	const {
-		location,
+		location: currentLocation,
 		loading: locationLoading,
 		error: locationError,
 	} = useCurrentLocation();
+	const effectiveLocation = selectedLocation;
 	const [price, setPrice] = useState<number>(0);
 	const [food, setFood] = useState(searchParams.get('food') || '');
 	const [popularReviews, setPopularReviews] = useState<PopularReview[]>([]);
-
+	const [openLocationSheet, setOpenLocationSheet] = useState(false);
 	useEffect(() => {
-		if (!location || locationError) {
+		const baseLat = selectedLocation?.lat ?? currentLocation?.coords?.latitude;
+		const baseLng = selectedLocation?.lng ?? currentLocation?.coords?.longitude;
+		console.log('검색 기준 위치:', { baseLat, baseLng, selectedLocation });
+		if (!baseLat || !baseLng) {
 			setNearbyStores([]);
 			return;
 		}
@@ -145,14 +154,17 @@ export default function HomeContainer() {
 					'/v1/restaurants/search/filter?page=0',
 					{
 						location: {
-							latitude: location.coords?.latitude,
-							longitude: location.coords?.longitude,
+							latitude: baseLat,
+							longitude: baseLng,
 							radius: 1000, // 1km 반경
 						},
 					},
 				);
+				if (!response.data) {
+					return;
+				}
 
-				let stores: NearbyStore[] = response?.data?.data?.content ?? [];
+				let stores: NearbyStore[] = response?.data?.data?.data?.content ?? [];
 
 				stores = stores.slice(0, 5);
 				setNearbyStores(stores);
@@ -162,7 +174,7 @@ export default function HomeContainer() {
 		};
 
 		fetchNearbyStores();
-	}, [location, locationError]);
+	}, [locationError, selectedLocation, currentLocation]);
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -359,13 +371,15 @@ export default function HomeContainer() {
 				onLocationSaved={handleLocationSaved}
 				user={user}
 				bgColorClass="bg-grey-10"
+				open={openLocationSheet}
+				setOpen={setOpenLocationSheet}
 			/>
 			<div className="flex-1 overflow-y-auto scrollbar-hide pb-[80px] h-auto">
 				<div className="bg-grey-10">
 					<section className="relative justify-center flex items-center gap-2 bg-grey-10">
-						<div className="rounded-full bg-gradient-to-r from-[#40D7F5] to-[#99E5F3] p-[2px]">
-							<div className="w-full min-w-[351px] max-w-[480px]  h-[48px] rounded-full bg-primary-10 flex items-center">
-								<SearchBox
+						<div className="rounded-full bg-gradient-to-r from-[rgb(64,215,245)] to-[#99E5F3] p-[2px]">
+							<div className="w-full min-w-[351px] sm:w-[440px]  h-[48px] rounded-full bg-primary-10 flex items-center">
+								<HomeSearchBox
 									query={query}
 									onChange={setQuery}
 									onClick={() => router.push('/searchBar')}
@@ -373,20 +387,24 @@ export default function HomeContainer() {
 									leftIcon={
 										<Icon name="Search" size="s" className="text-primary-40" />
 									}
-									className=" h-[48px] flex items-center"
-									placeholder="제주도 여행가서 먹고 싶은 음식은??"
-									placeholderColor="placeholder:text-primary-60"
+									className=" h-[48px] flex items-center text-primary-60 text-[14px] w-[300px]"
+									
 								/>
 							</div>
 						</div>
 					</section>
 					<AlarmBox />
-					<div className="mt-3 mx-4 rounded-3xl p-4 bg-gradient-to-r from-primary-30 via-primary-20 to-primary-30 relative overflow-hidden">
+					<div className="mt-3 mx-4 rounded-3xl p-4 bg-gradient-to-r from-[#99E5F3] via-[#99E5F3] to-[#DBF5FB] relative overflow-hidden">
 						<p className="text-[16px] font-semibold text-grey-90">
 							여러분만의 특별한 <br />
 							제주도 음식을 작성해주세요!
 						</p>
-						<button className="mt-3 px-3 py-1 rounded-full bg-primary-40 text-primary-10 text-[12px] font-semibold">
+						<button
+							className="mt-3 px-3 py-1 rounded-full bg-primary-40 text-primary-10 text-[12px] font-semibold cursor-pointer"
+							onClick={() => {
+								router.push('/review/write');
+							}}
+						>
 							바로 작성하러가기
 						</button>
 
@@ -441,7 +459,7 @@ export default function HomeContainer() {
 					{/* 가격 + 음식 필터 */}
 					<div className="mt-8 flex items-center justify-between mb-4">
 						<h2 className="text-[18px] font-semibold">
-							가격도 착하고 맛까지 좋은 가게는?
+							가격도 착하고, 맛까지 좋은 가게는?
 						</h2>
 					</div>
 					<PriceTabs
@@ -482,20 +500,31 @@ export default function HomeContainer() {
 							더보기
 						</button>
 					</div>
-					{!locationLoading &&
-						location &&
-						!locationError &&
-						nearbyStores.length > 0 && (
+					{!locationLoading && effectiveLocation && !locationError ? (
+						nearbyStores.length > 0 ? (
 							<section className="mt-8 flex flex-col">
 								{/* 가격도 착하고 맛까지 좋은 가게 */}
-
 								<div className="flex flex-col gap-4">
 									{nearbyStores.map((store) => (
 										<NearCard key={store.id} review={store} />
 									))}
 								</div>
 							</section>
-						)}
+						) : (
+							// 위치는 있지만 가게가 없을 때
+							<div className="mt-8 flex flex-col items-center justify-center bg-grey-10 rounded-xl py-10">
+								<p className="text-grey-60 mb-2 text-[14px]">
+									현재 위치가 설정되지 않았어요
+								</p>
+								<button
+									onClick={() => setOpenLocationSheet(true)} // 위치 설정 함수 연결
+									className="px-4 py-2 border border-primary-40 text-[#00B2E8] rounded-full text-[12px] font-semibold cursor-pointer"
+								>
+									지금 설정하기
+								</button>
+							</div>
+						)
+					) : null}
 					{/* StoreInfoCard 목록 */}
 				</section>
 				{/* Toast */}

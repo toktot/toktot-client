@@ -130,32 +130,37 @@ const PriceChart = () => {
 							<span className="text-[24px] text-grey-90 font-semibold">
 								는 1인 평균
 							</span>
-							<div className="flex flex-wrap items-center gap-1">
+							<div className="flex flex-wrap items-center gap-1 relative">
 								<span className="text-[24px] text-grey-90 font-semibold">
 									{avgPrice.toLocaleString()}원이에요.
 								</span>
-								<Icon name="WarningMark" onClick={() => setShowTooltip(true)} />
-							</div>
-							{showTooltip && (
-								<div className="absolute left-1/2 top-full w-max -translate-x-1/4 mb-2 z-10">
-									<div className="relative right-[40px] px-2 py-1 rounded-[10px] bg-grey-90 text-xs shadow">
-										<div className="flex items-center gap-2">
-											<span className="text-primary-40">
-												6개월 내 제주도에 존재하는 가게들의 평균값이에요
-											</span>
-											<span>
-												<Icon
-													name="Cancel"
-													size="xxs"
-													className="text-white"
-													onClick={() => setShowTooltip(false)}
-												/>
-											</span>
-										</div>
-										<div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full w-0 h-0 border-x-7 border-x-transparent border-b-8 border-t-black"></div>
-									</div>
+								<div className="relative">
+									<Icon
+										name="WarningMark"
+										onClick={() => setShowTooltip(true)}
+									/>
 								</div>
-							)}
+								{showTooltip && (
+									<div className="absolute left-1/2 top-full w-max -translate-x-[59%] mb-2 z-10">
+										<div className="right-[40px] px-2 py-1 rounded-[10px] bg-grey-90 text-xs">
+											<div className="flex items-center gap-2">
+												<span className="text-primary-40">
+													6개월 내 제주도에 존재하는 가게들의 평균값이에요
+												</span>
+												<span>
+													<Icon
+														name="Cancel"
+														size="xxs"
+														className="text-white"
+														onClick={() => setShowTooltip(false)}
+													/>
+												</span>
+											</div>
+											<div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full w-0 h-0 border-x-7 border-x-transparent border-b-8 border-t-black"></div>
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
 					))}
 			</div>
