@@ -7,6 +7,8 @@ import { getDecryptedToken } from '@/shared/utils/storage';
 
 import { MyReviewsPage, MyReviewsPageSchema } from './schema';
 
+import { z } from 'zod';
+
 const api = createAuthApi({
 	getToken: () => getDecryptedToken() ?? undefined,
 });
@@ -40,4 +42,21 @@ export const getMyReviews = async (page: number, size = 20): Promise<MyReviewsPa
 	}
 
 	return parsed.data.data;
+};
+
+export const deleteMyReview = async (reviewId: number): Promise<void> => {
+	const raw = await api.delete(`v1/reviews/${reviewId}`).json();
+
+	const parsed = ApiResponseSchema(z.null()).safeParse(raw);
+
+	if (!parsed.success) {
+		throw new ApiError('리뷰 삭제 API 응답 형식이 올바르지 않습니다.');
+	}
+
+	if (!parsed.data.success) {
+		throw new ApiError(
+			parsed.data.message ?? '리뷰 삭제에 실패했습니다.',
+			parsed.data.errorCode,
+		);
+	}
 };

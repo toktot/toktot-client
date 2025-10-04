@@ -2,7 +2,7 @@
 
 import { useInfiniteScroll } from '@/shared/hooks/useInfiniteScroll';
 
-import { useInfiniteMyReviews } from '../model/useInfiniteMyReviews';
+import { useInfiniteMyReviewsStore } from '../model/useInfiniteMyReviews';
 import { MyReviewCard } from './MyReviewCard';
 
 const MyReviewListLoad = () => (
@@ -18,7 +18,7 @@ const MyReviewListLoad = () => (
 
 export const MyReviewList = () => {
 	const { reviews, isLoading, hasMore, error, loadMoreReviews, initialized } =
-		useInfiniteMyReviews();
+		useInfiniteMyReviewsStore();
 
 	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
 		isLoading,
@@ -38,7 +38,7 @@ export const MyReviewList = () => {
 				))}
 			</div>
 			<div ref={loadMoreRef} className="h-5" />
-			{isLoading && <MyReviewListLoad />}
+			{isLoading && reviews.length === 0 && <MyReviewListLoad />}
 			{initialized && !isLoading && reviews.length === 0 && (
 				<div className="text-center p-10 text-grey-500">
 					작성한 리뷰가 없습니다.

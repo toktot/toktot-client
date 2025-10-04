@@ -1,42 +1,74 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
-import { getMyReviews } from '../api/api';
+import { deleteMyReview, getMyReviews } from '../api/api';
 import { MyReview } from '../api/schema';
 
-export const useInfiniteMyReviews = () => {
-	const [reviews, setReviews] = useState<MyReview[]>([]);
-	const [page, setPage] = useState(0);
-	const [isLoading, setIsLoading] = useState(false);
-	const [hasMore, setHasMore] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+interface MyReviewsState {
+	reviews: MyReview[];
+	page: number;
+	isLoading: boolean;
+	hasMore: boolean;
+	error: string | null;
+	initialized: boolean;
+}
 
-	const [initialized, setInitialized] = useState(false);
+interface MyReviewsActions {
+	loadMoreReviews: () => Promise<void>;
+	deleteReview: (reviewId: number) => Promise<void>;
+}
 
-	const loadMoreReviews = useCallback(async () => {
-		if (isLoading || !hasMore) return;
-		setIsLoading(true);
-		setError(null);
-
-		try {
-			const data = await getMyReviews(page);
-			setReviews((prev) => {
-				const existingIds = new Set(prev.map((r) => r.id));
-				const newReviews = data.content.filter((r) => !existingIds.has(r.id));
-				return [...prev, ...newReviews];
-			});
-			setHasMore(!data.last);
-			setPage((prev) => prev + 1);
-		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : 'An unknown error occurred',
-			);
-		} finally {
-			setIsLoading(false);
-			setInitialized(true); // 첫 요청이 끝났음을 표시
-		}
-	}, [isLoading, hasMore, page]);
-
-	return { reviews, isLoading, hasMore, error, loadMoreReviews, initialized };
+const initialState: MyReviewsState = {
+	reviews: [],
+	page: 0,
+	isLoading: false,
+	hasMore: true,
+	error: null,
+	initialized: false,
 };
+
+export const useInfiniteMyReviewsStore = create<MyReviewsState & MyReviewsActions>()(
+	immer((set, get) => ({
+		...initialState,
+
+		loadMoreReviews: async () => {
+			const { isLoading, hasMore, page } = get();
+			if (isLoading || !hasMore) return;
+
+			set({ isLoading: true, error: null });
+
+			try {
+				const data = await getMyReviews(page);
+				set((state) => {
+					const existingIds = new Set(state.reviews.map((r) => r.id));
+					const newReviews = data.content.filter((r) => !existingIds.has(r.id));
+					state.reviews.push(...newReviews);
+					state.hasMore = !data.last;
+					state.page += 1;
+				});
+			} catch (err) {
+				set({ error: err instanceof Error ? err.message : 'An unknown error occurred' });
+			} finally {
+				set({ isLoading: false, initialized: true });
+			}
+		},
+
+		deleteReview: async (reviewId: number) => {
+			// Optimistic UI Update
+			const previousReviews = get().reviews;
+			set((state) => {
+				state.reviews = state.reviews.filter((r) => r.id !== reviewId);
+			});
+
+			try {
+				await deleteMyReview(reviewId);
+			} catch (error) {
+				// Revert on error
+				set({ reviews: previousReviews });
+				throw error; // Re-throw for the component to catch
+			}
+		},
+	})),
+);
