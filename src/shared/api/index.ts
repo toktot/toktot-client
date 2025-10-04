@@ -63,7 +63,6 @@ export const createAuthApi = (opts?: AuthApiOptions) => {
 			afterResponse: [
 				async (_request, _options, response) => {
 					try {
-						debugger;
 						const cloned = await response.clone().json();
 						const parsed = BaseResponseSchema.safeParse(cloned);
 
@@ -72,7 +71,7 @@ export const createAuthApi = (opts?: AuthApiOptions) => {
 						}
 
 						const data = parsed.data;
-						console.log('🚀 ~ createAuthApi ~ data:', data);
+
 						if (
 							data.success === false &&
 							data.errorCode &&

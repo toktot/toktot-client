@@ -2,11 +2,11 @@ import Image from 'next/image';
 
 import Icon from '@/shared/ui/Icon';
 
-import { Place } from '../api/schema';
+import { PlaceClient } from '../api/schema';
 
 interface StoreSearchResultCardProps {
-	store: Place;
-	onSelect: (store: Place) => void;
+	store: PlaceClient;
+	onSelect: (store: PlaceClient) => void;
 }
 
 export const StoreSearchResultCard = ({
@@ -55,6 +55,9 @@ export const StoreSearchResultCard = ({
 					<Icon name="Location" size="xxs" className="mr-1 text-grey-50" />
 					<p className="text-xs text-grey-500 mt-1">{store.address}</p>
 					<span className="mx-1">·</span>
+					<div className="mt-1 text-xs text-grey-80 truncate">
+						{store.menus.firstMenu || store.menus.treatMenu}
+					</div>
 				</div>
 			</div>
 		</div>

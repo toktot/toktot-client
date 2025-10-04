@@ -6,7 +6,7 @@ import { useInfiniteScroll } from '@/shared/hooks/useInfiniteScroll';
 import Icon from '@/shared/ui/Icon';
 import Typography from '@/shared/ui/Typography';
 
-import { Place } from '../api/schema';
+import { PlaceClient } from '../api/schema';
 import { useStoreSearch } from '../model/useStoreSearch';
 import { StoreSearchBar } from './StoreSearchBar';
 import { StoreSearchResultCard } from './StoreSearchResultCard';
@@ -23,7 +23,7 @@ function useDebounce(value: string, delay: number): string {
 }
 
 interface SelectStoreForReviewProps {
-	onStoreSelect: (store: Place) => void;
+	onStoreSelect: (store: PlaceClient) => void;
 }
 
 export const SelectStoreForReview = ({
@@ -70,7 +70,7 @@ export const SelectStoreForReview = ({
 		searchStores(true);
 	};
 
-	const handleSelectStore = (store: Place) => {
+	const handleSelectStore = (store: PlaceClient) => {
 		onStoreSelect(store);
 	};
 

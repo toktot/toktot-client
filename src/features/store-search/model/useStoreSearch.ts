@@ -5,12 +5,12 @@ import { createAuthApi } from '@/shared/api';
 import { getDecryptedToken } from '@/shared/utils/storage';
 
 import { createStoreSearchApi } from '../api/api';
-import { Place } from '../api/schema';
+import { PlaceClient } from '../api/schema';
 
 interface StoreSearchState {
 	query: string;
-	suggestions: Place[];
-	results: Place[];
+	suggestions: PlaceClient[];
+	results: PlaceClient[];
 	isLoading: boolean;
 	error: string | null;
 	currentPage: number;
@@ -83,8 +83,8 @@ export const useStoreSearch = create<StoreSearchState & StoreSearchActions>()(
 						const newPlaces = data.places.filter((p) => !existingIds.has(p.id));
 						state.results.push(...newPlaces);
 					}
-					state.currentPage = data.current_page + 1;
-					state.isEnd = data.is_end;
+					state.currentPage = data.currentPage + 1;
+					state.isEnd = data.isEnd;
 				});
 			} catch (e) {
 				set({ error: e instanceof Error ? e.message : 'An error occurred' });
