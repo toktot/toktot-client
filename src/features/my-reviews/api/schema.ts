@@ -4,21 +4,23 @@ import { z } from 'zod';
 
 const RestaurantSchema = z.object({
 	id: z.number(),
+	address: z.string().nullish(),
 	name: z.string(),
+
 	representativeMenu: z.string().nullish(),
-	address: z.string(),
 	distanceInKm: z.number().nullish(),
 });
 
 export const MyReviewSchema = z.object({
-	id: z.number(),
-	mainImageUrl: z.string().nullish(),
-	authorProfileImageUrl: z.string().nullish(),
 	authorNickname: z.string(),
 	createdAt: z.string(),
-	restaurant: RestaurantSchema,
+	id: z.number(),
 	isBookmarked: z.boolean(),
 	isWriter: z.boolean(),
+	mainImageUrl: z.string().nullish(),
+	restaurant: RestaurantSchema,
+
+	authorProfileImageUrl: z.string().nullish(),
 });
 
 export const MyReviewsPageSchema = z.object({

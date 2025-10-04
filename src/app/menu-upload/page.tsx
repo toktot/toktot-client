@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import { AppShell, Header } from '@/widgets/layout';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
-import { Place } from '@/features/store-search/api/schema';
+import { PlaceClient } from '@/features/store-search/api/schema';
 import { SelectStoreForReview } from '@/features/store-search/ui/SelectStoreForReview';
 
 const SelectStoreForMenuUploadPage = () => {
 	const router = useRouter();
 
-	const handleStoreSelect = (store: Place) => {
+	const handleStoreSelect = (store: PlaceClient) => {
 		router.push(`/menu-upload/${store.id}`);
 	};
 

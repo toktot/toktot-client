@@ -52,6 +52,22 @@ export const createFolderApi = (kyInstance: KyInstance) => ({
 		return serverList.map((s) => FolderClientSchema.parse(s));
 	},
 
+	async getUserFolders(userId: number): Promise<FolderClient[]> {
+		const raw = await kyInstance.get(`v1/folders/users/${userId}`).json();
+		const parsed = ApiResponseSchema(z.array(FolderServerSchema)).safeParse(
+			raw,
+		);
+		if (!parsed.success) {
+			console.error('getUserFolders: 응답 스키마 불일치', parsed.error.format());
+			throw new Error('서버 응답 형식 오류 (getUserFolders)');
+		}
+		if (!parsed.data.success)
+			throw new Error(parsed.data.message ?? '사용자 폴더 목록 조회 실패');
+
+		const serverList = parsed.data.data ?? [];
+		return serverList.map((s) => FolderClientSchema.parse(s));
+	},
+
 	async saveReviewToFolders(
 		payload: SaveReviewPayload,
 	): Promise<FolderClient[]> {

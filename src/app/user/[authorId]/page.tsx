@@ -7,8 +7,8 @@ import { notFound, useSearchParams } from 'next/navigation';
 
 import { AppShell, Header } from '@/widgets/layout';
 
-import { FolderList } from '@/features/my-folders/ui/FolderList';
-import { MyReviewList } from '@/features/my-reviews/ui/MyReviewList';
+import { UserFolderList } from '@/features/my-folders/ui/UserFolderList';
+import { UserReviewList } from '@/features/my-reviews/ui/UserReviewList';
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { UserOptionsMenu } from '@/features/user/ui/UserOptionsMenu';
 
@@ -22,6 +22,7 @@ interface UserPageProps {
 
 const UserPage = ({ params }: UserPageProps) => {
 	const { authorId } = use(params);
+	const authorIdAsNumber = Number(authorId);
 	const searchParams = useSearchParams();
 	const nickname = searchParams.get('nickname');
 	const reviewCount = searchParams.get('reviewCount');
@@ -81,10 +82,9 @@ const UserPage = ({ params }: UserPageProps) => {
 					{ id: 'saved', label: '저장한 리뷰' },
 				]}
 			/>
-			{/* // TODO: 해당 유저 작성한 리뷰, 저장한 리뷰 조회로 변경 현재 api 미구현으로 마이페이지와 동일로직 */}
 			<div>
-				{activeTab === 'my' && <MyReviewList />}
-				{activeTab === 'saved' && <FolderList />}
+				{activeTab === 'my' && <UserReviewList userId={authorIdAsNumber} />}
+				{activeTab === 'saved' && <UserFolderList userId={authorIdAsNumber} />}
 			</div>
 		</AppShell>
 	);
