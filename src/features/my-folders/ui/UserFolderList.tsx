@@ -1,7 +1,9 @@
 'use client';
 
-import { FolderCard } from './FolderCard';
+import { ReviewFolder } from '@/entities/review-folder/model/types';
+
 import { useUserFolders } from '../model/useUserFolders';
+import { FolderCard } from './FolderCard';
 
 const FolderListLoader = () => (
 	<div className="p-4">
@@ -37,7 +39,10 @@ export const UserFolderList = ({ userId }: { userId: number }) => {
 		<div className="p-4">
 			<div className="grid grid-cols-2 gap-4">
 				{folders.map((folder) => (
-					<FolderCard key={folder.id} folder={folder as any} />
+					<FolderCard
+						key={folder.id}
+						folder={folder as unknown as ReviewFolder}
+					/>
 				))}
 			</div>
 		</div>
