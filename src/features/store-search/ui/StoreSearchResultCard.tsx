@@ -20,12 +20,18 @@ export const StoreSearchResultCard = ({
 		>
 			<div className="relative w-22 h-22 mr-4 text-center">
 				{store.image ? (
-					<Image
-						src={store.image}
-						alt={store.name}
-						fill
-						className="rounded-lg"
-					/>
+					<>
+						<Image
+							src={store.image}
+							alt={store.name}
+							fill
+							className="rounded-lg"
+						/>
+						<Icon
+							name="badge"
+							className="mr-1 text-primary-40 fill-primary-40"
+						/>
+					</>
 				) : (
 					<div className="rounded-lg text-xs text-grey-50 bg-grey-20 p-2 w-full h-full flex items-center justify-center">
 						등록된 사진이
@@ -51,13 +57,25 @@ export const StoreSearchResultCard = ({
 					</div>
 				</div>
 
+				<div className="flex items-center gap-1 text-xs text-grey-70">
+					{store.percent && (
+						<div className="py-[3px] px-1 gap-[2px] flex bg-sub-green-10 text-black rounded font-semibold">
+							<Icon name="price" size="xs" className="mr-1 text-grey-50" />
+							<span>{store.percent}</span>
+						</div>
+					)}
+					{store.point && (
+						<div className="py-[3px] px-1 gap-[2px] flex bg-black text-sub-green-20 rounded font-semibold">
+							<Icon name="greenHeart" size="xs" className="mr-1 text-grey-50" />
+							<span>{store.point}점</span>
+						</div>
+					)}
+				</div>
+
 				<div className="flex items-center text-xs text-grey-70">
 					<Icon name="Location" size="xxs" className="mr-1 text-grey-50" />
 					<p className="text-xs text-grey-500 mt-1">{store.address}</p>
 					<span className="mx-1">·</span>
-					<div className="mt-1 text-xs text-grey-80 truncate">
-						{store.menus.firstMenu || store.menus.treatMenu}
-					</div>
 				</div>
 			</div>
 		</div>
