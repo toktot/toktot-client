@@ -11,7 +11,7 @@ const Left = ({ children }: HeaderPartProps) => (
 );
 
 const Center = ({ children }: HeaderPartProps) => (
-	<div className="absolute left-1/2 -translate-x-1/2 font-semibold">
+	<div className="absolute left-1/2 -translate-x-1/2 font-semibold truncate">
 		{children}
 	</div>
 );

@@ -1,15 +1,17 @@
 'use client';
 
+import { useState } from 'react';
+
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { ConfirmModal } from '@/features/report/ui/ConfirmModal';
+
 import Icon from '@/shared/ui/Icon';
 
-import { useInfiniteMyReviewsStore } from '../model/useInfiniteMyReviews';
 import { MyReview } from '../api/schema';
+import { useInfiniteMyReviewsStore } from '../model/useInfiniteMyReviews';
 
 interface MyReviewCardProps {
 	review: MyReview;
@@ -24,7 +26,9 @@ export const MyReviewCard = ({ review }: MyReviewCardProps) => {
 			await deleteReview(review.id);
 			toast.success('리뷰가 삭제되었습니다.');
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.');
+			toast.error(
+				error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.',
+			);
 		} finally {
 			setIsModalOpen(false);
 		}
@@ -49,15 +53,17 @@ export const MyReviewCard = ({ review }: MyReviewCardProps) => {
 				)}
 				<div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-				<div className="absolute top-2 right-2">
-					<button
-						onClick={() => setIsModalOpen(true)}
-						className="p-1 rounded-full bg-black/30 text-white hover:bg-black/60"
-						aria-label="메뉴"
-					>
-						<Icon name="Kebab" size="s" />
-					</button>
-				</div>
+				{review.isWriter && (
+					<div className="absolute top-2 right-2">
+						<button
+							onClick={() => setIsModalOpen(true)}
+							className="p-1 rounded-full bg-black/30 text-white hover:bg-black/60"
+							aria-label="메뉴"
+						>
+							<Icon name="Kebab" size="s" />
+						</button>
+					</div>
+				)}
 
 				<div className="absolute bottom-0 left-0 right-0 p-3 text-white">
 					<h3 className="font-bold text-base truncate">
