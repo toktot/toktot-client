@@ -10,11 +10,6 @@ import toast from 'react-hot-toast';
 
 import { ConfirmModal } from '@/features/report/ui/ConfirmModal';
 
-import {
-	BottomSheet,
-	BottomSheetContent,
-	BottomSheetOverlay,
-} from '@/shared/components/BottomSheet';
 import { isHTTPError, isTimeoutError } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 
@@ -89,43 +84,53 @@ export const FolderCard = ({ folder }: FolderCardProps) => {
 							</p>
 						</div>
 					</div>
-					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							setIsMenuOpen(true);
-						}}
-						className="p-1"
-					>
-						<Icon name="Kebab" size="s" />
-					</button>
+					<div className="relative z-10">
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								setIsMenuOpen((prev) => !prev);
+							}}
+							className="p-1"
+						>
+							<Icon name="Kebab" size="s" />
+						</button>
+						{isMenuOpen && (
+							<div className="absolute top-full right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-grey-20">
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										setIsMenuOpen(false);
+										setIsRenameModalOpen(true);
+									}}
+									className="w-full p-2 text-left text-sm hover:bg-grey-10 rounded-t-lg"
+								>
+									이름 변경
+								</button>
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										setIsMenuOpen(false);
+										setIsDeleteModalOpen(true);
+									}}
+									className="w-full p-2 text-left text-sm text-sub-red-30 hover:bg-grey-10 rounded-b-lg"
+								>
+									폴더 삭제
+								</button>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 
-			<BottomSheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-				<BottomSheetOverlay />
-				<BottomSheetContent>
-					<div className="flex flex-col p-2">
-						<button
-							onClick={() => {
-								setIsMenuOpen(false);
-								setIsRenameModalOpen(true);
-							}}
-							className="p-4 text-left rounded-lg hover:bg-grey-10"
-						>
-							이름 변경
-						</button>
-						<button
-							onClick={() => {
-								setIsMenuOpen(false);
-								setIsDeleteModalOpen(true);
-							}}
-							className="p-4 text-left text-sub-red-30 rounded-lg hover:bg-grey-10"
-						>
-							폴더 삭제
-						</button>
-					</div>
-				</BottomSheetContent>
-			</BottomSheet>
+			{isMenuOpen && (
+				<div
+					className="fixed inset-0 z-0"
+					onClick={(e) => {
+						e.stopPropagation();
+						setIsMenuOpen(false);
+					}}
+				/>
+			)}
 
 			<AnimatePresence>
 				{isRenameModalOpen && (
@@ -134,6 +139,7 @@ export const FolderCard = ({ folder }: FolderCardProps) => {
 						onConfirm={handleRename}
 						title="폴더 이름 변경"
 						confirmLabel="변경"
+						cancelLabel="취소"
 					>
 						<input
 							type="text"
@@ -150,6 +156,7 @@ export const FolderCard = ({ folder }: FolderCardProps) => {
 						onConfirm={handleDelete}
 						title={`'${folder.name}' 폴더를 삭제하시겠습니까?`}
 						confirmLabel="삭제"
+						cancelLabel="취소"
 					/>
 				)}
 			</AnimatePresence>
