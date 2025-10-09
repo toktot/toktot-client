@@ -23,7 +23,6 @@ const MenuUploadPage = ({ params }: MenuUploadPageProps) => {
 	const { images, isUploading, reset } = useMenuImageStore();
 	const { uploadMenuImages } = useUploadMenuApi();
 
-	// 페이지를 벗어날 때 스토어 상태를 초기화합니다.
 	useEffect(() => {
 		return () => {
 			reset();
