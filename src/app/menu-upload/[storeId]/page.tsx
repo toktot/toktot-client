@@ -12,6 +12,7 @@ import { MenuImageUploaderWidget } from '@/features/menu/upload/ui/MenuImageUplo
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 
 import { StoreId } from '@/shared/model/types';
+import Icon from '@/shared/ui/Icon';
 
 interface MenuUploadPageProps {
 	params: Promise<{ storeId: StoreId }>;
@@ -49,11 +50,12 @@ const MenuUploadPage = ({ params }: MenuUploadPageProps) => {
 				<MenuImageUploaderWidget />
 				<div className="w-full sticky bottom-4 mt-auto">
 					<button
-						className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold disabled:bg-grey-50 disabled:text-white disabled:cursor-not-allowed"
+						className="py-3 mx-auto bg-grey-90 text-primary-40 w-full rounded-2xl text-lg font-semibold disabled:bg-grey-50 disabled:text-white disabled:cursor-not-allowed flex justify-center items-center gap-1"
 						disabled={isUploading || images.length === 0}
 						onClick={handleSubmit}
 					>
-						완료
+						<Icon name="Plus" size="s" />
+						<span>완료</span>
 					</button>
 				</div>
 			</div>
