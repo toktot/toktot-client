@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { getMenusByRestaurantId } from '@/entities/menu/api/api';
+
 import { createAuthApi } from '@/shared/api';
 import { StoreId } from '@/shared/model/types';
 import { getDecryptedToken } from '@/shared/utils/storage';
@@ -28,8 +30,17 @@ export const useStore = (storeId: StoreId) => {
 			setIsLoading(true);
 			setError(null);
 			try {
-				const data = await storeApi.getStoreById(storeId);
-				setStore(data);
+				const [storeData, menuData] = await Promise.all([
+					storeApi.getStoreById(storeId),
+					getMenusByRestaurantId(Number(storeId)),
+				]);
+
+				const mainMenuString =
+					menuData.length > 0
+						? menuData.map((menu) => menu.menuName).join(', ')
+						: '대표 메뉴 정보 없음';
+
+				setStore({ ...storeData, mainMenu: mainMenuString });
 			} catch (err) {
 				setError(
 					err instanceof Error ? err.message : 'Failed to fetch store data',

@@ -30,7 +30,7 @@ export const StoreInfoCard = ({ store }: StoreInfoCardProps) => {
 					<div className="justify-center text-sm font-semibold truncate">
 						{store.storeName}
 					</div>
-					<div className="justify-center text-xs flex-shrink-0 truncate">
+					<div className="justify-center text-xs truncate">
 						{store.mainMenu}
 					</div>
 				</div>

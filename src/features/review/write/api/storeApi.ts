@@ -33,6 +33,6 @@ export const createStoreApi = (kyInstance: KyInstance) => ({
 			throw new ApiError('가게 정보 데이터가 비어있습니다.', 'NO_DATA');
 		}
 
-		return parsed.data.data;
+		return parsed.data.data as Store;
 	},
 });
