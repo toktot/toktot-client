@@ -1,7 +1,7 @@
 'use client';
 
 type PrimaryButtonProps = {
-	text: string;
+	text?: string;
 	onClick?: () => void;
 	disabled?: boolean;
 	className?: string;
@@ -27,7 +27,7 @@ const PrimaryButton = ({
 
 	children,
 
-	disabledColor = '',
+	disabledColor = 'text-white',
 
 
 

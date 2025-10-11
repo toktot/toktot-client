@@ -180,9 +180,16 @@ export default function HomeContainer() {
 		const fetchUser = async () => {
 			try {
 				const response = await api.get<ApiResponse>('/v1/reviews/my');
-				const profile =
+				const content = response?.data?.data?.content;
+				if (Array.isArray(content) && content.length > 0) {
+					const profile =
 					response.data.data.content[0]?.authorProfileImageUrl ?? null;
 				setUser(profile);
+				} else {
+					console.warn('콘텐츠가 비어있거나 존재하지 않음')
+					setUser(null)
+				}
+				
 			} catch (err) {
 				console.error('유저 정보 불러오기 실패', err);
 			}

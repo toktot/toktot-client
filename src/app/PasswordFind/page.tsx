@@ -32,9 +32,9 @@ export default function SignupPage() {
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-start pt-6">
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'Back'} size="m"></Icon>
+				<Icon name={'ArrowLefttBar'} size="xxl"></Icon>
 				<h1 className="text-base font-semibold">비밀번호 찾기</h1>
-				<Icon name={'None'} size="m"></Icon>
+				<Icon name={'Cancel'} size="xl"></Icon>
 			</div>
 			{step !== 'complete' && (
 				<p className="text-lg font-semibold text-center mt-8">
@@ -61,9 +61,10 @@ export default function SignupPage() {
 									로그인이 가능해요.
 								</span>
 								<button
-									className="min-w-[343px] h-[48px] mt-55 rounded-2xl font-semibold bg-grey-90 text-primary-40"
+									className="min-w-[343px] h-[48px] mt-55 rounded-3xl flex items-center justify-center text-[18px] py-3 font-semibold bg-grey-90 text-primary-40"
 									onClick={() => router.push('/login')}
 								>
+									<Icon name="Plus" />
 									로그인하러 가기
 								</button>
 							</div>

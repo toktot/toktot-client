@@ -113,12 +113,14 @@ export default function LoginForm() {
 			<div className="w-full max-w-[343px] mt-[20px]">
 				<PrimaryButton
 					type="submit"
-					text="로그인"
-					className="w-[343px]"
+					className="w-[343px] flex items-center justify-center gap-1"
 					disabled={username.trim() === '' || password.trim() === ''}
 					bgColorWhenEnabled="bg-grey-90"
 					textColorWhenEnabled="text-primary-40"
-				/>
+				>
+					<Icon name="Plus" />
+					로그인
+					</PrimaryButton>
 			</div>
 			<Link href="/PasswordFind">
 				<button

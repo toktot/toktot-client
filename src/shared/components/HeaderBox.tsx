@@ -11,6 +11,7 @@ import {
 	BottomSheetTrigger,
 } from '@/shared/components/BottomSheet';
 import Icon from '@/shared/ui/Icon';
+import { useRouter } from 'next/navigation';
 
 interface HeaderBoxProps {
 	onLocationSaved?: () => void;
@@ -34,6 +35,7 @@ const HeaderBox = ({
 	const handleClose = () => handleOpenChange(false);
 	const { location } = useLocation();
 	const [showTooltip] = useState(true);
+	const router = useRouter();
 
 	return (
 		<BottomSheet open={isOpen} onOpenChange={handleOpenChange}>
@@ -76,7 +78,9 @@ const HeaderBox = ({
 					)}
 				</div>
 				<div>
+					<button onClick={() => router.push('/alarm')}>
 					<Icon name="Bell" className="w-[48px] h-[48px]" />
+					</button>
 				</div>
 			</header>
 
