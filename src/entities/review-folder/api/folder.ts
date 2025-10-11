@@ -26,8 +26,8 @@ export const createFolderApi = (kyInstance: KyInstance) => ({
 			throw new Error('서버 응답 형식 오류 (createFolder)');
 		}
 
-		if (!parsed.data.success) {
-			throw new Error(parsed.data.message ?? '폴더 생성 실패');
+		if (!parsed.data || !parsed.data.success) {
+			throw new Error(parsed.data?.message ?? '폴더 생성 실패');
 		}
 
 		const serverData = parsed.data.data as z.infer<typeof FolderServerSchema>;
@@ -45,8 +45,8 @@ export const createFolderApi = (kyInstance: KyInstance) => ({
 			console.error('getFolders: 응답 스키마 불일치', parsed.error.format());
 			throw new Error('서버 응답 형식 오류 (getFolders)');
 		}
-		if (!parsed.data.success)
-			throw new Error(parsed.data.message ?? '폴더 목록 조회 실패');
+		if (!parsed.data || !parsed.data.success)
+			throw new Error(parsed.data?.message ?? '폴더 목록 조회 실패');
 
 		const serverList = parsed.data.data ?? [];
 		return serverList.map((s) => FolderClientSchema.parse(s));
@@ -58,11 +58,14 @@ export const createFolderApi = (kyInstance: KyInstance) => ({
 			raw,
 		);
 		if (!parsed.success) {
-			console.error('getUserFolders: 응답 스키마 불일치', parsed.error.format());
+			console.error(
+				'getUserFolders: 응답 스키마 불일치',
+				parsed.error.format(),
+			);
 			throw new Error('서버 응답 형식 오류 (getUserFolders)');
 		}
-		if (!parsed.data.success)
-			throw new Error(parsed.data.message ?? '사용자 폴더 목록 조회 실패');
+		if (!parsed.data || !parsed.data.success)
+			throw new Error(parsed.data?.message ?? '사용자 폴더 목록 조회 실패');
 
 		const serverList = parsed.data.data ?? [];
 		return serverList.map((s) => FolderClientSchema.parse(s));
@@ -86,10 +89,48 @@ export const createFolderApi = (kyInstance: KyInstance) => ({
 			);
 			throw new Error('서버 응답 형식 오류 (saveReviewToFolders)');
 		}
-		if (!parsed.data.success)
-			throw new Error(parsed.data.message ?? '리뷰 저장 실패');
+		if (!parsed.data || !parsed.data.success)
+			throw new Error(parsed.data?.message ?? '리뷰 저장 실패');
 
 		const serverList = parsed.data.data ?? [];
 		return serverList.map((s) => FolderClientSchema.parse(s));
+	},
+
+	async renameFolder(folderId: number, newName: string): Promise<FolderClient> {
+		const raw = await kyInstance
+			.patch(`v1/folders/${folderId}`, { json: { folder_name: newName } })
+			.json();
+		const parsed = ApiResponseSchema(FolderServerSchema).safeParse(raw);
+
+		if (!parsed.success) {
+			throw new Error('폴더명 변경 응답 스키마 불일치');
+		}
+		if (!parsed.data || !parsed.data.success || !parsed.data.data) {
+			throw new Error(parsed.data?.message ?? '폴더명 변경 실패');
+		}
+		return FolderClientSchema.parse(parsed.data.data);
+	},
+
+	async deleteFolder(folderId: number): Promise<void> {
+		const raw = await kyInstance.delete(`v1/folders/${folderId}`).json();
+		const parsed = ApiResponseSchema(z.null()).safeParse(raw);
+
+		if (!parsed.success || !parsed.data || !parsed.data.success) {
+			throw new Error(parsed.data?.message ?? '폴더 삭제 실패');
+		}
+	},
+
+	async removeReviewFromFolder(
+		folderId: number,
+		reviewId: number,
+	): Promise<void> {
+		const raw = await kyInstance
+			.delete(`v1/folders/${folderId}/reviews/${reviewId}`)
+			.json();
+		const parsed = ApiResponseSchema(z.null()).safeParse(raw);
+
+		if (!parsed.success || !parsed.data || !parsed.data.success) {
+			throw new Error(parsed.data?.message ?? '저장된 리뷰 삭제 실패');
+		}
 	},
 });

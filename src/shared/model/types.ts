@@ -1,3 +1,5 @@
+import type { HTTPError, TimeoutError } from 'ky';
+
 export type Brand<K, T> = K & { __brand: T };
 
 // --- Entity ID Types ---
@@ -16,3 +18,11 @@ export type ReviewFolderId = Brand<string, 'ReviewFolderId'>;
 
 // --- Menu Context ID Types ---
 export type MenuItemId = Brand<string, 'MenuItemId'>;
+
+export type ApiError = HTTPError | TimeoutError | Error;
+
+export const isHTTPError = (err: unknown): err is HTTPError =>
+	err instanceof Error && 'response' in err;
+
+export const isTimeoutError = (err: unknown): err is TimeoutError =>
+	err instanceof Error && err.name === 'TimeoutError';

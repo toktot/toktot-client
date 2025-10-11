@@ -42,6 +42,7 @@ export const UserFolderList = ({ userId }: { userId: number }) => {
 					<FolderCard
 						key={folder.id}
 						folder={folder as unknown as ReviewFolder}
+						showMenu={false}
 					/>
 				))}
 			</div>

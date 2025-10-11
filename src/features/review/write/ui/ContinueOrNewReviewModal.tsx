@@ -56,13 +56,13 @@ const ContinueOrNewReviewModal = ({
 						onClick={handleContinue}
 						className="flex-1 py-3 font-semibold text-grey-90"
 					>
-						계속 쓰기
+						이어쓰기
 					</button>
 					<button
 						onClick={handleStartNew}
 						className="flex-1 py-3 font-semibold text-primary-50"
 					>
-						새로 쓰기
+						새로쓰기
 					</button>
 				</div>
 			</motion.div>
