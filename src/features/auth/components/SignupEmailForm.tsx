@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
+import Icon from '@/shared/ui/Icon';
 
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
@@ -253,21 +254,26 @@ export default function SignupEmailForm({ onSuccess }: SignupEmailFormProps) {
 					/>
 				)}
 					*/}
+					<div className="absolute bottom-0 w-full flex flex-col items-center pb-6">
 				<PrimaryButton
-					text="다음"
+					
 					onClick={() => {
 						if (canGoNext) {
 							onSuccess(email);
 						}
 					}}
 					disabled={!canGoNext}
-					className="w-[343px] h-[48px] mr-7"
+					className="w-[343px] h-[48px] flex items-center justify-center gap-2"
 					bgColorWhenEnabled="bg-grey-90"
 					textColorWhenEnabled="text-primary-40"
 					disabledColor="bg-grey-50 text-white"
-				/>
-				<div className="flex justify-center items-center mr-7">
+				>
+					<Icon name="Plus"/>
+					다음
+					</PrimaryButton>
+				
 					<div className="border-1 border-grey-90 w-[72px] mt-2" />
+				
 				</div>
 			</div>
 		</div>

@@ -71,7 +71,9 @@ export default function NearCard({ review }: StoreInfoCardProps) {
 						<div className="flex flex-wrap items-center text-sm text-grey-80">
 							<div className="flex items-center text-sm text-grey-80 flex-shrink-0">
 								<Icon name="Star" size="xs" className="mr-1" style={{fill : '#40D7F5', color:'#40D7F5'}}/>
-								<span className="mr-1">{review.average_rating.toFixed(1)}</span>
+								<span className="mr-1">{review.average_rating !== undefined && review.average_rating !== null
+    ? review.average_rating.toFixed(1)
+    : '0.0'}</span>
 								<span className="text-grey-90 mr-2">
 									({review.review_count})
 								</span>

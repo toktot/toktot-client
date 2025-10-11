@@ -111,7 +111,9 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 						style={{ fill: '#40D7F5', color: '#40D7F5' }}
 					/>
 					<span className="text-[14px]">
-						{review.average_rating.toFixed(1)}
+						{review.average_rating !== undefined && review.average_rating !== null
+    ? review.average_rating.toFixed(1)
+    : '0.0'}
 					</span>
 					<span className="text-grey-60 text-[14px] mb-0.4 -ml-0.5">
 						({review.review_count})

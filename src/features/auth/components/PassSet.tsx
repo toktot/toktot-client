@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
+import Icon from '@/shared/ui/Icon';
 
 type PassSetProps = {
 	email: string;
@@ -73,7 +74,8 @@ export default function SignupPasswordForm({
 				onChange={setPassword}
 				placeholder="비밀번호를 입력하세요."
 				type="password"
-				className="w-full min-w-[343px]"
+				className="w-full min-w-[343px] rounded-3xl"
+				labelClassName="text-[12px] text-grey-60"
 			/>
 
 			<div className="text-sm ml-2 flex gap-6">
@@ -89,12 +91,12 @@ export default function SignupPasswordForm({
 				value={confirm}
 				onChange={setConfirm}
 				placeholder="비밀번호를 다시 입력하세요."
-				className="w-full min-w-[343px]"
+				className="rounded-3xl w-full min-w-[343px]"
 				type="password"
 				inputClassName={`${
 					confirm.length > 0 ? 'border-primary-40 focus:border-primary-40' : ''
 				}`}
-				labelClassName="text-grey-60"
+				labelClassName="text-grey-60 text-[12px]"
 			/>
 			{isConfirmValid && (
 				<p className="text-green-500 text-sm ml-2">비밀번호가 동일합니다.</p>
@@ -108,14 +110,17 @@ export default function SignupPasswordForm({
 			{/* 가입하기 버튼 */}
 			<PrimaryButton
 				onClick={handleResetPassword}
-				text="가입하기"
+				
 				disabled={!canSubmit}
-				className={`min-w-[343px] rounded-2xl mt-80 h-[48px] font-semibold ${
+				className={`min-w-[343px] rounded-2xl mt-80 h-[48px] gap-1 font-semibold flex items-center justify-center ${
 					canSubmit
 						? 'bg-grey-90 text-primary-40'
 						: 'bg-grey-20 text-grey-50 cursor-not-allowed'
 				}`}
-			/>
+			>
+				<Icon name="Plus"/>
+				다음
+				</PrimaryButton>
 		</div>
 	);
 }

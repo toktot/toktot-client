@@ -78,12 +78,12 @@ export default function SignupPage() {
 			}`}
 		>
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'Back'} size="m" className="border-[#74808E]" />
+				<Icon name={'ArrowLefttBar'} size="xxl" className="border-[#74808E]" />
 				<h1 className="text-base font-semibold">회원가입</h1>
-				<Icon name={'None'} size="m" className="border-[#74808E]" />
+				<Icon name={'Cancel'} size="xl" className="border-[#74808E]" />
 			</div>
 			{step !== 'complete' && step !== 'agreement' && (
-				<p className="text-[28px] font-semibold mt-15 ml-5 self-start">
+				<p className="text-[28px] font-semibold mt-15 w-full text-center">
 					{renderTitle()}
 				</p>
 			)}
@@ -124,11 +124,12 @@ export default function SignupPage() {
 						<div className="flex flex-col items-center justify-center mt-50">
 							<div className="text-center text-[#000000] text-[28px] font-bold h-[34px] mt-12">
 								환영해요, {nickname}님!
-								<div className="absolute bottom-0 left-0 w-full flex flex-col items-center pb-3">
+								<div className="justify-center w-full flex flex-col items-center pb-3">
 									<button
-										className="min-w-[343px] h-[48px] mt-80 rounded-2xl font-semibold bg-grey-90 text-primary-40"
+										className="flex items-center justify-center min-w-[343px] h-[48px] mt-80 rounded-2xl font-semibold bg-grey-90 text-primary-40"
 										onClick={handleRegister}
 									>
+										<Icon name="Plus" />
 										다음
 									</button>
 									<div className="flex justify-center items-center">

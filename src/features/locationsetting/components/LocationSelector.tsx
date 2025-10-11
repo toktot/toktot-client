@@ -206,6 +206,14 @@ export default function LocationSelector({
 									onMarkerClick={() => setIsMarkerClicked(true)}
 									isMarkerClicked={isMarkerClicked}
 									user={user}
+									onMapClick={(coords, addr) => {
+										setLatLng(coords);
+										setAddress(addr);
+										setSearchAddress(addr);
+										setDisplayName(addr);
+										setIsMarkerClicked(true);
+										setIsSelected(true);
+									}}
 								/>
 							</div>
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import PrimaryButton from '@/shared/components/PrimaryButton';
 import TextInputWithLabel from '@/shared/components/TextInputWithLabel';
+import Icon from '@/shared/ui/Icon';
 
 type PassFindEmailProps = {
 	onSuccess: (email: string) => void;
@@ -60,7 +61,7 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 			if (res.ok) {
 				setVerificationSent(true);
 				setTimer(300);
-				alert('인증번호가 전송됐습니다.');
+				
 			} else {
 				alert(data.message || '인증번호 전송 실패');
 			}
@@ -113,18 +114,19 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 					이메일 주소를 다시 확인하세요.
 				</p>
 			)}
+			
 			<PrimaryButton
-				text={
-					verificationSent
-						? `인증번호 다시 받기 (${formatTimer(timer)})`
-						: '인증번호 전송'
-				}
+				
 				onClick={handleSendCode}
 				disabled={emailStatus !== 'valid'}
-				className="w-[343px] mt-3"
-				bgColorWhenEnabled="bg-grey-90"
+				className="w-[343px] mt-10 bg-grey-30 justify-center flex items-center gap-1"
+				bgColorWhenEnabled="bg-grey-80"
 				textColorWhenEnabled="text-primary-40"
-			/>
+			>
+				<Icon name="Plus"/>
+				{`${verificationSent ? `
+					인증번호 다시 받기 (${formatTimer(timer)})` : '인증번호 전송'}`}
+				</PrimaryButton>
 			<div>
 				<label className="text-grey-60 text-sm mb-1 block">인증번호</label>
 				<div className="flex gap-2 items-center">
@@ -144,13 +146,16 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 						}`}
 					/>
 					<PrimaryButton
-						text="확인"
+						
 						onClick={handleCheckCode}
 						disabled={code.length !== 6 || codeStatus === 'valid'}
-						className="w-[110px] mr-4"
-						bgColorWhenEnabled="bg-primary-40"
-						textColorWhenEnabled="text-grey-90"
-					/>
+						className="w-[110px] mr-4 flex items-center justify-center bg-grey-30"
+						bgColorWhenEnabled="bg-grey-90"
+						textColorWhenEnabled="text-white"
+					>
+					<Icon name="Plus" />
+					확인
+					</PrimaryButton>
 				</div>
 				{codeStatus === 'valid' && (
 					<p className="text-green-500 text-sm mt-1">인증번호가 일치합니다.</p>
@@ -163,13 +168,16 @@ export default function PassFindEmail({ onSuccess }: PassFindEmailProps) {
 			</div>
 
 			<PrimaryButton
-				text="다음"
+				
 				onClick={() => onSuccess(email)}
 				disabled={codeStatus !== 'valid'}
-				className="w-[343px]"
+				className="w-[343px] flex items-center justify-center bg-grey-30"
 				bgColorWhenEnabled="bg-grey-90"
 				textColorWhenEnabled="text-primary-40"
-			/>
+			>
+				<Icon name="Plus"/>
+				다음
+				</PrimaryButton>
 		</div>
 	);
 }
