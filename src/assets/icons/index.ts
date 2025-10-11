@@ -99,4 +99,8 @@ export { default as OrangeService } from './OrangeService.svg';
 export { default as Googigukso } from './Googigukso.svg';
 export { default as greenHeart } from './greenHeart.svg';
 export { default as orangeHeart } from './orangeHeart.svg';
+
 export {default as Calendar} from './calendar.svg';
+
+export { default as price } from './price.svg';
+export { default as badge } from './badge.svg';
