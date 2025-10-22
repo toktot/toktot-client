@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
 
+
 export interface PriceSummaryProps {
 	MenuName: string;
 	icon: IconName;

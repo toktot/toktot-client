@@ -20,6 +20,7 @@ type FilterItem = {
 	value: number;
 	active?: boolean;
 };
+
 const filterItems: FilterItem[] = [
 	{ label: '거리', value: 0 },
 	{ label: '별점', value: 1 },
@@ -43,6 +44,17 @@ interface Props {
 	) => void;
 	locationAvailable?: boolean;
 }
+const JEJU_BOUNDS = {
+		latMin: 33.0,
+		latMax: 33.7,
+		lngMin: 126.0,
+		lngMax: 127.0,
+	};
+const isInJeju = (lat: number, lng: number) =>
+		lat >= JEJU_BOUNDS.latMin &&
+		lat <= JEJU_BOUNDS.latMax &&
+		lng >= JEJU_BOUNDS.lngMin &&
+		lng <= JEJU_BOUNDS.lngMax;
 
 const FilterBar: React.FC<Props> = ({
 	value,
@@ -53,18 +65,9 @@ const FilterBar: React.FC<Props> = ({
 	const [filterTags, setFilterTags] = useState<string[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const JEJU_BOUNDS = {
-		latMin: 33.0,
-		latMax: 33.7,
-		lngMin: 126.0,
-		lngMax: 127.0,
-	};
+	
 
-	const isInJeju = (lat: number, lng: number) =>
-		lat >= JEJU_BOUNDS.latMin &&
-		lat <= JEJU_BOUNDS.latMax &&
-		lng >= JEJU_BOUNDS.lngMin &&
-		lng <= JEJU_BOUNDS.lngMax;
+	
 	const [displayItems, setDisplayItems] = useState(filterItems);
 	const [isQueryActive, setIsQueryActive] = useState(false);
 	console.log(setIsQueryActive);

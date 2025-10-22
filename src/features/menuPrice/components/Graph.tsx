@@ -2,8 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { mockGraph } from '@/entities/menuPrice/mockGraph';
-import { mockStores } from '@/entities/store/model/mockStore';
 import { useSearchParams } from 'next/navigation';
 import {
 	Bar,
@@ -18,11 +16,92 @@ import {
 } from 'recharts';
 import { ScatterPointItem } from 'recharts/types/cartesian/Scatter';
 
-import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
-
-import StoreInfoCard from '@/shared/components/StoreCard';
+import StoreInfoCard, { StoreInfoCardProps } from '@/shared/components/StoreCard';
 import { useCategories } from '@/shared/hooks/useCategories';
 import Icon from '@/shared/ui/Icon';
+import api from '@/features/home/lib/api';
+type PriceDistribution = {
+  cheapCount: number;
+  normalCount: number;
+  expensiveCount: number;
+  cheapRatio: number;
+  normalRatio: number;
+  // 백엔드가 expensiveRatio(정상) 또는 expensiveRation(오타) 둘 중 하나를 줄 수 있어 둘 다 대응
+  expensiveRatio?: number;
+  expensiveRation?: number;
+};
+
+type PriceRange = {
+  minPrice: number;
+  maxPrice: number;
+  reviewCount: number;
+  label: string;
+};
+
+
+type ApiStatsData = {
+  localFoodType: string;
+  displayName: string;
+  totalReviewCount: number;
+  averagePrice: number;
+  minPrice: number;
+  maxPrice: number;
+  hasSufficientData: boolean;
+  lastUpdated: string;
+  priceDistribution: PriceDistribution;
+  priceRanges: PriceRange[];
+};
+
+type ApiStats = {
+  success: boolean;
+  data: ApiStatsData;
+};
+type PriceRangeRestaurant = {
+  restaurant_id: number;
+  restaurant_name: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  distance?: number; // km 가정
+  average_rating?: number;
+  review_count?: number;
+  is_good_price_store?: boolean;
+  is_local_store?: boolean;
+  image_url?: string;
+  average_price_in_range?: number;
+};
+
+const toStoreCardReview = (it: PriceRangeRestaurant): StoreInfoCardProps['review'] => ({
+  id: it.restaurant_id,
+  name: it.restaurant_name,
+  address: it.address ?? '',
+  // 반드시 string | null 로 변환
+  distance: typeof it.distance === 'number' ? `${it.distance}km` : (it.distance ?? null),
+  // 카드가 기대하는 키 이름에 맞추기
+  main_menus: null, // API에 없으므로 null
+  average_rating: it.average_rating ?? 0,
+  review_count: it.review_count ?? 0,
+  is_good_price_store: it.is_good_price_store ?? null,
+  is_local_store: it.is_local_store ?? null,
+  image: it.image_url ?? null,
+  topPercent: null,   // API에 없으면 null
+  valueScore: null,   // API에 없으면 null
+});
+type PriceRangeRestaurantsResponse = {
+  success: boolean;
+  data: {
+    content: PriceRangeRestaurant[];
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
+    number: number;
+    size: number;
+  };
+};
+type PriceRangeRestaurantsRequest = {
+  local_food_type: string;
+  clicked_price: number;
+};
 
 export type GraphPoint = { price: number; store: number };
 type ClickedPoint = {
@@ -40,35 +119,159 @@ type CustomTickProps = {
 	maxPrice: number;
 };
 
+const NAME_TO_ENUM: Record<string, string> = {
+  // 필요에 맞게 계속 추가하세요
+  '돔베고기': 'DOMBE_MEAT',
+  '고기국수': 'MEAT_NOODLE',
+  '흑돼지': 'BLACK_PORK',
+  '성게알비빔밥': 'SEA_URCHIN_BAP',
+  
+};
+
 const PriceChart = () => {
 	const searchParams = useSearchParams();
 	const q = searchParams.get('q') ?? '';
 	const { categories } = useCategories();
 
 	const [query, setQuery] = useState(q);
-	const menuData = priceSummaryMap[query];
-
-	const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
-	const avgPrice = menuData?.avgPrice ?? 0;
 	useEffect(() => {
 		setQuery(q);
 	}, [q]);
+	
+	const [, setLoading] = useState(false);
+	const [, setError] = useState<string| null>(null);
+	const [stats, setStats] = useState<ApiStats['data'] | null>(null);
+	const avgPrice = stats?.averagePrice ?? 0;
+	// ⬇️ 선택된 가게들을 StoreInfoCard가 기대하는 타입으로 보관
+const [selectedStores, setSelectedStores] = useState<StoreInfoCardProps['review'][]>([]);
+;
+const [, setStoreLoading] = useState(false);
+const [, setStoreError] = useState<string | null>(null);
 	const [showGuide, setShowGuide] = useState(true);
-	const selectedStores = useMemo(() => {
-		if (selectedPrice === null) {
-			return [];
-		}
-		return mockStores.filter((store) =>
-			store.menuPrices?.some((menu) => menu.price === selectedPrice),
-		);
-	}, [selectedPrice]);
+	const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
 	const [clickedPoint, setClickedPoint] = useState<ClickedPoint>(null);
 	const [showTooltip, setShowTooltip] = useState(true);
+	const graphData: GraphPoint[] = useMemo(() => {
+  const ranges = Array.isArray(stats?.priceRanges) ? stats!.priceRanges : [];
+  return ranges.map((r) => ({
+    price: Math.round((r.minPrice + r.maxPrice) / 2),
+    store: r.reviewCount,
+  }));
+}, [stats]);
 
-	const storeCount = useMemo(() => selectedStores.length, [selectedStores]);
-	if (!menuData) {
-		return null;
+  
+
+  // ====== API 호출 ======
+  useEffect(() => {
+    const typeEnum = NAME_TO_ENUM[query];
+	if (!typeEnum) {
+    setStats(null);
+    return;
+  }
+   
+	let cancelled = false;
+    const toNum = (v: unknown, def = 0) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : def;
+  };
+    const run = async () => {
+		setLoading(true);
+    setError(null);
+	try {
+      
+	  const res = await api.get<ApiStats>(`/v1/local-foods/${typeEnum}/stats`);
+      if (!res.data?.success || !res.data?.data) throw new Error('Invalid response');
+		console.log(res.data.data);
+
+      const d = res.data.data;
+      const norm = {
+        ...d,
+        averagePrice: toNum(d.averagePrice),
+        minPrice: toNum(d.minPrice),
+        maxPrice: toNum(d.maxPrice),
+        priceDistribution: {
+          ...d.priceDistribution,
+          cheapCount: toNum(d.priceDistribution?.cheapCount),
+          normalCount: toNum(d.priceDistribution?.normalCount),
+          expensiveCount: toNum(d.priceDistribution?.expensiveCount),
+          cheapRatio: toNum(d.priceDistribution?.cheapRatio),
+          normalRatio: toNum(d.priceDistribution?.normalRatio),
+          expensiveRatio: toNum(
+    d.priceDistribution?.expensiveRatio ?? d.priceDistribution?.expensiveRation ?? 0
+  ),
+        },
+        priceRanges: Array.isArray(d.priceRanges)
+          ? d.priceRanges
+              .map((r) => ({
+                minPrice: toNum(r.minPrice),
+                maxPrice: toNum(r.maxPrice),
+                reviewCount: toNum(r.reviewCount),
+                label: String(r.label ?? ''),
+              }))
+              .filter((r) => r.minPrice <= r.maxPrice)
+          : [],
+      };
+	  
+        if (!cancelled) setStats(norm as ApiStats['data']);
+		
+      } catch (e) {
+        if (!cancelled) {
+          console.log(e)
+        setStats(null);
+        }
+      } finally {
+        if (!cancelled) setStoreLoading(false);
+      }
+    };
+    run();
+	
+    return () => { cancelled = true; };
+  }, [query]);
+  useEffect(() => {
+	console.log('api호출이 되는 거겠지?')
+	const typeEnum = NAME_TO_ENUM[query];
+	if (!selectedPrice || !typeEnum) {
+		setSelectedStores([]);
+		setStoreError(null);
+		return;
 	}
+	let cancelled = false;
+
+	const run = async () => {
+		try {
+			setStoreLoading(true);
+			setStoreError(null);
+
+			const body: PriceRangeRestaurantsRequest = {
+          local_food_type: typeEnum,
+          clicked_price: Number(selectedPrice),
+        };
+			const params = 'page=0&size=20&sort=distance,asc';
+      const res = await api.post<PriceRangeRestaurantsResponse>(
+        `/v1/local-foods/price-range/restaurants?${params}`,
+        body
+      );
+	  if (!res.data?.success || !res.data?.data) {
+        throw new Error('Invalid response');
+      }
+
+      const list = res.data.data.content ?? [];
+      const mapped = list.map(toStoreCardReview);
+
+      if (!cancelled) setSelectedStores(mapped);
+		} catch(e) {
+			if (!cancelled) {
+				console.log(e)
+        setSelectedStores([]);
+      }
+    } finally {
+      if (!cancelled) setStoreLoading(false);
+    }
+		}
+		run();
+		 return () => {cancelled = true};
+	
+  }, [selectedPrice, query])
 	const CustomXAxisTick = ({
 		x = 0,
 		y = 0,
@@ -96,10 +299,13 @@ const PriceChart = () => {
 			</g>
 		);
 	};
+const yMax = graphData.length ? Math.max(...graphData.map((d) => d.store)) : 0;
+const yTop = Math.max(5, Math.ceil(yMax / 5) * 5); // 최소 5 눈금
+const yTicks = Array.from({ length: yTop / 5 + 1 }, (_, i) => i * 5);
 
 	const handlePointClick = (
 		data: GraphPoint,
-		index: number,
+		_index: number,
 		event: React.MouseEvent<SVGElement, MouseEvent>,
 	) => {
 		const native = event.nativeEvent as MouseEvent & {
@@ -114,7 +320,9 @@ const PriceChart = () => {
 			cy: native.offsetY,
 		});
 	};
-
+	if (!stats) {
+		return null;
+	}
 	return (
 		<div className="bg-grey-10 py-4 px-4 min-h-screen space-y-3 cursor-pointer">
 			{/* 헤더 */}
@@ -132,7 +340,7 @@ const PriceChart = () => {
 							</span>
 							<div className="flex flex-wrap items-center gap-1 relative">
 								<span className="text-[24px] text-grey-90 font-semibold">
-									{avgPrice.toLocaleString()}원이에요.
+									{stats?.averagePrice.toLocaleString()}원이에요.
 								</span>
 								<div className="relative">
 									<Icon
@@ -226,8 +434,8 @@ const PriceChart = () => {
 						</defs>
 						<XAxis
 							dataKey="price"
-							ticks={[menuData.minPrice, menuData.avgPrice, menuData.maxPrice]}
-							domain={[menuData.minPrice, menuData.maxPrice]}
+							ticks={[stats.minPrice, stats.averagePrice, stats.maxPrice]}
+							domain={[stats.minPrice, stats.maxPrice]}
 							type="number"
 							axisLine={false}
 							tickLine={false}
@@ -235,26 +443,16 @@ const PriceChart = () => {
 							tick={(props) => (
 								<CustomXAxisTick
 									{...props}
-									minPrice={menuData.minPrice}
-									avgPrice={menuData.avgPrice}
-									maxPrice={menuData.maxPrice}
+									minPrice={stats?.minPrice}
+									avgPrice={stats?.averagePrice}
+									maxPrice={stats?.maxPrice}
 								/>
 							)}
 						/>
 						<YAxis
 							dataKey="store"
-							domain={[
-								0,
-								Math.ceil(Math.max(...mockGraph.map((d) => d.store)) / 5) * 5,
-							]}
-							ticks={Array.from(
-								{
-									length:
-										Math.ceil(Math.max(...mockGraph.map((d) => d.store)) / 5) +
-										1,
-								},
-								(_, i) => i * 5,
-							)}
+							domain={[0, yTop] as [number, number]}
+							ticks={yTicks}
 							tickMargin={7}
 							type="number"
 							tickLine={false}
@@ -272,7 +470,7 @@ const PriceChart = () => {
 						<CartesianGrid strokeDasharray="3 0" vertical={false} />
 						<Line
 							type="monotone"
-							data={mockGraph}
+							data={graphData}
 							dataKey="store"
 							stroke="url(#gradLine)"
 							strokeWidth={3}
@@ -280,7 +478,7 @@ const PriceChart = () => {
 							isAnimationActive={false}
 						/>
 						<Scatter
-							data={mockGraph}
+							data={graphData}
 							fill="#8884d8"
 							cursor="pointer"
 							onClick={(
@@ -310,7 +508,7 @@ const PriceChart = () => {
 						)}
 						{selectedPrice && (
 							<Scatter
-								data={mockGraph.filter((d) => d.price === selectedPrice)}
+								data={graphData.filter((d) => d.price === selectedPrice)}
 								fill="#FF2626"
 								shape={(props: ScatterPointItem) => (
 									<circle
@@ -372,36 +570,22 @@ const PriceChart = () => {
 						</span>
 
 						<span className="rounded-full bg-white w-[31px] h-[21px]  flex items-center justify-center text-primary-40 text-[9px]">
-							{storeCount}개
+							{selectedStores.length}개
 						</span>
 					</div>
 
 					<div className="bg-white mt-4 -mx-4 min-h-[500px]">
 						<div className="flex flex-wrap justify-between">
 							{selectedStores.length > 0 ? (
-								selectedStores.map((store, idx, arr) => {
-									const mappedStore = {
-										id: store.id,
-										storeImageUrl: store.storeImageUrl ?? '/default.png',
-										name: store.storeName,
-										isKindStore: store.isKindStore ?? false,
-										mainMenus: store.mainMenus ?? [store.mainMenu ?? ''],
-										reviewCount: store.reviewCount ?? 0,
-										valueScore: store.valueScore ?? 0,
-										topPercent: store.topPercent ?? 0,
-										address: store.address,
-										rating: store.rating ?? 0,
-										distance: store.distance,
-									};
-									return (
-										<div key={store.id} className="flex flex-col">
-											<StoreInfoCard review={mappedStore} />
+								selectedStores.map((store, idx, arr) => (
+									<div key={store.id} className="flex flex-col">
+											<StoreInfoCard review={store} />
 											{idx < arr.length - 1 && (
 												<div className="w-full h-px bg-grey-10 my-4" />
 											)}
 										</div>
-									);
-								})
+								))
+							
 							) : (
 								<p className="text-sm text-gray-500">
 									해당 가격대 메뉴가 없습니다.
