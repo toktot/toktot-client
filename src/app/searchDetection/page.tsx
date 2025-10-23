@@ -282,6 +282,8 @@ function LocationSearchContent({
 
 		if (from === 'home') {
 			router.push(`/home?${params.toString()}`);
+		} else if (from === 'review_feed') {
+			router.push(`/review/view?${params.toString()}`);
 		} else {
 			router.push(`/search?${params.toString()}`);
 		}

@@ -1,10 +1,9 @@
 import ky, { Options } from 'ky';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
 
-import { ApiResponseSchema } from '@/shared/api/schema';
+import { getDecryptedToken } from '@/shared/utils/storage';
 
-const BaseResponseSchema = ApiResponseSchema(z.unknown());
+import { refreshToken } from './auth';
 
 const baseOptions: Options = {
 	prefixUrl: process.env.NEXT_PUBLIC_API_URL,
@@ -29,16 +28,19 @@ const handleAuthRequired = async (loginPath: string, alertMessage: string) => {
 const AUTH_ERRORS = new Set([
 	'INVALID_PASSWORD',
 	'USER_NOT_FOUND',
-	'TOKEN_EXPIRED',
+
 	'TOKEN_INVALID',
 	'LOGIN_REQUIRED',
 	'KAKAO_LOGIN_FAILED',
 	'KAKAO_TOKEN_INVALID',
 ]);
 
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
 export const createAuthApi = (opts?: AuthApiOptions) => {
 	const {
-		getToken,
+		getToken = getDecryptedToken,
 		onAuthError,
 		loginPath = '/login',
 		alertMessage = '로그인이 필요한 서비스입니다.',
@@ -55,46 +57,69 @@ export const createAuthApi = (opts?: AuthApiOptions) => {
 						request.headers.set('Authorization', `Bearer ${token}`);
 					} else {
 						handleAuthRequired(loginPath, alertMessage);
-						throw new Error('Authentication required');
+
+						throw new Error('Authentication token is not available.');
 					}
 				},
 			],
-
 			afterResponse: [
-				async (_request, _options, response) => {
-					try {
-						const cloned = await response.clone().json();
-						const parsed = BaseResponseSchema.safeParse(cloned);
+				async (request, _options, response) => {
+					const body = await response
+						.clone()
+						.json()
+						.catch(() => null);
+					const isTokenExpired =
+						(body?.errorCode === 'TOKEN_EXPIRED' && body?.success === false) ||
+						response.status === 401;
 
-						if (!parsed.success) {
-							return;
+					if (isTokenExpired) {
+						if (!isRefreshing) {
+							isRefreshing = true;
+
+							refreshPromise = refreshToken().finally(() => {
+								isRefreshing = false;
+							});
 						}
 
-						const data = parsed.data;
+						try {
+							const newToken = await refreshPromise;
+							if (newToken) {
+								request.headers.set('Authorization', `Bearer ${newToken}`);
+								return ky(request);
+							}
 
-						if (
-							data.success === false &&
-							data.errorCode &&
-							AUTH_ERRORS.has(data.errorCode)
-						) {
-							await handleAuthRequired(
+							throw new Error('Failed to refresh token');
+						} catch (error) {
+							console.error(error);
+							onAuthError?.(401);
+							handleAuthRequired(
 								loginPath,
-								data.message ?? '로그인이 필요한 서비스입니다.',
+								'인증이 만료되었습니다. 다시 로그인해주세요.',
 							);
-							return Promise.reject(new Error('인증 오류'));
+
+							return new Response(JSON.stringify(body), {
+								status: response.status,
+							});
 						}
-					} catch {
-						return;
 					}
 
-					if (response.status === 401) {
-						onAuthError?.(401);
-						handleAuthRequired(
+					if (
+						body &&
+						body.success === false &&
+						body.errorCode &&
+						AUTH_ERRORS.has(body.errorCode)
+					) {
+						await handleAuthRequired(
 							loginPath,
-							'인증이 만료되었습니다. 다시 로그인해주세요.',
+							body.message ?? '로그인이 필요한 서비스입니다.',
 						);
-						throw new Error('401 Unauthorized');
+
+						return Promise.reject(
+							new Error(body.message || 'Authentication error'),
+						);
 					}
+
+					return response;
 				},
 			],
 		},

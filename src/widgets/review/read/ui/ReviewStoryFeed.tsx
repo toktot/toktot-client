@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { InteractionGuide } from '@/features/review/guide/ui/InteractionGuide';
 import { ImagePaginator } from '@/features/review/pagenate-images/ui/ImagePaginator';
+import { useReviewFeedFilterController } from '@/features/review/read/hooks/useReviewFeedFilterController';
+import { ReviewFeedFilter } from '@/features/review/read/ui/ReviewFeedFilter';
 import { SortBottomSheet } from '@/features/review/sort/ui/SortBottomSheet';
 import { useReviewStoryFeedController } from '@/features/review/view-story-feed/model/useReviewStoryFeedController';
 
@@ -35,6 +37,8 @@ const variants = {
 
 export function ReviewStoryFeed() {
 	const { states, handlers } = useReviewStoryFeedController();
+	const { activeFilters, handleFilterClick } = useReviewFeedFilterController();
+
 	const {
 		reviews,
 		currentPost,
@@ -66,82 +70,90 @@ export function ReviewStoryFeed() {
 	}
 
 	return (
-		<div className="relative h-full overflow-hidden bg-black">
-			<div className="absolute top-0 left-0  z-20 px-2 flex justify-end items-center">
+		<div className="h-full w-full flex flex-col bg-black">
+			<div className="flex-shrink-0 z-20 px-2 py-2 flex justify-start items-center gap-2 bg-black">
 				<button
 					onClick={() => setIsSortSheetOpen(true)}
-					className="flex items-center gap-1 text-blalck backdrop-blur-sm py-1 px-[10px] rounded-full bg-white"
+					className="flex items-center gap-1 text-black backdrop-blur-sm py-1 px-[10px] rounded-full bg-white shrink-0"
 				>
 					<Icon name="Sort" size="xs" />
 					<span className="text-sm font-medium">
 						{currentSortOption?.label}
 					</span>
 				</button>
+				<ReviewFeedFilter
+					filters={activeFilters}
+					onFilterClick={handleFilterClick}
+				/>
 			</div>
-			<AnimatePresence initial={false} custom={direction}>
-				<motion.div
-					className="h-full overflow-x-hidden w-full"
-					key={currentIndex}
-					custom={direction}
-					variants={variants}
-					initial="enter"
-					animate="center"
-					exit="exit"
-					transition={{ duration: 0.3, ease: 'easeOut' }}
-					drag="y"
-					dragConstraints={{ top: 0, bottom: 0 }}
-					dragElastic={0.05}
-					onDragEnd={(e, { offset, velocity }) => {
-						const swipe = swipePower(offset.y, velocity.y);
-						if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(1);
-						} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
-							paginate(-1);
-						}
-						if (currentIndex === reviews.length - 2) {
-							fetchNextPage();
-						}
-					}}
-				>
-					<div className="relative flex flex-col h-full">
-						<div className="flex-1 relative">
-							<InteractiveReview
-								reviewId={currentPost.id}
-								isBookmarked={currentPost.isBookmarked}
-							>
-								<AnimatePresence>
-									{showGuide && (
-										<InteractionGuide onClose={() => setShowGuide(false)} />
-									)}
-								</AnimatePresence>
-								<ImagePaginator
-									post={currentPost}
-									onTooltipClick={handleTooltipClick}
-									selectTooltip={selectedTooltip}
-									onOpenSheet={() => setIsSheetOpen(true)}
-								/>
-							</InteractiveReview>
-						</div>
-						<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
-							<div className="flex-shrink-0">
-								<ReviewUser author={currentPost.author} />
-							</div>
-							<div className="flex gap-2">
-								<div className="bg-grey-90 rounded-xl flex-[4] min-w-0">
-									<ReviewStore storeId={currentPost.store.id} />
-								</div>
-								<div className="bg-grey-90 rounded-xl flex-[1.3] min-w-0">
-									<ReviewStoreWithSheet
-										review={currentPost}
-										isSheetOpen={isSheetOpen}
-										onSheetOpenChange={setIsSheetOpen}
+
+			<div className="relative flex-1 min-h-0">
+				<AnimatePresence initial={false} custom={direction}>
+					<motion.div
+						className="absolute inset-0"
+						key={currentIndex}
+						custom={direction}
+						variants={variants}
+						initial="enter"
+						animate="center"
+						exit="exit"
+						transition={{ duration: 0.3, ease: 'easeOut' }}
+						drag="y"
+						dragConstraints={{ top: 0, bottom: 0 }}
+						dragElastic={0.05}
+						onDragEnd={(e, { offset, velocity }) => {
+							const swipe = swipePower(offset.y, velocity.y);
+							if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) {
+								paginate(1);
+							} else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) {
+								paginate(-1);
+							}
+							if (currentIndex === reviews.length - 2) {
+								fetchNextPage();
+							}
+						}}
+					>
+						<div className="relative flex flex-col h-full">
+							<div className="flex-1 relative">
+								<InteractiveReview
+									reviewId={currentPost.id}
+									isBookmarked={currentPost.isBookmarked}
+								>
+									<AnimatePresence>
+										{showGuide && (
+											<InteractionGuide onClose={() => setShowGuide(false)} />
+										)}
+									</AnimatePresence>
+									<ImagePaginator
+										post={currentPost}
+										onTooltipClick={handleTooltipClick}
+										selectTooltip={selectedTooltip}
+										onOpenSheet={() => setIsSheetOpen(true)}
 									/>
+								</InteractiveReview>
+							</div>
+							<div className="h-[140px] p-4 text-grey-10 bg-black flex flex-col gap-[14px]">
+								<div className="flex-shrink-0">
+									<ReviewUser author={currentPost.author} />
+								</div>
+								<div className="flex gap-2">
+									<div className="bg-grey-90 rounded-xl flex-[4] min-w-0">
+										<ReviewStore storeId={currentPost.store.id} />
+									</div>
+									<div className="bg-grey-90 rounded-xl flex-[1.3] min-w-0">
+										<ReviewStoreWithSheet
+											review={currentPost}
+											isSheetOpen={isSheetOpen}
+											onSheetOpenChange={setIsSheetOpen}
+										/>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</motion.div>
-			</AnimatePresence>
+					</motion.div>
+				</AnimatePresence>
+			</div>
+
 			<SortBottomSheet
 				isOpen={isSortSheetOpen}
 				onOpenChange={setIsSortSheetOpen}
