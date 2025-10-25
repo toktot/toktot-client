@@ -38,6 +38,62 @@ type PriceRange = {
   label: string;
 };
 
+type ApiStatsSnake = {
+  success: boolean;
+  data: {
+    local_food_type: string;
+    display_name: string;
+    total_review_count: number;
+    average_price: number;
+    min_price: number;
+    max_price: number;
+    has_sufficient_data: boolean;
+    last_updated: string;
+    price_distribution: {
+      cheap_count: number;
+      normal_count: number;
+      expensive_count: number;
+      cheap_ratio: number;
+      normal_ratio: number;
+      // 서버가 오타를 줄 수도 있으니 둘 다 대비
+      expensive_ratio?: number;
+      expensive_ration?: number;
+    };
+    price_ranges: Array<{
+      min_price: number;
+      max_price: number;
+      review_count: number;
+      label: string;
+    }>;
+  };
+};
+
+// 파일 상단 import 아래 쪽에 유틸/타입 추가
+type LatLng = { lat: number; lng: number } | null;
+
+const toRad = (deg: number): number => (deg * Math.PI) / 180;
+
+// km 단위 거리 계산 (Haversine)
+const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }): number => {
+  const R = 6371; // km
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+};
+
+// "532m" 또는 "1.4km" 포맷
+const formatDistance = (km: number): string => {
+  if (!Number.isFinite(km) || km < 0) return '';
+  if (km < 1) return `${Math.round(km * 1000)}m`;
+  return `${km.toFixed(1)}km`;
+};
 
 type ApiStatsData = {
   localFoodType: string;
@@ -62,7 +118,7 @@ type PriceRangeRestaurant = {
   address: string;
   latitude?: number;
   longitude?: number;
-  distance?: number; // km 가정
+  distance?: number | string; // km 가정
   average_rating?: number;
   review_count?: number;
   is_good_price_store?: boolean;
@@ -71,22 +127,46 @@ type PriceRangeRestaurant = {
   average_price_in_range?: number;
 };
 
-const toStoreCardReview = (it: PriceRangeRestaurant): StoreInfoCardProps['review'] => ({
-  id: it.restaurant_id,
-  name: it.restaurant_name,
-  address: it.address ?? '',
-  // 반드시 string | null 로 변환
-  distance: typeof it.distance === 'number' ? `${it.distance}km` : (it.distance ?? null),
-  // 카드가 기대하는 키 이름에 맞추기
-  main_menus: null, // API에 없으므로 null
-  average_rating: it.average_rating ?? 0,
-  review_count: it.review_count ?? 0,
-  is_good_price_store: it.is_good_price_store ?? null,
-  is_local_store: it.is_local_store ?? null,
-  image: it.image_url ?? null,
-  topPercent: null,   // API에 없으면 null
-  valueScore: null,   // API에 없으면 null
-});
+// 기존 타입은 그대로 유지된 상황에서, 함수 시그니처만 변경
+const toStoreCardReview = (
+  it: PriceRangeRestaurant,
+  user: LatLng
+): StoreInfoCardProps['review'] => {
+  // 우선순위: 사용자 위치가 있으면 계산 → 없으면 서버의 distance(숫자 km?) → null
+  let distanceText: string | null = null;
+
+  if (
+    user &&
+    typeof it.latitude === 'number' &&
+    typeof it.longitude === 'number' &&
+    Number.isFinite(it.latitude) &&
+    Number.isFinite(it.longitude)
+  ) {
+    const km = haversineKm(user, { lat: it.latitude, lng: it.longitude });
+    distanceText = formatDistance(km);
+  } else if (typeof it.distance === 'number' && Number.isFinite(it.distance)) {
+    // 서버가 km로 주는 케이스 유지 (원하면 formatDistance로 바꿔도 됨)
+    distanceText = `${it.distance}km`;
+  } else if (typeof it.distance === 'string' && it.distance.trim().length > 0) {
+    distanceText = it.distance;
+  }
+
+  return {
+    id: it.restaurant_id,
+    name: it.restaurant_name,
+    address: it.address ?? '',
+    distance: distanceText,
+    main_menus: null,
+    average_rating: it.average_rating ?? 0,
+    review_count: it.review_count ?? 0,
+    is_good_price_store: it.is_good_price_store ?? null,
+    is_local_store: it.is_local_store ?? null,
+    image: it.image_url ?? null,
+    topPercent: null,
+    valueScore: null,
+  };
+};
+
 type PriceRangeRestaurantsResponse = {
   success: boolean;
   data: {
@@ -159,7 +239,31 @@ const [, setStoreError] = useState<string | null>(null);
   }));
 }, [stats]);
 
-  
+  const [userPos, setUserPos] = useState<LatLng>(null);
+const [, setLocError] = useState<string | null>(null);
+// 컴포넌트 내부 useEffect들 사이에 추가
+useEffect(() => {
+  if (!('geolocation' in navigator)) {
+    setLocError('Geolocation not supported');
+    return;
+  }
+  const onOk = (pos: GeolocationPosition) => {
+    setUserPos({
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+    });
+  };
+  const onErr = (err: GeolocationPositionError) => {
+    // 권한 거부 / 타임아웃 등 → 거리 표시는 null로 남김
+    setLocError(err.message);
+  };
+  navigator.geolocation.getCurrentPosition(onOk, onErr, {
+    enableHighAccuracy: true,
+    timeout: 10_000,
+    maximumAge: 30_000,
+  });
+}, []);
+
 
   // ====== API 호출 ======
   useEffect(() => {
@@ -174,45 +278,54 @@ const [, setStoreError] = useState<string | null>(null);
     const n = Number(v);
     return Number.isFinite(n) ? n : def;
   };
+  const normalizeStats = (d: ApiStatsSnake['data']): ApiStatsData => {
+  const pd = d.price_distribution ?? ({} as ApiStatsSnake['data']['price_distribution']);
+  const pr = Array.isArray(d.price_ranges) ? d.price_ranges : [];
+
+  return {
+    localFoodType: d.local_food_type,
+    displayName: d.display_name,
+    totalReviewCount: toNum(d.total_review_count),
+    averagePrice: toNum(d.average_price),
+    minPrice: toNum(d.min_price),
+    maxPrice: toNum(d.max_price),
+    hasSufficientData: Boolean(d.has_sufficient_data),
+    lastUpdated: String(d.last_updated ?? ''),
+    priceDistribution: {
+      cheapCount: toNum(pd.cheap_count),
+      normalCount: toNum(pd.normal_count),
+      expensiveCount: toNum(pd.expensive_count),
+      cheapRatio: toNum(pd.cheap_ratio),
+      normalRatio: toNum(pd.normal_ratio),
+      // 오타(expensive_ration)까지 흡수
+      expensiveRatio: toNum(pd.expensive_ratio ?? pd.expensive_ration ?? 0),
+      // 타입 안전을 위해 내부적으로는 위의 필드만 사용 (추가 필드 없음)
+    },
+    priceRanges: pr
+      .map((r) => ({
+        minPrice: toNum(r.min_price),
+        maxPrice: toNum(r.max_price),
+        reviewCount: toNum(r.review_count),
+        label: String(r.label ?? ''),
+      }))
+      .filter((r) => r.minPrice <= r.maxPrice),
+  };
+};
+
     const run = async () => {
 		setLoading(true);
     setError(null);
 	try {
       
-	  const res = await api.get<ApiStats>(`/v1/local-foods/${typeEnum}/stats`);
+	  const res = await api.get<ApiStatsSnake>(`/v1/local-foods/${typeEnum}/stats`);
       if (!res.data?.success || !res.data?.data) throw new Error('Invalid response');
-		console.log(res.data.data);
+		console.log('data', res.data.data);
 
-      const d = res.data.data;
-      const norm = {
-        ...d,
-        averagePrice: toNum(d.averagePrice),
-        minPrice: toNum(d.minPrice),
-        maxPrice: toNum(d.maxPrice),
-        priceDistribution: {
-          ...d.priceDistribution,
-          cheapCount: toNum(d.priceDistribution?.cheapCount),
-          normalCount: toNum(d.priceDistribution?.normalCount),
-          expensiveCount: toNum(d.priceDistribution?.expensiveCount),
-          cheapRatio: toNum(d.priceDistribution?.cheapRatio),
-          normalRatio: toNum(d.priceDistribution?.normalRatio),
-          expensiveRatio: toNum(
-    d.priceDistribution?.expensiveRatio ?? d.priceDistribution?.expensiveRation ?? 0
-  ),
-        },
-        priceRanges: Array.isArray(d.priceRanges)
-          ? d.priceRanges
-              .map((r) => ({
-                minPrice: toNum(r.minPrice),
-                maxPrice: toNum(r.maxPrice),
-                reviewCount: toNum(r.reviewCount),
-                label: String(r.label ?? ''),
-              }))
-              .filter((r) => r.minPrice <= r.maxPrice)
-          : [],
-      };
-	  
-        if (!cancelled) setStats(norm as ApiStats['data']);
+      const norm = normalizeStats(res.data.data);
+	  if (norm.minPrice > norm.maxPrice) {
+        throw new Error('Invalid domain (minPrice > maxPrice)');
+      }
+        if (!cancelled) setStats(norm);
 		
       } catch (e) {
         if (!cancelled) {
@@ -220,7 +333,7 @@ const [, setStoreError] = useState<string | null>(null);
         setStats(null);
         }
       } finally {
-        if (!cancelled) setStoreLoading(false);
+        if (!cancelled) setLoading(false)
       }
     };
     run();
@@ -254,9 +367,11 @@ const [, setStoreError] = useState<string | null>(null);
 	  if (!res.data?.success || !res.data?.data) {
         throw new Error('Invalid response');
       }
+	  console.log(res.data.data.content);
 
       const list = res.data.data.content ?? [];
-      const mapped = list.map(toStoreCardReview);
+      const mapped = list.map((it) => toStoreCardReview(it, userPos));
+
 
       if (!cancelled) setSelectedStores(mapped);
 		} catch(e) {
@@ -271,7 +386,7 @@ const [, setStoreError] = useState<string | null>(null);
 		run();
 		 return () => {cancelled = true};
 	
-  }, [selectedPrice, query])
+  }, [selectedPrice, query, userPos])
 	const CustomXAxisTick = ({
 		x = 0,
 		y = 0,
@@ -324,7 +439,7 @@ const yTicks = Array.from({ length: yTop / 5 + 1 }, (_, i) => i * 5);
 		return null;
 	}
 	return (
-		<div className="bg-grey-10 py-4 px-4 min-h-screen space-y-3 cursor-pointer">
+		<div className="bg-grey-10 py-4 px-4 min-h-screen space-y-3 cursor-pointer pb-12">
 			{/* 헤더 */}
 			<div className="ml-2">
 				{categories
@@ -500,7 +615,7 @@ const yTicks = Array.from({ length: yTop / 5 + 1 }, (_, i) => i * 5);
 									<div className="text-white text-[12px]">{`${clickedPoint.price.toLocaleString()}원`}</div>
 									<div className="flex flex-wrap gap-1">
 										<div className="text-white text-[9px]">{'가게'}</div>
-										<div className="text-primary-40 text-[9px]">{`${clickedPoint.store}`}</div>
+										<div className="text-primary-40 text-[9px]">{`${selectedStores.length}`}</div>
 									</div>
 									<div className="absolute left-1/2 top-full w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-black transform -translate-x-1/2"></div>
 								</div>

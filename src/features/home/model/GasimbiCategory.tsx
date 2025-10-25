@@ -11,6 +11,8 @@ interface GasimbiTagProps {
 }
 
 export default function GasimbiTag({ value, className }: GasimbiTagProps) {
+
+	if (!Number.isFinite(value) || value  <= 0) return null;
 	let valueColor = 'text-green-500';
 	let iconName: IconName = 'None';
 

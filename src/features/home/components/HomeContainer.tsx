@@ -23,6 +23,7 @@ import PhotoReviewCard from './ReviewCardNew';
 import AlarmBox from './alarmBox';
 import PriceTabs from './homeStore';
 import HomeSearchBox from '@/shared/components/HomeSearchBox';
+import { fetchGoodPriceStores } from '../lib/fetchGoodPrice';
 
 interface NearbyStore {
 	id: number;
@@ -100,22 +101,8 @@ interface GoodPriceStore {
 	is_local_store: boolean;
 	image: string;
 }
-const formatDistance = (d: number | null): string => {
-	if (d == null || Number.isNaN(d)) return '';
-	// Heuristic: if it's over 1000 it's probably meters; format to km
-	if (d >= 1000) return `${(d / 1000).toFixed(1)}km`;
-	// if it's less than 10 but not a tiny number, might already be km
-	if (d > 0 && d < 10) return `${d.toFixed(1)}km`;
-	return `${Math.round(d)}m`;
-};
 
-const extractMenus = (menus: string | null | undefined): string[] => {
-	if (!menus) return [];
-	return menus
-		.split(',')
-		.map((m) => m.trim())
-		.filter(Boolean);
-};
+
 
 export default function HomeContainer() {
 	const searchParams = useSearchParams();
@@ -196,71 +183,71 @@ export default function HomeContainer() {
 		};
 		fetchUser();
 	}, []);
-	const fetchGoodPriceStores = useCallback(
-		async (priceValue?: number, foodName?: string) => {
-			try {
-				const actualPrice = priceValue || price || 0;
+	const fetchGoodPriceStoresHome = useCallback(
+  async (priceValue?: number, foodName?: string) => {
+    try {
+      const actualPrice = priceValue ?? price ?? 0;
 
-				const response = await api.get('/v1/restaurants/good-price', {
-					params: {
-						priceRange: actualPrice,
-						latitude: 33.4996,
-						longitude: 126.5312,
-						page: 0,
-						size: 10,
-					},
-				});
-				let stores: GoodPriceStore[] = response?.data?.data?.content ?? [];
+      const { items, pageMeta } = await fetchGoodPriceStores({
+        priceRange: actualPrice,
+        latitude: 33.4996,
+        longitude: 126.5312,
+        page: 0,
+        size: 20, // 페이지 크기 (원하면 50도 가능)
+      });
 
-				if (foodName) {
-					stores = stores.filter((store) => {
-						const menus = extractMenus(store.main_menus);
-						const matchesFood = menus.some((m) => m.includes(foodName));
+      console.log('[home] good-price totalElements:', pageMeta?.totalElements);
 
-						const matchesPrice = menus.some((menu) => {
-							const match = menu.match(/(\d+)[,]?(\d*)\s*원|₩\s*(\d+)/);
-							const num = match
-								? parseInt(match[1] || match[3] || '0', 10) * (match[2] ? 1 : 1)
-								: NaN;
-							if (!num) return false;
-							const selected = actualPrice;
-							if (selected === 0 || null) return num < 10000;
-							if (selected === 10000) return num >= 10000 && num < 20000;
-							if (selected === 20000) return num >= 20000 && num < 30000;
-							if (selected === 30000) return num >= 30000 && num < 50000;
-							if (selected === 50000) return num >= 50000 && num < 70000;
-							if (selected === 70000) return num >= 70000;
-							return true; // if price filter is 0 or invalid
-						});
+      let stores = items;
 
-						return matchesFood && matchesPrice;
-					});
-				}
-				const normalized: GoodPriceStore[] = stores.slice(0, 3).map((s) => ({
-					id: s.id,
-					name: s.name,
-					distance: formatDistance(Number(s.distance ?? 0)),
-					main_menus: s.main_menus ?? '',
-					average_rating: s.average_rating ?? 0,
-					address: s.address ?? '',
-					review_count: s.review_count ?? 0,
-					is_good_price_store: !!s.is_good_price_store,
-					is_local_store: !!s.is_local_store,
-					image: s.image ?? '',
-				}));
-				setGoodPriceStores(normalized);
-			} catch (error) {
-				console.error('가격 착한 가게 조회 실패', error);
-			}
-		},
-		[price],
-	);
+      if (foodName) {
+        stores = stores.filter((store) => {
+          const matchesFood = store.main_menus
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .some((m) => m.includes(foodName));
 
-	// 위치 없으면 해당 영역 렌더링 X
+          const match = store.main_menus.match(/(\d+)[,]?(\d*)\s*원|₩\s*(\d+)/);
+          const num = match
+            ? parseInt(match[1] || match[3] || '0', 10)
+            : NaN;
 
-	useEffect(() => {
-		fetchGoodPriceStores(price, food);
-	}, [price, food, fetchGoodPriceStores]);
+          const selected = actualPrice;
+          const inPrice =
+            selected == null || selected === 0
+              ? Number.isFinite(num) && num < 10000
+              : selected === 10000
+              ? Number.isFinite(num) && num >= 10000 && num < 20000
+              : selected === 20000
+              ? Number.isFinite(num) && num >= 20000 && num < 30000
+              : selected === 30000
+              ? Number.isFinite(num) && num >= 30000 && num < 50000
+              : selected === 50000
+              ? Number.isFinite(num) && num >= 50000 && num < 70000
+              : selected === 70000
+              ? Number.isFinite(num) && num >= 70000
+              : true;
+
+          return matchesFood && inPrice;
+        });
+      }
+
+      // ✅ 홈에서는 3개만 보여주기
+      const top3 = stores.slice(0, 3);
+      setGoodPriceStores(top3);
+      console.log('[home] show count:', top3.length);
+    } catch (error) {
+      console.error('가격 착한 가게 조회 실패', error);
+    }
+  },
+  [price],
+);
+
+// 호출부 유지
+useEffect(() => {
+  fetchGoodPriceStoresHome(price, food);
+}, [price, food, fetchGoodPriceStoresHome]);
 	const handleMoreClick = () => {
 		const params = new URLSearchParams();
 		const price = searchParams.get('price');
@@ -470,14 +457,16 @@ export default function HomeContainer() {
 						</h2>
 					</div>
 					<PriceTabs
-						initialPrice={price}
-						initialFood={food}
-						onChange={(priceValue, foodName) => {
-							setPrice(priceValue);
-							setFood(foodName);
-							fetchGoodPriceStores(priceValue, foodName);
-						}}
-					/>
+  initialPrice={price}
+  initialFood={food}
+  onChange={(priceValue, foodName) => {
+    setPrice(priceValue);
+    setFood(foodName);
+    // 필요 시 다른 작업
+  }}
+  limit={3}         // 홈: 3개만
+  pageSize={20}
+/>
 
 					<div className="flex justify-center mt-5">
 						<button

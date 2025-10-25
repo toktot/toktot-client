@@ -31,7 +31,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 
 	return (
 		<div
-			className="flex flex-row gap-3 p-3 bg-white min-w-[343px] max-w-[430px] h-[105px] cursor-pointer mb-2"
+			className="flex flex-row gap-3 p-3 bg-white min-w-[480px] max-w-[480px] h-[105px] cursor-pointer"
 			onClick={() => router.push(`/storemenu/${review.id}`)}
 		>
 			<div className="relative w-[89px] h-[89px]">
@@ -74,7 +74,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 								style={{ color: '#40D7F5', fill: '#40D7F5' }}
 							/>
 							<span className="mr-1">{review.average_rating?.toFixed(1)}</span>
-							<span className="text-grey-70 text-[12px] mr-2 mt-0.5">
+							<span className="text-grey-70 text-[12px] mr-2 mb-0.5">
 								({review.review_count})
 							</span>
 						</div>

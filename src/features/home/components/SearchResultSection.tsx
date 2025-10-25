@@ -220,10 +220,10 @@ export interface StoreSearchBody {
 type LocalFoodStatsResponse = {
 	success : boolean;
 	data : {
-		displayName : string;
-		averagePrice : number;
-		minPrice : number;
-		maxPrice : number;
+		display_name : string;
+		average_price : number;
+		min_price : number;
+		max_price : number;
 	}
 }
 async function fetchLocalFoodStats(localFoodType: string) {
@@ -294,6 +294,8 @@ const MENU_ICON_MAP: Partial<Record<string, IconName>> = {
   '회/물회': 'RawFish' as IconName,
   '빙떡': 'Bingtteok' as IconName,
   '오메기떡': 'Omegitteok' as IconName,
+  '흑돼지구이' : 'Pig' as IconName,
+  '전복김밥' : 'Abalone' as IconName
 };
 
 // enum → 아이콘
@@ -307,6 +309,9 @@ const TYPE_ICON_MAP: Partial<Record<string, IconName>> = {
   RAW_FISH_MULHOE: 'RawFish' as IconName,
   BING_RICE_CAKE: 'Bingtteok' as IconName,
   OMEGI_RICE_CAKE: 'Omegitteok' as IconName,
+  GRILLED_BLACK_PORK: 'Pig' as IconName,     // 흑돼지구이
+  ABALONE_GIMBAP: 'Abalone' as IconName,  
+
 };
 
 // ICON_MAP에 실제로 있는 키만 허용 + 폴백
@@ -386,10 +391,10 @@ const [localFoodTypeForIcon, setLocalFoodTypeForIcon] = useState<string | undefi
 				if (!mounted) return;
 
 				setPriceSummary({
-					displayName : stats.displayName || query,
-					averagePrice : stats.averagePrice ?? 0,
-					minPrice : stats.minPrice ?? 0,
-					maxPrice : stats.maxPrice ?? 0,
+					displayName : stats.display_name || query,
+					averagePrice : stats.average_price ?? 0,
+					minPrice : stats.min_price ?? 0,
+					maxPrice : stats.max_price ?? 0,
 				})
 			} catch (e) {
 				if (mounted) setPriceSummary(null);
@@ -844,6 +849,31 @@ const [localFoodTypeForIcon, setLocalFoodTypeForIcon] = useState<string | undefi
 								/>
 								<Auto query={text} onSelect={handleSelect} />
 							</div>
+							{priceSummary ? (
+								// PriceSummary 있을 때
+								<div className="bg-grey-10 mt-4 h-[800px] pt-2 pb-6 ">
+									<div className="flex justify-center px-4">
+										{(() => {
+											const derivedIcon = pickIconByMenu({
+												menuName : priceSummary.displayName,
+												localFoodType: localFoodTypeForIcon,
+												
+											})
+											return (
+<PriceSummary
+    MenuName={priceSummary.displayName}
+    icon={derivedIcon}   // 존재하는 아이콘 키로 바꾸세요
+    id={1}
+    avgPrice={priceSummary.averagePrice}
+    minPrice={priceSummary.minPrice}
+    maxPrice={priceSummary.maxPrice}
+    minRate={0}
+    maxRate={0}
+  />
+											)
+										})()}
+										
+									</div>
 							<div className="mt-4 w-full flex flex-col">
 								{stores.map((store, index) => (
 									<StoreInfoCard
@@ -861,6 +891,8 @@ const [localFoodTypeForIcon, setLocalFoodTypeForIcon] = useState<string | undefi
 									onClose={handleToastClose}
 								/>
 							)}
+							</div>
+							) : null}
 						</>
 					)}
 					{/* 리뷰 탭 콘텐츠 */}

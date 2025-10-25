@@ -39,11 +39,14 @@ interface StoreData {
 	value_for_money_score?: number;
 	is_local_store?: boolean;
 }
-
+type ReviewStats = {
+  overallRating: number;        // 소수점 1자리 표시용
+  totalReviewCount: number;
+};
 export default function StoreDetailPage() {
 	const params = useParams();
 	const router = useRouter();
-
+const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 	const storeId = Number(params.storeId);
 	const [store, setStore] = useState<StoreData | null>(null);
 	const [selected, setSelected] = useState(false);
@@ -56,6 +59,45 @@ export default function StoreDetailPage() {
 		}
 	}, [router]);
 	// 단일 Review 객체 추출 // 여기 변경
+	useEffect(() => {
+  const fetchReviewStats = async () => {
+    try {
+      const res = await api.get(`/v1/restaurants/${storeId}/review-statistics`);
+      const json = res.data;
+
+      if (json?.success && json.data) {
+        const d = json.data;
+
+        // 문서/서버의 명칭 차이까지 안전하게 커버
+        const total =
+          d.totalReviewCount ?? d.totalCount ?? 0;
+
+        const ratingRaw =
+          d.overallRating ?? d.averageRating ?? 0;
+
+        // 소수점 1자리 반올림
+        const rating =
+          typeof ratingRaw === 'number'
+            ? Math.round(ratingRaw * 10) / 10
+            : Number(ratingRaw) || 0;
+
+        setReviewStats({
+          overallRating: rating,
+          totalReviewCount: total,
+        });
+      } else {
+        setReviewStats(null);
+        console.error(json);
+      }
+    } catch (e) {
+      console.error(e);
+      setReviewStats(null);
+    }
+  };
+
+  fetchReviewStats();
+}, [storeId]);
+
 
 	useEffect(() => {
 		const fetchStore = async () => {
@@ -63,7 +105,7 @@ export default function StoreDetailPage() {
 				const res = await api.get(`/v1/restaurants/${storeId}`);
 
 				const json = res.data;
-
+				console.log(res.data);
 				if (json.success && json.data) {
 					setStore(json.data);
 				} else {
@@ -102,13 +144,14 @@ export default function StoreDetailPage() {
 						priority
 					/>
 				) : (
-					<Image
-						src="/images/foodImage1.png"
-						alt="기본 이미지"
-						fill
-						style={{ objectFit: 'cover' }}
-						priority
-					/>
+					<div className="relative min-w-[343px] max-w-[480px] h-[300px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-3xl overflow-hidden">
+											<div className="flex flex-col flex items-center">
+												<span className="">
+													<Icon name="KoreanDish" size="xxl"></Icon>
+												</span>
+												<div className="">사진을 준비하고 있어요</div>
+											</div>
+										</div>
 				)}
 				<Icon
 					name={'ArrowLefttBar'}
@@ -129,14 +172,18 @@ export default function StoreDetailPage() {
 							</div>
 							<div className="flex items-center gap-1">
 								{/*{store.point !== undefined && (*/}
-								<span className="text-sm font-semibold">
-									<TopPercentTag
-										value={store.value_for_money_score ?? '상위 20'}
-									/>
-								</span>
-								<span className="text-sm font-semibold">
-									<GasimbiCategoryTag value={store.point ?? 80} />
-								</span>
+								{store.value_for_money_score && (
+    <span className="text-sm font-semibold">
+      <TopPercentTag value={store.value_for_money_score} />
+    </span>
+  )}
+
+  {/* 가심비 점수 */}
+  {store.point != null && (
+    <span className="text-sm font-semibold">
+      <GasimbiCategoryTag value={store.point} />
+    </span>
+  )}
 								{/*})}*/}
 								{/*{store.value_for_money_score !== undefined && ( */}
 
@@ -158,11 +205,11 @@ export default function StoreDetailPage() {
 							size="xxs"
 						/>
 						<span className="text-[14px] font-semibold text-grey-85">
-							{store.value_for_money_score ?? 0}
+							{(reviewStats?.overallRating ?? 0).toFixed(1)}
 						</span>
 						<span className="mx-1 text-[#D9D9D9]">·</span>
 						<span className="text-[14px] font-semibold text-grey-85">
-							리뷰 {store.point ?? 0}개
+							리뷰 {reviewStats?.totalReviewCount ?? 0}개
 						</span>
 						<Icon name="ArrowRight" size="xxs" className=" text-grey-80 ml-1" />
 					</div>
@@ -196,7 +243,7 @@ export default function StoreDetailPage() {
 
 						<div className="flex items-center gap-2 mb-2">
 							<Icon name={'call'} className="mr-2 w-5 h-5 text-grey-50" />
-
+<span className="text-grey-80 text-[14px]">{store.phone}</span>
 							<span className="-ml-2">
 								<CopyButton text={store.phone} />
 							</span>

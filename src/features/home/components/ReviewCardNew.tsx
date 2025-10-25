@@ -120,6 +120,7 @@ export default function PhotoReviewCard({ review }: PhotoReviewCardProps) {
 							사진을 준비하고 있어요
 						</div>
 					)}
+					
 					{(review.valueForMoneyScore || review.keywords.length > 0) && (
 						<div className="absolute bottom-0 left-0 flex flex-wrap gap-2 px-2 pb-2 pt-2">
 							{/* 가심비 박스 */}

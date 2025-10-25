@@ -31,12 +31,20 @@ export function useCategories() {
 					success: boolean;
 					data: FoodCategoryItem[];
 				}>('/v1/local-foods');
-				console.log(res);
+				console.log(res.data?.data?.length);
 				const mapped: CategoryItem[] = res.data.data.map((item) => ({
 					id: item.id,
 					name: item.name,
 					icon: foodIconMap[item.icon_name] || 'None',
 				}));
+				console.log(mapped.length)
+				console.table(
+					mapped.map((m) => ({
+						id : m.id,
+						name: m.name,
+						icon : m.icon
+					}))
+				)
 
 				setCategories(mapped);
 			} catch (err: unknown) {
