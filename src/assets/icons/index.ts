@@ -1,7 +1,7 @@
 export { default as ArrowDownBar } from './arrow-down-bar.svg';
 export { default as ArrowUpBar } from './arrow-up-bar.svg';
-export { default as ArrowUp } from './arrow-up.svg';
-export { default as ArrowDown } from './ArrowDown.svg';
+export { default as ArrowUp } from './Arrow-down.svg';
+export { default as ArrowDown } from './ArrowUp.svg';
 export { default as ArrowLeft } from './arrow-left.svg';
 export { default as ArrowRight } from './ArrowRight.svg';
 export { default as Bell } from './bell.svg';
@@ -63,7 +63,8 @@ export { default as evening } from './evening.svg';
 export { default as morning } from './morning.svg';
 export { default as call } from './call.svg';
 export { default as Kebab } from './kebab.svg';
-
+export {default as Pig} from './pig.svg';
+export {default as Abalone} from './abalone.svg';
 export { default as Gasimbi } from './gasimbi.svg';
 export { default as Reset } from './Reset.svg';
 export { default as OrangeGasimbi } from './OrangeGasimbi.svg';

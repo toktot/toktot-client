@@ -342,38 +342,30 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 							},
 						]
 							.sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
-							.map(({ label, value, range }, _, arr) => {
-								const maxValue = Math.max(
-									...arr.map((item) => item.value ?? 0),
-								);
-								const isMax = value === maxValue;
-								return (
-									<div key={label} className="flex items-center w-full">
-										<span className="ml-2 w-[55px] text-[12px] text-grey-85">
-											{label}
-										</span>
-										<span className="text-[9px] text-grey-50 w-[40px]">
-											{range}
-										</span>
+    .map(({ label, value, range }, _, arr) => {
+      const pct = Number(value ?? 0);
+      const maxValue = Math.max(...arr.map((item) => Number(item.value ?? 0)));
+      const isMax = pct === maxValue;
 
-										<div className="relative sm:w-[90px] w-[70px] h-[6px] bg-gray-200 overflow-hidden ml-2">
-											<div
-												className={`absolute h-[6px] ${
-													isMax ? 'bg-grey-90' : 'bg-grey-50'
-												}`}
-												style={{ width: `${Math.min(value ?? 0, 100)}%` }}
-											/>
-										</div>
+      return (
+        <div key={label} className="flex items-center w-full">
+          <span className="ml-2 w-[55px] text-[12px] text-grey-85">{label}</span>
+          <span className="text-[9px] text-grey-50 w-[40px]">{range}</span>
 
-										<span
-											className={`ml-2 font-semibold ${isMax ? 'text-grey-90' : 'text-grey-50'}`}
-										>
-											{value}%
-										</span>
-									</div>
-								);
-							})}
-					</div>
+          <div className="relative sm:w-[90px] w-[70px] h-[6px] bg-gray-200 overflow-hidden ml-2">
+            <div
+              className={`absolute h-[6px] ${isMax ? 'bg-grey-90' : 'bg-grey-50'}`}
+              style={{ width: `${Math.min(pct, 100)}%` }}
+            />
+          </div>
+
+          <span className={`ml-2 font-semibold ${isMax ? 'text-grey-90' : 'text-grey-50'}`}>
+            {pct.toFixed(2)}%
+          </span>
+        </div>
+      );
+    })}
+</div>
 				</div>
 			</div>
 
@@ -403,7 +395,7 @@ export default function StoreReview({ fillColor = '#3AC8FF' }: Star) {
 			</div>
 
 			{/* 리뷰 카드 리스트 */}
-			<div className=" w-full px-2 pb-20">
+			<div className=" w-full">
 				{filteredReviews.length > 0 ? (
 					filteredReviews.map((review) => (
 						<ReviewCard

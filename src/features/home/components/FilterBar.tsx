@@ -20,6 +20,7 @@ type FilterItem = {
 	value: number;
 	active?: boolean;
 };
+
 const filterItems: FilterItem[] = [
 	{ label: '거리', value: 0 },
 	{ label: '별점', value: 1 },
@@ -43,6 +44,17 @@ interface Props {
 	) => void;
 	locationAvailable?: boolean;
 }
+const JEJU_BOUNDS = {
+		latMin: 33.0,
+		latMax: 33.7,
+		lngMin: 126.0,
+		lngMax: 127.0,
+	};
+const isInJeju = (lat: number, lng: number) =>
+		lat >= JEJU_BOUNDS.latMin &&
+		lat <= JEJU_BOUNDS.latMax &&
+		lng >= JEJU_BOUNDS.lngMin &&
+		lng <= JEJU_BOUNDS.lngMax;
 
 const FilterBar: React.FC<Props> = ({
 	value,
@@ -53,18 +65,9 @@ const FilterBar: React.FC<Props> = ({
 	const [filterTags, setFilterTags] = useState<string[]>([]);
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const JEJU_BOUNDS = {
-		latMin: 33.0,
-		latMax: 33.7,
-		lngMin: 126.0,
-		lngMax: 127.0,
-	};
+	
 
-	const isInJeju = (lat: number, lng: number) =>
-		lat >= JEJU_BOUNDS.latMin &&
-		lat <= JEJU_BOUNDS.latMax &&
-		lng >= JEJU_BOUNDS.lngMin &&
-		lng <= JEJU_BOUNDS.lngMax;
+	
 	const [displayItems, setDisplayItems] = useState(filterItems);
 	const [isQueryActive, setIsQueryActive] = useState(false);
 	console.log(setIsQueryActive);
@@ -102,7 +105,7 @@ const FilterBar: React.FC<Props> = ({
 		} else {
 			setCanUseDistanceSort(false);
 		}
-	}, [location, isInJeju]);
+	}, [location]);
 
 	// 3. sortOption 설정 (브라우저 허용 + 제주도)
 	useEffect(() => {
@@ -340,3 +343,79 @@ const FilterBar: React.FC<Props> = ({
 };
 
 export default FilterBar;
+
+
+
+
+/*
+> git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file -
+
+husky - DEPRECATED
+
+
+
+Please remove the following two lines from .husky/pre-commit:
+
+
+
+#!/usr/bin/env sh
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+
+
+They WILL FAIL in v10.0.0
+
+
+
+🔍 Type checking...
+
+🧹 Lint checking...
+
+
+
+./src/features/home/components/FilterBar.tsx
+
+108:5  Warning: React Hook useEffect has an unnecessary dependency: 'isInJeju'. Either exclude it or remove the dependency array. Outer scope values like 'isInJeju' aren't valid dependencies because mutating them doesn't re-render the component.  react-hooks/exhaustive-deps
+
+
+
+./src/features/home/components/GoodStoreClient.tsx
+
+24:9  Error: 'allStores' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+24:20  Error: 'setAllStores' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+35:8  Error: 'handleFilterSelect' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+
+
+./src/features/home/components/HomeContainer.tsx
+
+104:7  Error: 'formatDistance' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+113:7  Error: 'extractMenus' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+
+
+./src/features/home/components/homeStore.tsx
+
+71:10  Error: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+125:6  Warning: React Hook useEffect has a missing dependency: 'fetchStores'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+
+
+./src/features/home/lib/fetchGoodPrice.tsx
+
+3:10  Error: 'logImages' is defined but never used.  @typescript-eslint/no-unused-vars
+
+
+
+./src/features/menuPrice/components/Graph.tsx
+
+389:6  Warning: React Hook useEffect has a missing dependency: 'userPos'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+생각 중
+ChatGPT는 실수를 할 수 있습니다.
+*/

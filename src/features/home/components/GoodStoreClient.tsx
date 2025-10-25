@@ -10,7 +10,6 @@ import PriceTabs from '@/features/home/components/homeStore';
 
 import { getDecryptedToken } from '@/shared/utils/storage';
 
-import { CategoryItem } from './FoodIcon';
 
 export default function GoodstoreClient() {
 	const searchParams = useSearchParams();
@@ -20,6 +19,7 @@ export default function GoodstoreClient() {
 
 	const [selectedPrice, setSelectedPrice] = useState(initialPrice);
 	const [selectedFood, setSelectedFood] = useState(initialFood);
+	
 	console.log(setSelectedPrice);
 	const router = useRouter();
 
@@ -30,9 +30,6 @@ export default function GoodstoreClient() {
 		}
 	}, [router]);
 
-	const handleFilterSelect = (food: CategoryItem) => {
-		setSelectedFood(food.name);
-	};
 
 	return (
 		<HomeAppShell showBottomNav={true}>
@@ -45,10 +42,15 @@ export default function GoodstoreClient() {
 							</h2>
 						</div>
 						<PriceTabs
-							initialPrice={selectedPrice}
-							initialFood={selectedFood}
-							onSelect={handleFilterSelect}
-						/>
+  initialPrice={selectedPrice}
+  initialFood={selectedFood}
+  onChange={(priceValue, foodName) => {
+    setSelectedPrice(priceValue);
+    setSelectedFood(foodName);
+  }}
+  limit={null}      // 더보기: 전부
+  pageSize={100}    // 한 번에 크게
+/>
 					</section>
 				</div>
 			</main>

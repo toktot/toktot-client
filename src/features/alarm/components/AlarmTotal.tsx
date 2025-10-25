@@ -76,7 +76,9 @@ export default function AlarmTotal() {
 		<div className="bg-grey-10 min-h-screen">
 			
 				<div className="relative flex items-center justify-between w-full bg-white py-3">
+					<button onClick={() => router.push('/back')}>
 					<Icon name={'ArrowLefttBar'} className="text-grey-70 mx-4" size="xxl"/>
+					</button>
 					<span className="text-base font-semibold text-grey-90">알림</span>
 					<Icon name={'Cancel'} className="text-grey-70" size="xl" />
 				</div>

@@ -6,7 +6,7 @@ import { IconName } from '@/shared/icons/iconMap';
 import Icon from '@/shared/ui/Icon';
 
 interface TopPercentTagProps {
-	value: string | number; // "상위 20%" 같은 string
+	value: string | number | undefined; // "상위 20%" 같은 string
 	className?: string;
 }
 

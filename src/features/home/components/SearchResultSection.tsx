@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { mealOptions } from '@/entities/home/model/mockMealOptions';
 import { useSearchParams } from 'next/navigation';
@@ -10,7 +10,7 @@ import { AppShell } from '@/widgets/layout';
 
 import FilterBar from '@/features/home/components/FilterBar';
 import { Review } from '@/features/home/model/mockHome';
-import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
+
 import Auto from '@/features/searchBar/components/Auto';
 
 import HeaderBox from '@/shared/components/HeaderBox';
@@ -24,6 +24,7 @@ import { getDecryptedToken } from '@/shared/utils/storage';
 import api from '../lib/api';
 import PriceSummary from './PriceSummary';
 import ReviewStoreCard from './ReviewStoreCard';
+import { ICON_MAP, IconName } from '@/shared/icons/iconMap';
 
 export interface BackendReview {
 	id: number;
@@ -216,6 +217,37 @@ export interface StoreSearchBody {
 	localFood?: LocalFoodFilter;
 	keywords?: string[];
 }
+type LocalFoodStatsResponse = {
+	success : boolean;
+	data : {
+		display_name : string;
+		average_price : number;
+		min_price : number;
+		max_price : number;
+	}
+}
+async function fetchLocalFoodStats(localFoodType: string) {
+	console.log('API call start')
+	const {data} = await api.get<LocalFoodStatsResponse>(
+		`/v1/local-foods/${encodeURIComponent(localFoodType)}/stats`
+	)
+	console.log('연동이 되고 있는 거냐고');
+	if (!data?.success) throw new Error('stats api failed')
+		return data.data;
+}
+const MENU_TO_ENUM: Record<string, string> = {
+  돔베고기: 'DOMBE_MEAT',
+  고기국수: 'MEAT_NOODLE_SOUP',
+  성게미역국: 'SEA_URCHIN_SEAWEED_SOUP',
+  고사리해장국: 'BRACKEN_HANGOVER_SOUP',
+  '고사리 해장국': 'BRACKEN_HANGOVER_SOUP',
+  옥돔구이: 'GRILLED_RED_TILEFISH',
+  갈치구이: 'GRILLED_CUTLASSFISH',
+  회: 'RAW_FISH_MULHOE',
+  '회/물회': 'RAW_FISH_MULHOE',
+  빙떡: 'BING_RICE_CAKE',
+  오메기떡: 'OMEGI_RICE_CAKE',
+};
 
 export default function SearchResultSection() {
 	const searchParams = useSearchParams();
@@ -236,7 +268,7 @@ export default function SearchResultSection() {
 	const fetchRef = useRef({ reviews: false, stores: false });
 	const pageRef = useRef(1);
 	const [text, setText] = useState('');
-
+	
 	const fetchingRef = useRef(false);
 	const handleSelect = (selectedText: string) => {
 		setInputValue(selectedText);
@@ -250,6 +282,68 @@ export default function SearchResultSection() {
 		setHasMoreReviews(true);
 		router.push(`/search?q=${encodeURIComponent(selectedText)}`);
 	};
+// 메뉴명 → 아이콘(ICON_MAP에 실제 존재하는 키로 채우세요)
+const MENU_ICON_MAP: Partial<Record<string, IconName>> = {
+  '돔베고기': 'DombeGogi' as IconName,
+  '고기국수': 'RawFishSoup' as IconName,
+  '성게미역국': 'Seaweedsoup' as IconName,
+  '고사리 해장국': 'Gosali' as IconName,
+  '옥돔구이': 'Ogdom' as IconName,
+  '갈치구이': 'Galchi' as IconName,
+  '회' : 'RawFish' as IconName,
+  '회/물회': 'RawFish' as IconName,
+  '빙떡': 'Bingtteok' as IconName,
+  '오메기떡': 'Omegitteok' as IconName,
+  '흑돼지구이' : 'Pig' as IconName,
+  '전복김밥' : 'Abalone' as IconName
+};
+
+// enum → 아이콘
+const TYPE_ICON_MAP: Partial<Record<string, IconName>> = {
+  DOMBE_MEAT: 'DombeGogi' as IconName,
+  MEAT_NOODLE_SOUP: 'RawFishSoup' as IconName,
+  SEA_URCHIN_SEAWEED_SOUP: 'Seaweedsoup' as IconName,
+  BRACKEN_HANGOVER_SOUP: 'Gosali' as IconName,
+  GRILLED_RED_TILEFISH: 'Ogdom' as IconName,
+  GRILLED_CUTLASSFISH: 'Galchi' as IconName,
+  RAW_FISH_MULHOE: 'RawFish' as IconName,
+  BING_RICE_CAKE: 'Bingtteok' as IconName,
+  OMEGI_RICE_CAKE: 'Omegitteok' as IconName,
+  GRILLED_BLACK_PORK: 'Pig' as IconName,     // 흑돼지구이
+  ABALONE_GIMBAP: 'Abalone' as IconName,  
+
+};
+
+// ICON_MAP에 실제로 있는 키만 허용 + 폴백
+function ensureIcon(icon: IconName | undefined, fallback: IconName = 'Food' as IconName): IconName {
+  if (icon && ICON_MAP[icon]) return icon;
+  if (ICON_MAP[fallback]) return fallback;
+  return Object.keys(ICON_MAP)[0] as IconName;
+}
+
+// ⬇️ “정확 매핑만” 사용 (키워드 없음)
+function pickIconByMenu(params: { menuName?: string; localFoodType?: string; fallback?: IconName }): IconName {
+  const { menuName, localFoodType, fallback = 'Food' as IconName } = params;
+
+  if (menuName && MENU_ICON_MAP[menuName]) {
+    const ic = MENU_ICON_MAP[menuName]!;
+    console.log('[IconMap] by MENU_ICON_MAP:', menuName, '→', ic);
+    return ensureIcon(ic, fallback);
+  }
+
+  if (localFoodType && TYPE_ICON_MAP[localFoodType]) {
+    const ic = TYPE_ICON_MAP[localFoodType]!;
+    console.log('[IconMap] by TYPE_ICON_MAP:', localFoodType, '→', ic);
+    return ensureIcon(ic, fallback);
+  }
+
+  console.warn('[IconMap] fallback used for', { menuName, localFoodType });
+  return ensureIcon(undefined, fallback);
+}
+
+
+
+
 
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [, setReviewPage] = useState(1);
@@ -270,11 +364,50 @@ export default function SearchResultSection() {
 			router.replace('/login');
 		}
 	});
-
+	
 	// 가격 정보 가져오기
-	const priceSummary = useMemo(() => {
-		return priceSummaryMap[query as keyof typeof priceSummaryMap];
-	}, [query]);
+	const [priceSummary, setPriceSummary] = useState<{
+		displayName : string;
+		averagePrice : number;
+		minPrice : number;
+		maxPrice : number;
+	} | null>(null);
+const [localFoodTypeForIcon, setLocalFoodTypeForIcon] = useState<string | undefined>(undefined);
+
+	useEffect(() => {
+		let mounted = true;
+
+		(async () => {
+			try {
+				const localFoodType = MENU_TO_ENUM[query];
+				setLocalFoodTypeForIcon(localFoodType);
+				console.log(localFoodType);
+				if (!localFoodType) {
+					setPriceSummary(null);
+					return;
+				}
+
+				const stats = await fetchLocalFoodStats(localFoodType);
+				if (!mounted) return;
+
+				setPriceSummary({
+					displayName : stats.display_name || query,
+					averagePrice : stats.average_price ?? 0,
+					minPrice : stats.min_price ?? 0,
+					maxPrice : stats.max_price ?? 0,
+				})
+			} catch (e) {
+				if (mounted) setPriceSummary(null);
+				console.error('price stats fetch error', e);
+			}
+		})()
+
+		return () => {
+			mounted = false;
+		}
+	}, [query])
+
+
 	const [showToast, setShowToast] = useState(false);
 	const handleLocationSaved = () => {
 		setShowToast(true);
@@ -549,8 +682,8 @@ export default function SearchResultSection() {
 		hasMore,
 	]);
 	useEffect(() => {
-		if (!loaderRef.current) return;
-
+		const node = loaderRef.current;
+		if(!node) return;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting) {
@@ -564,9 +697,9 @@ export default function SearchResultSection() {
 			},
 			{ threshold: 1.0 },
 		);
-		observer.observe(loaderRef.current);
+		observer.observe(node);
 		return () => {
-			if (loaderRef.current) observer.unobserve(loaderRef.current);
+			observer.unobserve(node);
 		};
 	}, [tab, fetchReviews, fetchStores]);
 
@@ -716,6 +849,31 @@ export default function SearchResultSection() {
 								/>
 								<Auto query={text} onSelect={handleSelect} />
 							</div>
+							{priceSummary ? (
+								// PriceSummary 있을 때
+								<div className="bg-grey-10 mt-4 h-[800px] pt-2 pb-6 ">
+									<div className="flex justify-center px-4">
+										{(() => {
+											const derivedIcon = pickIconByMenu({
+												menuName : priceSummary.displayName,
+												localFoodType: localFoodTypeForIcon,
+												
+											})
+											return (
+<PriceSummary
+    MenuName={priceSummary.displayName}
+    icon={derivedIcon}   // 존재하는 아이콘 키로 바꾸세요
+    id={1}
+    avgPrice={priceSummary.averagePrice}
+    minPrice={priceSummary.minPrice}
+    maxPrice={priceSummary.maxPrice}
+    minRate={0}
+    maxRate={0}
+  />
+											)
+										})()}
+										
+									</div>
 							<div className="mt-4 w-full flex flex-col">
 								{stores.map((store, index) => (
 									<StoreInfoCard
@@ -733,6 +891,8 @@ export default function SearchResultSection() {
 									onClose={handleToastClose}
 								/>
 							)}
+							</div>
+							) : null}
 						</>
 					)}
 					{/* 리뷰 탭 콘텐츠 */}
@@ -758,7 +918,26 @@ export default function SearchResultSection() {
 								// PriceSummary 있을 때
 								<div className="bg-grey-10 mt-4 h-[800px] pt-2 pb-6 ">
 									<div className="flex justify-center px-4">
-										<PriceSummary {...priceSummary} />
+										{(() => {
+											const derivedIcon = pickIconByMenu({
+												menuName : priceSummary.displayName,
+												localFoodType: localFoodTypeForIcon,
+												
+											})
+											return (
+<PriceSummary
+    MenuName={priceSummary.displayName}
+    icon={derivedIcon}   // 존재하는 아이콘 키로 바꾸세요
+    id={1}
+    avgPrice={priceSummary.averagePrice}
+    minPrice={priceSummary.minPrice}
+    maxPrice={priceSummary.maxPrice}
+    minRate={0}
+    maxRate={0}
+  />
+											)
+										})()}
+										
 									</div>
 									{/* 리뷰 리스트 */}
 									<div className="flex flex-wrap justify-between mt-4">

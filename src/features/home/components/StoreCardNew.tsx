@@ -22,12 +22,14 @@ interface GoodPriceStore {
 		is_local_store: boolean;
 		image: string;
 		point: number;
-		percent: number;
+		percent?: number;
 	};
 }
 
 export default function StoreCardNew({ review }: GoodPriceStore) {
 	const router = useRouter();
+	const hasPercent =
+    review.percent != null && !Number.isNaN(review.percent);
 	const getAveragePrice = (menus: string) => {
 		const menuItems = menus.split(',').map((item) => item.trim());
 		const prices: number[] = [];
@@ -86,7 +88,7 @@ export default function StoreCardNew({ review }: GoodPriceStore) {
 			</div>
 
 			<div className="flex items-center gap-1 text-xs mt-1">
-				{review.percent && <TopPercentTag value={review.percent} />}
+				{hasPercent && <TopPercentTag value={review.percent} />}
 				{review.point !== undefined && <GasimbiTag value={review.point} />}
 			</div>
 			{/* main_menus 오른쪽 작은 글씨 */}
