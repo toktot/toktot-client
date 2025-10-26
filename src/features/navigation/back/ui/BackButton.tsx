@@ -12,7 +12,9 @@ export const BackButton = ({ className }: { className?: string }) => {
 			aria-label="Go back"
 			className={className}
 		>
+
 			<Icon name="ArrowLeft" />
+
 		</button>
 	);
 };

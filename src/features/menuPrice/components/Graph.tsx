@@ -202,7 +202,14 @@ type CustomTickProps = {
 const NAME_TO_ENUM: Record<string, string> = {
   // 필요에 맞게 계속 추가하세요
   '돔베고기': 'DOMBE_MEAT',
-  '고기국수': 'MEAT_NOODLE',
+  '고기국수': 'MEAT_NOODLE_SOUP',
+  '성게미역국' : 'SEA_URCHIN_SEAWEED_SOUP',
+  '고사리 해장국' : 'BRACKEN_HANGOVER_SOUP',
+  '옥돔구이' : 'GRILLED_RED_TILEFISH',
+  '갈치구이' : 'GRILLED_CUTLASSFISH',
+  '회/물회' : 'RAW_FISH_MULHOE',
+  '빙떡' : 'BING_RICE_CAKE',
+  '오메기떡' : 'OMEGI_RICE_CAKE',
   '흑돼지': 'BLACK_PORK',
   '성게알비빔밥': 'SEA_URCHIN_BAP',
   
@@ -438,6 +445,7 @@ const yTicks = Array.from({ length: yTop / 5 + 1 }, (_, i) => i * 5);
 	if (!stats) {
 		return null;
 	}
+	const selectedFoodName = stats?.displayName || query
 	return (
 		<div className="bg-grey-10 py-4 px-4 min-h-screen space-y-3 cursor-pointer pb-12">
 			{/* 헤더 */}
@@ -694,7 +702,7 @@ const yTicks = Array.from({ length: yTop / 5 + 1 }, (_, i) => i * 5);
 							{selectedStores.length > 0 ? (
 								selectedStores.map((store, idx, arr) => (
 									<div key={store.id} className="flex flex-col">
-											<StoreInfoCard review={store} />
+											<StoreInfoCard review={store} selectedFoodName={selectedFoodName} selectedPrice={selectedPrice}/>
 											{idx < arr.length - 1 && (
 												<div className="w-full h-px bg-grey-10 my-4" />
 											)}

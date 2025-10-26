@@ -231,7 +231,7 @@ async function fetchLocalFoodStats(localFoodType: string) {
 	const {data} = await api.get<LocalFoodStatsResponse>(
 		`/v1/local-foods/${encodeURIComponent(localFoodType)}/stats`
 	)
-	console.log('연동이 되고 있는 거냐고');
+	console.log('data.data', data.data);
 	if (!data?.success) throw new Error('stats api failed')
 		return data.data;
 }
@@ -247,6 +247,8 @@ const MENU_TO_ENUM: Record<string, string> = {
   '회/물회': 'RAW_FISH_MULHOE',
   빙떡: 'BING_RICE_CAKE',
   오메기떡: 'OMEGI_RICE_CAKE',
+  흑돼지구이: 'BLACKPORK_BBQ',
+  전복김밥 : 'ABALONE_KIMBAP'
 };
 
 export default function SearchResultSection() {
@@ -309,8 +311,8 @@ const TYPE_ICON_MAP: Partial<Record<string, IconName>> = {
   RAW_FISH_MULHOE: 'RawFish' as IconName,
   BING_RICE_CAKE: 'Bingtteok' as IconName,
   OMEGI_RICE_CAKE: 'Omegitteok' as IconName,
-  GRILLED_BLACK_PORK: 'Pig' as IconName,     // 흑돼지구이
-  ABALONE_GIMBAP: 'Abalone' as IconName,  
+  BLACKPORK_BBQ: 'Pig' as IconName,     // 흑돼지구이
+  ABALONE_KIMBAP: 'Abalone' as IconName,  
 
 };
 
