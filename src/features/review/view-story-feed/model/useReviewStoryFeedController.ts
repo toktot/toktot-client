@@ -34,11 +34,12 @@ export const useReviewStoryFeedController = () => {
 
 	useEffect(() => {
 		const newFilters: ReviewSearchRequest = { sort };
+		//FIXME: 1km로 고정되어 있음. 나중에 수정해야 함.
 		if (sort === 'DISTANCE' && location.lat && location.lng) {
 			newFilters.location = {
 				latitude: location.lat,
 				longitude: location.lng,
-				radius: 10000, // 10km
+				radius: 1000, // 1km
 			};
 		}
 		setFilters(newFilters);
