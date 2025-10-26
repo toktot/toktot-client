@@ -41,14 +41,15 @@ export const MenuImageUploaderWidget = () => {
 
 	return (
 		<section className="w-full space-y-3">
+			<p className="text-grey-70 mb-[12px]">
+				메뉴판 등록을 위한 두 번째 단계예요!
+			</p>
 			<Typography as="h2" className="text-2xl">
 				가격 메뉴판을
 				<br />
 				등록해주세요!
 			</Typography>
-			<p className="text-xs text-grey-80">
-				어둡지 않고 선명할수록 메뉴 정보에 오류가 줄어들어요
-			</p>
+
 			<div className="flex flex-wrap gap-4">
 				{images.map((image) => (
 					<div key={image.id} className="relative w-24 h-24 rounded-lg">
@@ -69,7 +70,7 @@ export const MenuImageUploaderWidget = () => {
 				))}
 
 				{images.length < MAX_MENU_IMAGES && (
-					<label className="w-full h-60 bg-grey-10 flex flex-col items-center justify-center cursor-pointer rounded-lg text-grey-50">
+					<label className="w-full h-60 bg-grey-10 flex flex-col items-center justify-center cursor-pointer rounded-lg text-grey-50 gap-3">
 						<input
 							type="file"
 							className="hidden"
@@ -77,10 +78,17 @@ export const MenuImageUploaderWidget = () => {
 							multiple
 							accept=".jpeg, .jpg, .png"
 						/>
-						<Icon name="Plus" size="s" />
+						<p className="text-xs text-grey-80">
+							어둡지 않고 선명할수록 메뉴 정보에 오류가 줄어들어요
+						</p>
+						{/* Changed button to span to ensure clicking it triggers the parent label's input */}
+						<span className="p-2 text-xs bg-grey-90 text-primary-40 rounded-2xl font-semibold">
+							메뉴판 등록하기
+						</span>
+						{/* <Icon name="Plus" size="s" />
 						<span className="text-xs mt-1">
 							{images.length}/{MAX_MENU_IMAGES}
-						</span>
+						</span> */}
 					</label>
 				)}
 			</div>

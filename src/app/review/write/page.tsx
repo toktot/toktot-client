@@ -3,10 +3,11 @@
 import { useRouter } from 'next/navigation';
 
 import { AppShell, Header } from '@/widgets/layout';
+import { SelectStoreWidget } from '@/widgets/store-search/ui/SelectStoreWidget';
 
 import { BackButton } from '@/features/navigation/back/ui/BackButton';
 import { PlaceClient } from '@/features/store-search/api/schema';
-import { SelectStoreForReview } from '@/features/store-search/ui/SelectStoreForReview';
+import Typography from '@/shared/ui/Typography';
 
 const SelectStoreForReviewPage = () => {
 	const router = useRouter();
@@ -23,7 +24,14 @@ const SelectStoreForReviewPage = () => {
 				</Header.Left>
 				<Header.Center>리뷰 쓰기</Header.Center>
 			</Header>
-			<SelectStoreForReview onStoreSelect={handleStoreSelect} />
+			<div className="p-4">
+				<Typography as="h1" className="mt-[47px] mb-[12px] font-semibold">
+					방문한 가게를
+					<br />
+					검색해주세요
+				</Typography>
+				<SelectStoreWidget onStoreSelect={handleStoreSelect} />
+			</div>
 		</AppShell>
 	);
 };

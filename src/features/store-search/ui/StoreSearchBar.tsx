@@ -20,7 +20,6 @@ export const StoreSearchBar = ({
 			onChange={onQueryChange}
 			onSearchClick={onSearch}
 			className={clsx(
-				'border',
 				'rounded-2xl',
 				'p-4',
 				'bg-grey-10',

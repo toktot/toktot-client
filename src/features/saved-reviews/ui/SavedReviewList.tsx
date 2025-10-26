@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { useInfiniteScroll } from '@/shared/hooks/useInfiniteScroll';
 
 import { useInfiniteSavedReviews } from '../model/useInfiniteSavedReviews';
@@ -10,13 +12,23 @@ interface SavedReviewListProps {
 }
 
 export const SavedReviewList = ({ folderId }: SavedReviewListProps) => {
-	const { reviews, isLoading, hasMore, error, loadMoreReviews } =
-		useInfiniteSavedReviews(folderId);
+	const {
+		reviews,
+		isLoading,
+		hasMore,
+		error,
+		loadMoreReviews,
+		reset,
+	} = useInfiniteSavedReviews();
+
+	useEffect(() => {
+		reset();
+	}, [reset]);
 
 	const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
 		isLoading,
 		hasMore,
-		onLoadMore: loadMoreReviews,
+		onLoadMore: () => loadMoreReviews(folderId),
 	});
 
 	if (error) {
@@ -27,7 +39,7 @@ export const SavedReviewList = ({ folderId }: SavedReviewListProps) => {
 		<div className="p-4">
 			<div className="grid grid-cols-2 gap-4">
 				{reviews.map((review) => (
-					<SavedReviewCard key={review.id} review={review} />
+					<SavedReviewCard key={review.id} review={review} folderId={folderId} />
 				))}
 			</div>
 			<div ref={loadMoreRef} className="h-10" />

@@ -28,6 +28,8 @@ interface ReviewFolderState {
 		reviewId: ReviewId,
 		folderIds: ReviewFolderId[],
 	) => Promise<{ success: boolean; fullFolders?: string[] }>;
+	renameFolder: (folderId: ReviewFolderId, newName: string) => Promise<void>;
+	deleteFolder: (folderId: ReviewFolderId) => Promise<void>;
 }
 
 const mapFolderClientToReviewFolder = (f: FolderClient): ReviewFolder => ({
@@ -38,7 +40,7 @@ const mapFolderClientToReviewFolder = (f: FolderClient): ReviewFolder => ({
 	reviewIds: [], // 서버에서 reviewIds를 주지 않는다면 빈 배열; 필요하면 API 확장
 });
 
-export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
+export const useReviewFolderStore = create<ReviewFolderState>()((set, get) => {
 	const getToken = () => getDecryptedToken() ?? undefined;
 	const authKy = createAuthApi({
 		getToken,
@@ -51,7 +53,7 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 
 	return {
 		folders: [],
-		isLoading: true,
+		isLoading: false,
 
 		fetchFolders: async () => {
 			set({ isLoading: true });
@@ -120,13 +122,43 @@ export const useReviewFolderStore = create<ReviewFolderState>((set, get) => {
 				const mapped = updatedServerFolders.map(mapFolderClientToReviewFolder);
 				set({ folders: mapped, isLoading: false });
 
-				useReviewFeedStore.getState().updateBookmarkStatus(reviewId, true);
+        useReviewFeedStore.getState().updateBookmarkStatus(reviewId, true);
 
 				return { success: true };
 			} catch (err: unknown) {
 				console.error('리뷰 저장 실패:', err);
 				set({ isLoading: false });
 				return { success: false };
+			}
+		},
+
+		renameFolder: async (folderId, newName) => {
+			const oldFolders = get().folders;
+			set((state) => ({
+				folders: state.folders.map((f) =>
+					f.id === folderId ? { ...f, name: newName } : f,
+				),
+			}));
+
+			try {
+				await api.renameFolder(Number(folderId), newName);
+			} catch (error) {
+				set({ folders: oldFolders });
+				throw error;
+			}
+		},
+
+		deleteFolder: async (folderId) => {
+			const oldFolders = get().folders;
+			set((state) => ({
+				folders: state.folders.filter((f) => f.id !== folderId),
+			}));
+
+			try {
+				await api.deleteFolder(Number(folderId));
+			} catch (error) {
+				set({ folders: oldFolders });
+				throw error;
 			}
 		},
 	};

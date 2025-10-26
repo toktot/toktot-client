@@ -1,47 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-
-import { useReviewFolderStore } from '@/entities/review-folder/model/store';
-import { ReviewFolder } from '@/entities/review-folder/model/types';
-import { AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { AnimatePresence } from 'framer-motion';
 
+import { ReviewFolder } from '@/entities/review-folder/model/types';
+import { useReviewFolderStore } from '@/entities/review-folder/model/store';
 import { ConfirmModal } from '@/features/report/ui/ConfirmModal';
-
 import { isHTTPError, isTimeoutError } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';
 
-interface FolderCardProps {
+interface FolderMenuProps {
 	folder: ReviewFolder;
-	isMenuOpen?: boolean;
-	onMenuToggle?: () => void;
-	showMenu?: boolean;
+	isMenuOpen: boolean;
+	onMenuToggle: () => void;
+	closeMenu: () => void;
 }
 
-export const FolderCard = ({
-	folder,
-	isMenuOpen,
-	onMenuToggle,
-	showMenu = true,
-}: FolderCardProps) => {
-	const router = useRouter();
+export const FolderMenu = ({ folder, isMenuOpen, onMenuToggle, closeMenu }: FolderMenuProps) => {
 	const { renameFolder, deleteFolder } = useReviewFolderStore();
 	const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [newFolderName, setNewFolderName] = useState(folder.name);
-
-	const handleCardClick = () => {
-		router.push(`/my/saved/${folder.id}`);
-	};
 
 	const handleRename = async () => {
 		if (!newFolderName.trim() || newFolderName === folder.name) {
 			setIsRenameModalOpen(false);
 			return;
 		}
-
 		try {
 			await renameFolder(folder.id, newFolderName);
 			toast.success('폴더 이름이 변경되었습니다.');
@@ -77,69 +63,41 @@ export const FolderCard = ({
 
 	return (
 		<>
-			<div
-				onClick={handleCardClick}
-				className="relative w-full p-3 h-[20vh] rounded-lg overflow-hidden shadow-sm cursor-pointer hover:bg-grey-10 transition-colors"
-			>
-				<div className="flex items-start justify-between">
-					<div className="flex items-center gap-3">
-						<Icon name="Bookmark" size="m" className="text-grey-600" />
-						<div>
-							<h3 className="font-semibold text-grey-900">{folder.name}</h3>
-							<p className="text-sm text-grey-500">
-								{folder.reviewCount}개의 리뷰
-							</p>
-						</div>
-					</div>
-					{showMenu && (
-						<div className="relative z-10">
+			<div className="relative z-10">
+				<button
+					onClick={(e) => {
+						e.stopPropagation();
+						onMenuToggle();
+					}}
+					className="p-1"
+				>
+					<Icon name="Kebab" size="s" />
+				</button>
+				{isMenuOpen && (
+					<div className="absolute top-full right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-grey-20">
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								closeMenu();
+									setIsRenameModalOpen(true);
+								}}
+								className="w-full p-2 text-left text-sm hover:bg-grey-10 rounded-t-lg"
+							>
+								이름 변경
+							</button>
 							<button
 								onClick={(e) => {
 									e.stopPropagation();
-									onMenuToggle?.();
+									closeMenu();
+									setIsDeleteModalOpen(true);
 								}}
-								className="p-1"
+								className="w-full p-2 text-left text-sm text-sub-red-30 hover:bg-grey-10 rounded-b-lg"
 							>
-								<Icon name="Kebab" size="s" />
+								폴더 삭제
 							</button>
-							{isMenuOpen && (
-								<div className="absolute top-full right-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-grey-20">
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											onMenuToggle?.();
-											setIsRenameModalOpen(true);
-										}}
-										className="w-full p-2 text-left text-sm hover:bg-grey-10 rounded-t-lg"
-									>
-										이름 변경
-									</button>
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											onMenuToggle?.();
-											setIsDeleteModalOpen(true);
-										}}
-										className="w-full p-2 text-left text-sm text-sub-red-30 hover:bg-grey-10 rounded-b-lg"
-									>
-										폴더 삭제
-									</button>
-								</div>
-							)}
 						</div>
 					)}
-				</div>
 			</div>
-
-			{isMenuOpen && (
-				<div
-					className="fixed inset-0 z-0"
-					onClick={(e) => {
-						e.stopPropagation();
-						onMenuToggle?.();
-					}}
-				/>
-			)}
 
 			<AnimatePresence>
 				{isRenameModalOpen && (

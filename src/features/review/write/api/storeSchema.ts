@@ -23,9 +23,8 @@ export const StoreClientSchema = StoreServerSchema.transform((serverData) => ({
 	storeName: serverData.name,
 	address: serverData.address,
 	storeImageUrl: serverData.image,
-	mainMenu: '메뉴 등록이 필요해요.',
 	latitude: serverData.latitude,
 	longitude: serverData.longitude,
 }));
 
-export type Store = z.infer<typeof StoreClientSchema>;
+export type Store = z.infer<typeof StoreClientSchema> & { mainMenu: string };

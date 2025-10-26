@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useReviewFolderStore } from '@/entities/review-folder/model/store';
+
+import { ReviewFolderId } from '@/shared/model/types';
 
 import { FolderCard } from './FolderCard';
 
@@ -21,10 +23,16 @@ const FolderListLoader = () => (
 
 export const FolderList = () => {
 	const { folders, isLoading, fetchFolders } = useReviewFolderStore();
+	const [openMenuFolderId, setOpenMenuFolderId] =
+		useState<ReviewFolderId | null>(null);
 
 	useEffect(() => {
 		fetchFolders();
 	}, [fetchFolders]);
+
+	const handleMenuToggle = (folderId: ReviewFolderId) => {
+		setOpenMenuFolderId((prevId) => (prevId === folderId ? null : folderId));
+	};
 
 	if (isLoading) {
 		return <FolderListLoader />;
@@ -40,7 +48,13 @@ export const FolderList = () => {
 		<div className="p-4">
 			<div className="grid grid-cols-2 gap-4">
 				{folders.map((folder) => (
-					<FolderCard key={folder.id} folder={folder} />
+					<FolderCard
+						key={folder.id}
+						folder={folder}
+						isMenuOpen={openMenuFolderId === folder.id}
+						onMenuToggle={() => handleMenuToggle(folder.id)}
+						showMenu={true}
+					/>
 				))}
 			</div>
 		</div>
