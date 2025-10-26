@@ -1,6 +1,6 @@
 export { default as ArrowDownBar } from './arrow-down-bar.svg';
 export { default as ArrowUpBar } from './arrow-up-bar.svg';
-export { default as ArrowUp } from './ArrowUp.svg';
+export { default as ArrowUp } from './arrow-downs.svg';
 export { default as ArrowDown } from './ArrowUp.svg';
 export { default as ArrowLeft } from './arrow-left.svg';
 export { default as ArrowRight } from './ArrowRight.svg';
