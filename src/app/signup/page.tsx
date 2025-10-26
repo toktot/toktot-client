@@ -78,7 +78,7 @@ export default function SignupPage() {
 			}`}
 		>
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'ArrowLefttBar'} size="xxl" className="border-[#74808E]" />
+				<Icon name={'ArrowLeftBar'} size="xxl" className="border-[#74808E]" />
 				<h1 className="text-base font-semibold">회원가입</h1>
 				<Icon name={'Cancel'} size="xl" className="border-[#74808E]" />
 			</div>

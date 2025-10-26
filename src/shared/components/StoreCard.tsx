@@ -24,9 +24,12 @@ export interface StoreInfoCardProps {
 		topPercent?: string | null;
 		valueScore?: number | null;
 	};
+	selectedFoodName?: string;
+  /** 그래프에서 내려받는 선택된 가격 (예: 15000) */
+  selectedPrice?: number | null;
 }
 
-export default function StoreInfoCard({ review }: StoreInfoCardProps) {
+export default function StoreInfoCard({ review, selectedPrice, selectedFoodName }: StoreInfoCardProps) {
 	const router = useRouter();
 
 	return (
@@ -43,13 +46,12 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 						className="rounded-xl object-cover"
 					/>
 				) : (
-					<Image
-						src="/images/Checker.png"
-						alt="Checker"
-						width={89}
-						height={89}
-						className="rounded-xl object-cover"
-					/>
+					<div className="flex flex-col flex items-center justify-center bg-grey-30 rounded-2xl">
+												<span className="">
+													<Icon name="KoreanDish" size="xl" className="text-grey-60"></Icon>
+												</span>
+												<div className="text-center text-grey-60">사진을 준비하고 있어요</div>
+											</div>
 				)}
 
 				{review.is_good_price_store && (
@@ -80,6 +82,7 @@ export default function StoreInfoCard({ review }: StoreInfoCardProps) {
 						</div>
 					</div>
 				</div>
+				{selectedFoodName} {selectedPrice?.toLocaleString()}원
 				<div className="flex items-center text-xs -mt-1 gap-1">
 					{review.topPercent && <TopPercentTag value={review.topPercent} />}
 					{review.valueScore !== undefined && (

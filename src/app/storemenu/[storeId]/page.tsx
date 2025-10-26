@@ -154,7 +154,7 @@ const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 										</div>
 				)}
 				<Icon
-					name={'ArrowLefttBar'}
+					name={'ArrowLeftBar'}
 					className="absolute top-3 left-4 transform text-white"
 					onClick={handleBack}
 				/>

@@ -12,4 +12,6 @@ export const foodIconMap: Record<string, keyof typeof Icons> = {
 	raw_fish_icon: 'RawFish',
 	cutlassfish_icon: 'Galchi',
 	red_tilefish_icon: 'Ogdom',
+	blackpork_bbq_icon : 'Pig',
+	abalone_kimbap_icon : 'Abalone'
 };

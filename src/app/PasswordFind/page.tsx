@@ -32,7 +32,7 @@ export default function SignupPage() {
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-start pt-6">
 			<div className="flex items-center justify-between px-4 w-full max-w-md mb-2">
-				<Icon name={'ArrowLefttBar'} size="xxl"></Icon>
+				<Icon name={'ArrowLeftBar'} size="xxl"></Icon>
 				<h1 className="text-base font-semibold">비밀번호 찾기</h1>
 				<Icon name={'Cancel'} size="xl"></Icon>
 			</div>
