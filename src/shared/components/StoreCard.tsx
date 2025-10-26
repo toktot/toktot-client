@@ -82,7 +82,11 @@ export default function StoreInfoCard({ review, selectedPrice, selectedFoodName 
 						</div>
 					</div>
 				</div>
-				{selectedFoodName} {selectedPrice?.toLocaleString()}원
+				{selectedFoodName && (
+  <div>
+    {selectedFoodName} {selectedPrice?.toLocaleString()}원
+  </div>
+)}
 				<div className="flex items-center text-xs -mt-1 gap-1">
 					{review.topPercent && <TopPercentTag value={review.topPercent} />}
 					{review.valueScore !== undefined && (
