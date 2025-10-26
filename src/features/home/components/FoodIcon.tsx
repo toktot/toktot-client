@@ -38,11 +38,8 @@ const CategoryGrid: React.FC<Props> = ({ onSelect }) => {
 					로컬음식
 					<button type="button" onClick={() => setExpanded((prev) => !prev)}
 						className="transition-transform duration-300">
-						<Icon
-							name={expanded ? 'ArrowDown':'ArrowUp'}
-							size="l"
-							
-						/>
+							{expanded ? <Icon name="ArrowDown" /> : <Icon name="ArrowUp" />}
+						
 					</button>
 				</div>
 			</h2>
