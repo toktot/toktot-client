@@ -8,10 +8,10 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 import MapScreen from '@/widgets/MapScreen';
+import CategorySection from '@/widgets/home/filter/ui/CategorySection';
+import PriceRangeSlider from '@/widgets/home/filter/ui/Slider';
+import { priceSummaryMap } from '@/widgets/home/model/mockPriceSummary';
 
-import CategorySection from '@/features/home/filter/components/CategorySection';
-import PriceRangeSlider from '@/features/home/filter/components/Slider';
-import { priceSummaryMap } from '@/features/home/model/mockPriceSummary';
 import {
 	RadiusProvider,
 	useRadius,
@@ -448,7 +448,7 @@ function LocationSearchContent({
 													max={priceSummary.maxPrice}
 													initialMin={minPrice ?? priceSummary.minPrice}
 													initialMax={maxPrice ?? priceSummary.maxPrice}
-													onChange={(min, max) => {
+													onChange={(min: number, max: number) => {
 														setIsPriceChanged(true);
 														setMinPrice(min);
 														setMaxPrice(max);

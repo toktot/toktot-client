@@ -4,7 +4,10 @@
 
 import { Suspense } from 'react';
 
-import GoodstoreClient from '@/features/home/components/GoodStoreClient';
+import GoodstoreClient from '@/widgets/home/ui/GoodStoreClient';
+
+// goodstore/page.tsx
+// 여기는 최소한만
 
 // goodstore/page.tsx
 // 여기는 최소한만

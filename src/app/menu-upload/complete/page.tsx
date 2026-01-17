@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { AppShell, Header } from '@/widgets/layout';
 
 import { UploadCompleteWidget } from '@/features/menu/upload/ui/UploadCompleteWidget';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 
 import { StoreId } from '@/shared/model/types';
 

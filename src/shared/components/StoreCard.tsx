@@ -4,8 +4,8 @@ import StoreCategoryTag from '@/entities/storeCard/components/StoreCategoryTag';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import GasimbiCategoryTag from '@/features/home/model/GasimbiCategory';
-import TopPercentTag from '@/features/home/model/TopPercentTag';
+import GasimbiCategoryTag from '@/widgets/home/model/GasimbiCategory';
+import TopPercentTag from '@/widgets/home/model/TopPercentTag';
 
 import Icon from '@/shared/ui/Icon';
 

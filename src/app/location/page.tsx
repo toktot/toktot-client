@@ -1,6 +1,6 @@
 'use client';
 
-import LocationSelector from '@/features/locationsetting/components/LocationSelector';
+import LocationSelector from '@/features/locationsetting/ui/LocationSelector';
 
 import { BottomSheet } from '@/shared/components/BottomSheet';
 

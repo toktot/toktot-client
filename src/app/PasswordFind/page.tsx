@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import Icon from '@/shared/ui/Icon';
 
-import PassFindEmail from '../../features/auth/components/PassFindEmail';
-import PassSet from '../../features/auth/components/PassSet';
+import PassFindEmail from '../../features/auth/ui/PassFindEmail';
+import PassSet from '../../features/auth/ui/PassSet';
 
 export default function SignupPage() {
 	const [step, setStep] = useState<'email' | 'password' | 'complete'>('email');

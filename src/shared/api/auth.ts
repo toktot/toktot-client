@@ -1,5 +1,5 @@
 // shared/api/auth.ts
-import api from '@/features/home/lib/api';
+import api from '@/widgets/home/lib/api';
 
 import {
 	removeToken,

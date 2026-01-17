@@ -3,6 +3,8 @@
 
 import { Suspense } from 'react';
 
+import { useMyProfile } from '@/entities/user/lib/useMyProfile';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -10,13 +12,10 @@ import { AppShell, Header } from '@/widgets/layout';
 
 import { FolderList } from '@/features/my-folders/ui/FolderList';
 import { MyReviewList } from '@/features/my-reviews/ui/MyReviewList';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 
 import Icon from '@/shared/ui/Icon';
 import Tab from '@/shared/ui/Tab';
-
-import { useMyProfile } from '@/entities/user/lib/useMyProfile';
-import Image from 'next/image';
 
 type MyPageTab = 'written' | 'saved';
 

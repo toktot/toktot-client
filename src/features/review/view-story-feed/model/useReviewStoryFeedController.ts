@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Tooltip } from '@/entities/review';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { useLocation } from '@/features/locationsetting/components/LocationContext';
+import { useLocation } from '@/features/locationsetting/ui/LocationContext';
 import {
 	ReviewSearchRequest,
 	SortValue,

@@ -4,7 +4,7 @@ import { AppShell, Header } from '@/widgets/layout';
 import { ReviewStoryFeed } from '@/widgets/review/read/ui/ReviewStoryFeed';
 
 import { LocationDisplayTrigger } from '@/features/locationsetting/ui/LocationDisplayTrigger';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { ReviewOptionsMenu } from '@/features/review/read/ui/ReviewOptionsMenu';
 
 const page = () => {

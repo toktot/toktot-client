@@ -4,7 +4,7 @@ import { use } from 'react';
 
 import { AppShell, Header } from '@/widgets/layout';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { SavedReviewList } from '@/features/saved-reviews/ui/SavedReviewList';
 
 interface SavedReviewsPageProps {

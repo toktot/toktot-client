@@ -4,10 +4,10 @@ import { Suspense, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import FilterBar from '@/widgets/home/ui/FilterBar';
 import { AppShell } from '@/widgets/layout';
 
-import FilterBar from '@/features/home/components/FilterBar';
-import Auto from '@/features/searchBar/components/Auto';
+import Auto from '@/features/search-bar/ui/Auto';
 
 import HeaderBox from '@/shared/components/HeaderBox';
 import SearchBox from '@/shared/components/SearchBox';

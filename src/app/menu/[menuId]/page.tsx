@@ -6,8 +6,7 @@ import { mockMenu } from '@/entities/store/menu/mockMenu';
 import { useParams } from 'next/navigation';
 
 import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
-
-import MenuChart from '@/features/StoreDetail/components/[menuId]/MenuGraph';
+import MenuChart from '@/widgets/store-detail/ui/[menuId]/MenuGraph';
 
 export default function MenuDetailPage() {
 	const params = useParams();

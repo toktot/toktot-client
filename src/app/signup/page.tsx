@@ -4,13 +4,13 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import AgreementModal from '@/features/auth/components/Agree';
-import NicknameInput from '@/features/auth/components/SignupNickname';
+import AgreementModal from '@/features/auth/ui/Agree';
+import NicknameInput from '@/features/auth/ui/SignupNickname';
 
 import Icon from '@/shared/ui/Icon';
 
-import SignupEmailForm from '../../features/auth/components/SignupEmailForm';
-import SignupPasswordForm from '../../features/auth/components/SignupPasswordForm';
+import SignupEmailForm from '../../features/auth/ui/SignupEmailForm';
+import SignupPasswordForm from '../../features/auth/ui/SignupPasswordForm';
 
 export default function SignupPage() {
 	const [step, setStep] = useState<

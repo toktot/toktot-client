@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { AppShell, Header } from '@/widgets/layout';
 import { ReportReviewWidget } from '@/widgets/report/review/ui/ReportReviewWidget';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { useReviewReportStore } from '@/features/report/model/useReviewReportStore';
 import { SubmitReviewReportButton } from '@/features/report/review/ui/SubmitReviewReportButton';
 

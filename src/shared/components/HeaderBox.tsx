@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 
-import { useLocation } from '@/features/locationsetting/components/LocationContext';
-import LocationSelector from '@/features/locationsetting/components/LocationSelector';
+import { useRouter } from 'next/navigation';
+
+import { useLocation } from '@/features/locationsetting/ui/LocationContext';
+import LocationSelector from '@/features/locationsetting/ui/LocationSelector';
 
 import {
 	BottomSheet,
@@ -11,7 +13,6 @@ import {
 	BottomSheetTrigger,
 } from '@/shared/components/BottomSheet';
 import Icon from '@/shared/ui/Icon';
-import { useRouter } from 'next/navigation';
 
 interface HeaderBoxProps {
 	onLocationSaved?: () => void;
@@ -79,7 +80,7 @@ const HeaderBox = ({
 				</div>
 				<div>
 					<button onClick={() => router.push('/alarm')}>
-					<Icon name="Bell" className="w-[48px] h-[48px]" />
+						<Icon name="Bell" className="w-[48px] h-[48px]" />
 					</button>
 				</div>
 			</header>

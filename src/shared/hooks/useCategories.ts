@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { CategoryItem } from '@/features/home/components/FoodIcon';
-import api from '@/features/home/lib/api';
+import api from '@/widgets/home/lib/api';
+import { CategoryItem } from '@/widgets/home/ui/FoodIcon';
 
 import { foodIconMap } from '../icons/CategoryIconMap';
 import { getDecryptedToken } from '../utils/storage';
@@ -37,14 +37,14 @@ export function useCategories() {
 					name: item.name,
 					icon: foodIconMap[item.icon_name] || 'None',
 				}));
-				console.log(mapped.length)
+				console.log(mapped.length);
 				console.table(
 					mapped.map((m) => ({
-						id : m.id,
+						id: m.id,
 						name: m.name,
-						icon : m.icon
-					}))
-				)
+						icon: m.icon,
+					})),
+				);
 
 				setCategories(mapped);
 			} catch (err: unknown) {

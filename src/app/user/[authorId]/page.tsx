@@ -9,7 +9,7 @@ import { AppShell, Header } from '@/widgets/layout';
 
 import { UserFolderList } from '@/features/my-folders/ui/UserFolderList';
 import { UserReviewList } from '@/features/my-reviews/ui/UserReviewList';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { UserOptionsMenu } from '@/features/user/ui/UserOptionsMenu';
 
 import Tab from '@/shared/ui/Tab';

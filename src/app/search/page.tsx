@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 
-import SearchResultSection from '@/features/home/components/SearchResultSection';
+import SearchResultSection from '@/widgets/home/ui/SearchResultSection';
 
 export default function SearchPage() {
 	return (

@@ -5,7 +5,7 @@ import PolicyNavigator from '@/widgets/my/ui/PolicyNavigator';
 
 import { DeleteAccountButton } from '@/features/auth/delete-account/ui/DeleteAccountButton';
 import { LogoutButton } from '@/features/auth/logout/ui/LogoutButton';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 
 import Icon from '@/shared/ui/Icon';
 

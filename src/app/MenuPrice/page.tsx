@@ -4,8 +4,8 @@ import { Suspense } from 'react';
 
 import { HomeAppShell } from '@/widgets/layout/ui/HomeAppShell';
 
-import PriceChart from '@/features/menuPrice/components/Graph';
-import Header from '@/features/menuPrice/components/Header';
+import PriceChart from '@/features/menuPrice/ui/Graph';
+import Header from '@/features/menuPrice/ui/Header';
 
 export default function MenuPricePage() {
 	return (

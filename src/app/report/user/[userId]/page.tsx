@@ -7,7 +7,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { AppShell, Header } from '@/widgets/layout';
 import { ReportFormWidget } from '@/widgets/report/user/ui/ReportUserWidget';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { useUserReportStore } from '@/features/report/model/useUserReportStore';
 import { SubmitUserReportButton } from '@/features/report/user/ui/SubmitUserReportButton';
 

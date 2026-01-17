@@ -9,7 +9,7 @@ import { AppShell, Header } from '@/widgets/layout';
 import { useUploadMenuApi } from '@/features/menu/upload/api/useUploadMenuApi';
 import { useMenuImageStore } from '@/features/menu/upload/model/useMenuImageStore';
 import { MenuImageUploaderWidget } from '@/features/menu/upload/ui/MenuImageUploaderWidget';
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 
 import { StoreId } from '@/shared/model/types';
 import Icon from '@/shared/ui/Icon';

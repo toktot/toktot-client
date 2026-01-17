@@ -10,7 +10,7 @@ import { AppShell, Header } from '@/widgets/layout';
 import { buildSubmitPayload } from '@/widgets/review/write/lib/buildSubmitPayload';
 import { ReviewSubmitButton } from '@/widgets/review/write/ui/ReviewSubmitButton';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { createWriteReviewApi } from '@/features/review/write/api/api';
 import { useKeywordStore } from '@/features/review/write/model/useKeywordStore';
 import { useReviewWriteStore } from '@/features/review/write/model/useReviewWriteStore';

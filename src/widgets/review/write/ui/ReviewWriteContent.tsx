@@ -10,7 +10,7 @@ import { AppShell, Header } from '@/widgets/layout';
 import { ReviewImageWidget, VisitedStoreWidget } from '@/widgets/review/write';
 import { KeywordSelectionWidget } from '@/widgets/review/write/ui/KeywordSelectionWidget';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { useStore } from '@/features/review/write/hooks/useStore';
 import ContinueOrNewReviewModal from '@/features/review/write/ui/ContinueOrNewReviewModal';
 

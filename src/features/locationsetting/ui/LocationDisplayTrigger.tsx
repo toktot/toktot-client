@@ -4,8 +4,7 @@ import { useState } from 'react';
 
 import clsx from 'clsx';
 
-import { useLocation } from '@/features/locationsetting/components/LocationContext';
-import LocationSelector from '@/features/locationsetting/components/LocationSelector';
+import { useLocation } from '@/features/locationsetting/ui/LocationContext';
 
 import {
 	BottomSheet,
@@ -13,6 +12,8 @@ import {
 	BottomSheetTrigger,
 } from '@/shared/components/BottomSheet';
 import Icon from '@/shared/ui/Icon';
+
+import LocationSelector from './LocationSelector';
 
 interface LocationDisplayTriggerProps {
 	className?: string;

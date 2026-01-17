@@ -1,3 +1,4 @@
+import { MSWProvider } from '@/mocks/MSWProvider';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 
@@ -25,25 +26,27 @@ export default function RootLayout({
 			<body
 				className={`${pretendard.variable} ${manrope.variable} antialiased`}
 			>
-				<ClientProviders>
-					<PageLoader duration={500} />
-					{children}
-					<DevelopmentBanner />
-					<Toaster
-						position="bottom-center"
-						reverseOrder={false}
-						toastOptions={{
-							success: {
-								icon: <Icon name="Success" />,
-								duration: 1500,
-							},
-							error: {
-								icon: <Icon name="Error" />,
-								duration: 1500,
-							},
-						}}
-					/>
-				</ClientProviders>
+				<MSWProvider>
+					<ClientProviders>
+						<PageLoader duration={500} />
+						{children}
+						<DevelopmentBanner />
+						<Toaster
+							position="bottom-center"
+							reverseOrder={false}
+							toastOptions={{
+								success: {
+									icon: <Icon name="Success" />,
+									duration: 1500,
+								},
+								error: {
+									icon: <Icon name="Error" />,
+									duration: 1500,
+								},
+							}}
+						/>
+					</ClientProviders>
+				</MSWProvider>
 			</body>
 		</html>
 	);

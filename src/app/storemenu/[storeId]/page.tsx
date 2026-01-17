@@ -8,13 +8,13 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-import { CopyButton } from '@/features/StoreDetail/components/Copy';
-import StoreHome from '@/features/StoreDetail/components/[storeId]/StoreHome';
-import StoreMenuSection from '@/features/StoreDetail/components/[storeId]/StoreMenu';
-import StoreReview from '@/features/StoreDetail/components/[storeId]/StoreReview';
-import api from '@/features/home/lib/api';
-import GasimbiCategoryTag from '@/features/home/model/GasimbiCategory';
-import TopPercentTag from '@/features/home/model/TopPercentTag';
+import api from '@/widgets/home/lib/api';
+import GasimbiCategoryTag from '@/widgets/home/model/GasimbiCategory';
+import TopPercentTag from '@/widgets/home/model/TopPercentTag';
+import { CopyButton } from '@/widgets/store-detail/ui/Copy';
+import StoreHome from '@/widgets/store-detail/ui/[storeId]/StoreHome';
+import StoreMenuSection from '@/widgets/store-detail/ui/[storeId]/StoreMenu';
+import StoreReview from '@/widgets/store-detail/ui/[storeId]/StoreReview';
 
 import {
 	BottomSheet,
@@ -40,13 +40,13 @@ interface StoreData {
 	is_local_store?: boolean;
 }
 type ReviewStats = {
-  overallRating: number;        // 소수점 1자리 표시용
-  totalReviewCount: number;
+	overallRating: number; // 소수점 1자리 표시용
+	totalReviewCount: number;
 };
 export default function StoreDetailPage() {
 	const params = useParams();
 	const router = useRouter();
-const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+	const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 	const storeId = Number(params.storeId);
 	const [store, setStore] = useState<StoreData | null>(null);
 	const [selected, setSelected] = useState(false);
@@ -60,44 +60,43 @@ const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 	}, [router]);
 	// 단일 Review 객체 추출 // 여기 변경
 	useEffect(() => {
-  const fetchReviewStats = async () => {
-    try {
-      const res = await api.get(`/v1/restaurants/${storeId}/review-statistics`);
-      const json = res.data;
+		const fetchReviewStats = async () => {
+			try {
+				const res = await api.get(
+					`/v1/restaurants/${storeId}/review-statistics`,
+				);
+				const json = res.data;
 
-      if (json?.success && json.data) {
-        const d = json.data;
+				if (json?.success && json.data) {
+					const d = json.data;
 
-        // 문서/서버의 명칭 차이까지 안전하게 커버
-        const total =
-          d.totalReviewCount ?? d.totalCount ?? 0;
+					// 문서/서버의 명칭 차이까지 안전하게 커버
+					const total = d.totalReviewCount ?? d.totalCount ?? 0;
 
-        const ratingRaw =
-          d.overallRating ?? d.averageRating ?? 0;
+					const ratingRaw = d.overallRating ?? d.averageRating ?? 0;
 
-        // 소수점 1자리 반올림
-        const rating =
-          typeof ratingRaw === 'number'
-            ? Math.round(ratingRaw * 10) / 10
-            : Number(ratingRaw) || 0;
+					// 소수점 1자리 반올림
+					const rating =
+						typeof ratingRaw === 'number'
+							? Math.round(ratingRaw * 10) / 10
+							: Number(ratingRaw) || 0;
 
-        setReviewStats({
-          overallRating: rating,
-          totalReviewCount: total,
-        });
-      } else {
-        setReviewStats(null);
-        console.error(json);
-      }
-    } catch (e) {
-      console.error(e);
-      setReviewStats(null);
-    }
-  };
+					setReviewStats({
+						overallRating: rating,
+						totalReviewCount: total,
+					});
+				} else {
+					setReviewStats(null);
+					console.error(json);
+				}
+			} catch (e) {
+				console.error(e);
+				setReviewStats(null);
+			}
+		};
 
-  fetchReviewStats();
-}, [storeId]);
-
+		fetchReviewStats();
+	}, [storeId]);
 
 	useEffect(() => {
 		const fetchStore = async () => {
@@ -145,13 +144,13 @@ const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 					/>
 				) : (
 					<div className="relative min-w-[343px] max-w-[480px] h-[300px] bg-grey-20 flex items-center justify-center text-grey-60 text-sm rounded-3xl overflow-hidden">
-											<div className="flex flex-col flex items-center">
-												<span className="">
-													<Icon name="KoreanDish" size="xxl"></Icon>
-												</span>
-												<div className="">사진을 준비하고 있어요</div>
-											</div>
-										</div>
+						<div className="flex flex-col flex items-center">
+							<span className="">
+								<Icon name="KoreanDish" size="xxl"></Icon>
+							</span>
+							<div className="">사진을 준비하고 있어요</div>
+						</div>
+					</div>
 				)}
 				<Icon
 					name={'ArrowLeftBar'}
@@ -173,17 +172,17 @@ const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 							<div className="flex items-center gap-1">
 								{/*{store.point !== undefined && (*/}
 								{store.value_for_money_score && (
-    <span className="text-sm font-semibold">
-      <TopPercentTag value={store.value_for_money_score} />
-    </span>
-  )}
+									<span className="text-sm font-semibold">
+										<TopPercentTag value={store.value_for_money_score} />
+									</span>
+								)}
 
-  {/* 가심비 점수 */}
-  {store.point != null && (
-    <span className="text-sm font-semibold">
-      <GasimbiCategoryTag value={store.point} />
-    </span>
-  )}
+								{/* 가심비 점수 */}
+								{store.point != null && (
+									<span className="text-sm font-semibold">
+										<GasimbiCategoryTag value={store.point} />
+									</span>
+								)}
 								{/*})}*/}
 								{/*{store.value_for_money_score !== undefined && ( */}
 
@@ -243,7 +242,7 @@ const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 
 						<div className="flex items-center gap-2 mb-2">
 							<Icon name={'call'} className="mr-2 w-5 h-5 text-grey-50" />
-<span className="text-grey-80 text-[14px]">{store.phone}</span>
+							<span className="text-grey-80 text-[14px]">{store.phone}</span>
 							<span className="-ml-2">
 								<CopyButton text={store.phone} />
 							</span>

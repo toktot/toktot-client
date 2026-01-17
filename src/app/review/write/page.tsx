@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { AppShell, Header } from '@/widgets/layout';
 import { SelectStoreWidget } from '@/widgets/store-search/ui/SelectStoreWidget';
 
-import { BackButton } from '@/features/navigation/back/ui/BackButton';
+import { BackButton } from '@/features/navigation/ui/back/BackButton';
 import { PlaceClient } from '@/features/store-search/api/schema';
+
 import Typography from '@/shared/ui/Typography';
 
 const SelectStoreForReviewPage = () => {

@@ -2,9 +2,8 @@
 
 import { Suspense } from 'react';
 
+import HomeContainer from '@/widgets/home/ui/HomeContainer';
 import { AppShell } from '@/widgets/layout';
-
-import HomeContainer from '../../features/home/components/HomeContainer';
 
 export default function Home() {
 	return (

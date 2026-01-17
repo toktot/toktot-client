@@ -1,4 +1,4 @@
-import { GoHomeButton } from '@/features/navigation/go-home/ui/GoHomeButton';
+import { GoHomeButton } from '@/features/navigation/ui/go-home/GoHomeButton';
 import { ViewWrittenReviewButton } from '@/features/review/write/ui/ViewWrittenReviewButton';
 
 import { ReviewId } from '@/shared/model/types';

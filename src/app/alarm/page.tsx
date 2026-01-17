@@ -2,8 +2,7 @@ import { Suspense } from 'react';
 
 import { AppShell } from '@/widgets/layout';
 
-import AlarmTotal from '@/features/alarm/components/AlarmTotal';
-
+import AlarmTotal from '@/features/alarm/ui/AlarmTotal';
 
 export default function Alarm() {
 	return (
